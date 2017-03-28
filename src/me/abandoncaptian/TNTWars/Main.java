@@ -167,19 +167,21 @@ public class Main extends JavaPlugin implements Listener{
 					if(!active){
 						if(gameQueue.size() >= 2){
 							active = true;
-							
+
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								@Override
 								public void run() {
 									inGame.addAll(gameQueue);
 									modeON.addAll(inGame);
+									Bukkit.broadcastMessage("IN Game: " + inGame);
 									for(String name : inGame){
+										Bukkit.broadcastMessage("Running for: " + name);
 										Bukkit.getPlayer(name).setHealth(20);
 										Bukkit.getPlayer(name).setFoodLevel(20);
+										p.sendMessage("Your inv: " + Bukkit.getPlayer(name).getInventory().getContents());
 										invSaves.put(Bukkit.getPlayer(name).getUniqueId(), Bukkit.getPlayer(name).getInventory());
 										p.getInventory().clear();
 										p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
-										p.sendMessage("Your inv: " + Bukkit.getPlayer(name).getInventory().getContents());
 										if(!selectedKit.containsKey(name)){
 											int rand = (int) (Math.random()*8);
 											selectedKit.put(name, kitsList.get(rand));
@@ -272,86 +274,88 @@ public class Main extends JavaPlugin implements Listener{
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void tntClick(PlayerInteractEvent e){
-		if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
-			Player p = e.getPlayer();
-			if(selectedKit.get(p.getName()) == "Miner"){
+		if(active){
+			if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
+				Player p = e.getPlayer();
+				if(selectedKit.get(p.getName()) == "Miner"){
+					ItemStack item = p.getItemInHand();
+					if(item.getType() == Material.TNT){
+						if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
+							if(modeON.contains(p.getName())){
+								this.primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
+								tntActive.put(this.primeTnt, p.getName());
+								primeTnt.setFuseTicks(0);
+								e.setCancelled(true);
+							}
+						}
+					}
+				}
+				return;
+			}
+			if((e.getAction() == Action.LEFT_CLICK_AIR) || (e.getAction() == Action.LEFT_CLICK_BLOCK)){
+				Player p = e.getPlayer();
 				ItemStack item = p.getItemInHand();
 				if(item.getType() == Material.TNT){
 					if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
 						if(modeON.contains(p.getName())){
-							this.primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
+							double power = 0;
+							int fuse;
+							if(selectedKit.containsKey(p.getName())){
+								if(selectedKit.get(p.getName()) == "Sniper") power = 4;
+								else if((selectedKit.get(p.getName()) == "Suicide Bomber"))power = 0;
+								else if((selectedKit.get(p.getName()) == "Boomerang"))power = 3;
+								else power = 1.5;
+							}else power =  1.5;
+							if(selectedKit.containsKey(p.getName())){
+								if(selectedKit.get(p.getName()) == "Short Fuse")fuse = 10;
+								else if((selectedKit.get(p.getName()) == "Ender"))fuse = 60;
+								else if((selectedKit.get(p.getName()) == "Suicide Bomber"))fuse = 0;
+								else if((selectedKit.get(p.getName()) == "Boomerang"))fuse = 30;
+								else fuse = 20;
+							}else fuse = 20;
+							Location eye = p.getEyeLocation();
+							Vector vec = eye.getDirection().normalize().multiply(power);
+							eye.setY(eye.getY() + 0.4);
+							this.primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
+							this.primeTnt.setFuseTicks(fuse);
+							this.primeTnt.setCustomName(p.getName());
+							this.primeTnt.setCustomNameVisible(true);
 							tntActive.put(this.primeTnt, p.getName());
-							primeTnt.setFuseTicks(0);
-							e.setCancelled(true);
-						}
-					}
-				}
-			}
-			return;
-		}
-		if((e.getAction() == Action.LEFT_CLICK_AIR) || (e.getAction() == Action.LEFT_CLICK_BLOCK)){
-			Player p = e.getPlayer();
-			ItemStack item = p.getItemInHand();
-			if(item.getType() == Material.TNT){
-				if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
-					if(modeON.contains(p.getName())){
-						double power = 0;
-						int fuse;
-						if(selectedKit.containsKey(p.getName())){
-							if(selectedKit.get(p.getName()) == "Sniper") power = 4;
-							else if((selectedKit.get(p.getName()) == "Suicide Bomber"))power = 0;
-							else if((selectedKit.get(p.getName()) == "Boomerang"))power = 3;
-							else power = 1.5;
-						}else power =  1.5;
-						if(selectedKit.containsKey(p.getName())){
-							if(selectedKit.get(p.getName()) == "Short Fuse")fuse = 10;
-							else if((selectedKit.get(p.getName()) == "Ender"))fuse = 60;
-							else if((selectedKit.get(p.getName()) == "Suicide Bomber"))fuse = 0;
-							else if((selectedKit.get(p.getName()) == "Boomerang"))fuse = 30;
-							else fuse = 20;
-						}else fuse = 20;
-						Location eye = p.getEyeLocation();
-						Vector vec = eye.getDirection().normalize().multiply(power);
-						eye.setY(eye.getY() + 0.4);
-						this.primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
-						this.primeTnt.setFuseTicks(fuse);
-						this.primeTnt.setCustomName(p.getName());
-						this.primeTnt.setCustomNameVisible(true);
-						tntActive.put(this.primeTnt, p.getName());
-						if(selectedKit.get(p.getName()) == "Ender"){
-							Block block = p.getTargetBlock((HashSet<Byte>)null, 30);
-							Location bLoc = block.getLocation();
-							bLoc.setY(bLoc.getWorld().getHighestBlockYAt(bLoc));
-							this.primeTnt.teleport(bLoc);
-						}else{
-							this.primeTnt.setVelocity(vec);
-						}
-						if(selectedKit.containsKey(p.getName())){
-							if((selectedKit.get(p.getName()) == "Boomerang")){
-								Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-									@Override
-									public void run() {
-										Vector vec = eye.getDirection().normalize().multiply(-1);
-										primeTnt.setVelocity(vec);
-									}
-								}, 10);
+							if(selectedKit.get(p.getName()) == "Ender"){
+								Block block = p.getTargetBlock((HashSet<Byte>)null, 30);
+								Location bLoc = block.getLocation();
+								bLoc.setY(bLoc.getWorld().getHighestBlockYAt(bLoc));
+								this.primeTnt.teleport(bLoc);
+							}else{
+								this.primeTnt.setVelocity(vec);
 							}
-						}
+							if(selectedKit.containsKey(p.getName())){
+								if((selectedKit.get(p.getName()) == "Boomerang")){
+									Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+										@Override
+										public void run() {
+											Vector vec = eye.getDirection().normalize().multiply(-1);
+											primeTnt.setVelocity(vec);
+										}
+									}, 10);
+								}
+							}
 
-						if((p.getItemInHand().getAmount()-1)>=1){
-							p.getItemInHand().setAmount(p.getItemInHand().getAmount()-1);
+							if((p.getItemInHand().getAmount()-1)>=1){
+								p.getItemInHand().setAmount(p.getItemInHand().getAmount()-1);
+							}else{
+								p.getItemInHand().setAmount(0);
+							}
 						}else{
-							p.getItemInHand().setAmount(0);
+							p.sendMessage("§6TNT Mode: §7[§cOFF§7]");
+							return;
 						}
 					}else{
-						p.sendMessage("§6TNT Mode: §7[§cOFF§7]");
 						return;
 					}
 				}else{
 					return;
 				}
-			}else{
-				return;
 			}
 		}
 	}
@@ -380,8 +384,10 @@ public class Main extends JavaPlugin implements Listener{
 
 	@EventHandler
 	public void tntExplode(EntityExplodeEvent e){
-		if(e.getEntity() instanceof CraftTNTPrimed){
-			tntActive.remove(e.getEntity());
+		if(active){
+			if(e.getEntity() instanceof CraftTNTPrimed){
+				tntActive.remove(e.getEntity());
+			}
 		}
 	}
 
@@ -395,61 +401,64 @@ public class Main extends JavaPlugin implements Listener{
 
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
-		if(inGame.contains(e.getEntity().getName())){
-			Player p = (Player) e.getEntity();
-			e.getDrops().clear();
-			dead.add(p.getName());
-			p.getInventory().setStorageContents(null);
-			e.setDeathMessage(null);
-			int game = inGame.size();
-			if(game > 2){
-				inGame.remove(e.getEntity().getName());
-				modeON.remove(e.getEntity().getName());
-				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-					@Override
-					public void run() {
-						PlayerInvCheck(p.getName());
-					}
-				}, (20*10));
+		if(active){
+			if(inGame.contains(e.getEntity().getName())){
+				Player p = (Player) e.getEntity();
+				e.getDrops().clear();
+				dead.add(p.getName());
+				p.getInventory().setStorageContents(null);
+				e.setDeathMessage(null);
+				int game = inGame.size();
+				if(game > 2){
+					inGame.remove(e.getEntity().getName());
+					modeON.remove(e.getEntity().getName());
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						@Override
+						public void run() {
+							PlayerInvCheck(p.getName());
+						}
+					}, (20*10));
 
-			}else{
-				inGame.remove(e.getEntity().getName());
-				modeON.remove(e.getEntity().getName());
-				PlayerInvCheck(e.getEntity().getName());
-				Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
-				Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
-				Bukkit.getPlayer(inGame.get(0)).setHealth(20);
-				Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
-				PlayerInvCheck(inGame.get(0));
-				inGame.clear();
-				modeON.clear();
-				active = false;
-				canKit = true;
-				selectedKit.clear();
+				}else{
+					inGame.remove(e.getEntity().getName());
+					modeON.remove(e.getEntity().getName());
+					PlayerInvCheck(e.getEntity().getName());
+					Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
+					Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
+					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
+					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
+					PlayerInvCheck(inGame.get(0));
+					inGame.clear();
+					modeON.clear();
+					active = false;
+					canKit = true;
+					selectedKit.clear();
+				}
 			}
 		}
 	}
 
 	@EventHandler
 	public void tntDamage(EntityDamageByEntityEvent e){
-		if(e.getEntity() instanceof Player){
-			Player p = (Player)e.getEntity();
-			if(e.getDamager() instanceof CraftTNTPrimed){				
-				if(!modeON.contains(p.getName())){
-					e.setCancelled(true);
-					p.sendMessage("§7You got lucky this time, the next TNT won't be so kind!");
-				}
-				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-					@Override
-					public void run() {
-						if(dead.contains(p.getName())){
-							int game = inGame.size();
-							Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
-							dead.remove(p.getName());
-						}
+		if(active){
+			if(e.getEntity() instanceof Player){
+				Player p = (Player)e.getEntity();
+				if(e.getDamager() instanceof CraftTNTPrimed){				
+					if(!modeON.contains(p.getName())){
+						e.setCancelled(true);
+						p.sendMessage("§7You got lucky this time, the next TNT won't be so kind!");
 					}
-				}, 5);
-
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						@Override
+						public void run() {
+							if(dead.contains(p.getName())){
+								int game = inGame.size();
+								Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
+								dead.remove(p.getName());
+							}
+						}
+					}, 5);
+				}
 			}
 		}
 	}
