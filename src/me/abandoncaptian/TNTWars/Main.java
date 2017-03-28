@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+//import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -27,7 +28,9 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -44,11 +47,16 @@ public class Main extends JavaPlugin implements Listener{
 	List<String> gameQueue = new ArrayList<String>();
 	List<String> inGame = new ArrayList<String>();
 	List<String> dead = new ArrayList<String>();
+	List<String> kitsList = new ArrayList<String>();
 	ItemStack tnt = new ItemStack(Material.TNT);
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
 	HashMap<String, String> selectedKit = new HashMap<String, String>();
 	HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
+	HashMap<String, HashMap<Integer, ItemStack>> invSaves = new HashMap<String, HashMap<Integer, ItemStack>>();
+	HashMap<String, PlayerInventory> invSavesTest = new HashMap<String, PlayerInventory>();
+	HashMap<String, ItemStack[]> savedItems = new HashMap<String, ItemStack[]>();
+
 	TNTPrimed primeTnt;
 	BukkitTask deathCount;
 	boolean active = false;
@@ -69,6 +77,14 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
+		kitsList.add("Sniper");
+		kitsList.add("Short Fuse");
+		kitsList.add("Heavy Loader");
+		kitsList.add("Miner");
+		kitsList.add("Suicide Bomber");
+		kitsList.add("Glue Factory Worker");
+		kitsList.add("Ender");
+		kitsList.add("Boomerang");
 		meta.setDisplayName("§6§lThrowable §c§lTNT");
 		lore.add("§bRight click to throw");
 		lore.add("§bMade By: abandoncaptian");
@@ -158,9 +174,34 @@ public class Main extends JavaPlugin implements Listener{
 								public void run() {
 									inGame.addAll(gameQueue);
 									modeON.addAll(inGame);
+									invSaves.clear();
 									for(String name : inGame){
 										Bukkit.getPlayer(name).setHealth(20);
 										Bukkit.getPlayer(name).setFoodLevel(20);
+										saveInventory(Bukkit.getPlayer(name));
+										//invSavesTest.put(name, Bukkit.getPlayer(name).getInventory());
+
+										/*
+										for(int index = 0; index < p.getInventory().getSize(); index++){
+											if(p.getInventory().getItem(index) == null){
+												Bukkit.broadcastMessage(name + ": is null : " + index);
+												continue;
+											}else{
+												Bukkit.broadcastMessage(name + ": " + p.getInventory().getItem(index) + " : " + index);
+												if(p.getInventory().getItem(index) != null){
+													invSaves.get(p.getName()).put(index, p.getInventory().getItem(index));
+												}
+											}
+										}
+										Bukkit.broadcastMessage(name);
+										Bukkit.broadcastMessage("INV: " + invSaves.get(name));*/
+										p.getInventory().setStorageContents(null);
+										p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
+										if(!selectedKit.containsKey(name)){
+											int rand = (int) (Math.random()*8);
+											selectedKit.put(name, kitsList.get(rand));
+											Bukkit.getPlayer(name).sendMessage("§6We selected §b" + kitsList.get(rand) + " §6for you");
+										}
 									}
 									gameQueue.clear(); 
 									canKit = false;
@@ -209,6 +250,9 @@ public class Main extends JavaPlugin implements Listener{
 									Bukkit.broadcastMessage("§cTNT Wars §bStarts in 30 seconds!");
 									Bukkit.broadcastMessage("§6Remember to do  §7[§b/TNT Kits§7] §6to select a kit!");
 									Bukkit.broadcastMessage("§c[Warning] §7- §cDo not bring items into game §7- §cYou will lose items!");
+									for(String name : gameQueue){
+										kh.kitsMenu(Bukkit.getPlayer(name));
+									}
 								}
 							}, 0);
 						}else{
@@ -343,6 +387,7 @@ public class Main extends JavaPlugin implements Listener{
 		if(inGame.contains(p.getName())){
 			inGame.remove(p.getName());
 			modeON.remove(p.getName());
+			restoreInventory(p);
 			int game = inGame.size();
 			Bukkit.broadcastMessage("§b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");
 			if(selectedKit.containsKey(p.getName())){
@@ -358,27 +403,70 @@ public class Main extends JavaPlugin implements Listener{
 		}
 	}
 
-	public void PlayerInvCheck(String name){
-		Player p = Bukkit.getPlayer(name);
-		if(p.getInventory().contains(Material.TNT)){
-			for(int index = 0; index < p.getInventory().getSize(); index++){
-				ItemStack item = p.getInventory().getItem(index);
-				if(item != null){	
-					if(item.getItemMeta().getDisplayName() == "§6§lThrowable §c§lTNT"){
-						p.getInventory().remove(item);
-					}
-				}
+
+
+	public void saveInventory(Player player)
+	{
+		this.savedItems.put(player.getName(), copyInventory(player.getInventory()));
+	}
+
+	public boolean restoreInventory(Player player)
+	{
+		ItemStack[] savedInventory = this.savedItems.remove(player.getName());
+		if(savedInventory == null)
+			return false;
+		restoreInventory(player, savedInventory);
+		return true;
+	}
+
+	private ItemStack[] copyInventory(Inventory inv)
+	{
+		ItemStack[] original = inv.getContents();
+		ItemStack[] copy = new ItemStack[original.length];
+		for(int i = 0; i < original.length; ++i)
+			if(original != null){
+				copy = original;
 			}
-		}else{
-			return;
+		return copy;
+	}
+
+	private void restoreInventory(Player p, ItemStack[] inventory)
+	{
+		p.getInventory().setContents(inventory);
+	}
+
+
+
+
+
+	public void PlayerInvCheck(String name){
+		Bukkit.getPlayer(name).sendMessage("INV Saved: " + this.invSavesTest.keySet());
+		Bukkit.getPlayer(name).sendMessage("INV: " + this.invSavesTest.get(name).getContents());
+		PlayerInventory inv = this.invSavesTest.get(name);
+		for(ItemStack item : inv.getStorageContents()){
+			if(item == null)continue;
+			else Bukkit.getPlayer(name).getInventory().addItem(item);
 		}
+		//Bukkit.getPlayer(name).getInventory().equals(inv);
+		/*
+		Bukkit.broadcastMessage("INV Set: " + name);
+		Bukkit.broadcastMessage("Saved INv: " + invSaves.keySet());
+		Player p = Bukkit.getPlayer(name);
+		for(Entry<Integer, ItemStack> map : invSaves.get(name).entrySet()){
+			int index = map.getKey();
+			ItemStack item = map.getValue();
+			p.getInventory().setItem(index, item);
+		}*/
+		return;
 	}
 
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
 		if(inGame.contains(e.getEntity().getName())){
 			Player p = (Player) e.getEntity();
+			e.getDrops().clear();
 			dead.add(p.getName());
+			p.getInventory().setStorageContents(null);
 			e.setDeathMessage(null);
 			int game = inGame.size();
 			if(game > 2){
@@ -387,17 +475,19 @@ public class Main extends JavaPlugin implements Listener{
 				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 					@Override
 					public void run() {
-						PlayerInvCheck(e.getEntity().getName());
+						PlayerInvCheck(p.getName());
 					}
 				}, (20*10));
-				
+
 			}else{
 				inGame.remove(e.getEntity().getName());
 				modeON.remove(e.getEntity().getName());
-				PlayerInvCheck(e.getEntity().getName());
+				restoreInventory(p);
 				Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
 				Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
-				PlayerInvCheck(inGame.get(0));
+				restoreInventory(Bukkit.getPlayer(inGame.get(0)));
+				Bukkit.getPlayer(inGame.get(0)).setHealth(20);
+				Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
 				inGame.clear();
 				modeON.clear();
 				active = false;

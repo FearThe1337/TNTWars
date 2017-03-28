@@ -20,7 +20,7 @@ public class KitHandler implements Listener{
 		this.pl = plugin;
 		ItemMeta meta;
 		List<String> lore = new ArrayList<String>();
-		inv = Bukkit.createInventory(null, 18, "§c§lTNT Wars §6Kits Menu");
+		inv = Bukkit.createInventory(null, 54, "§c§lTNT Wars §6Kits Menu");
 		ItemStack kit1 = new ItemStack(Material.BOW);
 		meta = kit1.getItemMeta();
 		meta.setDisplayName("§b§lSniper");
@@ -91,19 +91,30 @@ public class KitHandler implements Listener{
 		meta.setLore(lore);
 		lore.clear();
 		kit8.setItemMeta(meta);
-		inv.setItem(1, kit1);
-		inv.setItem(2, kit2);
-		inv.setItem(3, kit3);
-		inv.setItem(4, kit4);
-		inv.setItem(5, kit5);
-		inv.setItem(6, kit6);
-		inv.setItem(7, kit7);
-		inv.setItem(13, kit8);
+		ItemStack kit9 = new ItemStack(Material.ARROW);
+		meta = kit9.getItemMeta();
+		meta.setDisplayName("§b§lRandom");
+		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
+		lore.add("§7 - §6Click for a random kit");
+		meta.setLore(lore);
+		lore.clear();
+		kit9.setItemMeta(meta);
+		inv.setItem(10, kit1);
+		inv.setItem(11, kit2);
+		inv.setItem(12, kit3);
+		inv.setItem(13, kit4);
+		inv.setItem(14, kit5);
+		inv.setItem(15, kit6);
+		inv.setItem(16, kit7);
+		inv.setItem(22, kit8);
+		inv.setItem(40, kit9);
 	}
 
 	@EventHandler
 	public void invClick(InventoryClickEvent e){
-		if(e.getClickedInventory().getTitle() == "§c§lTNT Wars §6Kits Menu"){
+		if(e.getClickedInventory().getTitle() == null){
+			return;
+		}else if(e.getClickedInventory().getTitle() == "§c§lTNT Wars §6Kits Menu"){
 			e.setCancelled(true);
 			Player p = (Player) e.getWhoClicked();
 			ItemStack clicked = e.getCurrentItem();
@@ -147,6 +158,10 @@ public class KitHandler implements Listener{
 			case "§b§lBoomerang": 
 				p.sendMessage("§6You selected: " + itemName);
 				pl.selectedKit.put(p.getName(), "Boomerang");
+				p.closeInventory();
+				break;
+			case "§b§lRandom": 
+				p.sendMessage("§6You selected: " + itemName);
 				p.closeInventory();
 				break;
 			case "§b§lTBA":
