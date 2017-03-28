@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 //import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,6 +56,7 @@ public class Main extends JavaPlugin implements Listener{
 	HashMap<String, String> selectedKit = new HashMap<String, String>();
 	HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
 	HashMap<UUID, PlayerInventory> invSaves = new HashMap<UUID, PlayerInventory>();
+    Map<String, ItemStack[]> extraInv;
 
 	TNTPrimed primeTnt;
 	BukkitTask deathCount;
@@ -75,6 +78,7 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
+        this.extraInv = new HashMap<>();
 		kitsList.add("Sniper");
 		kitsList.add("Short Fuse");
 		kitsList.add("Heavy Loader");
@@ -178,8 +182,7 @@ public class Main extends JavaPlugin implements Listener{
 										Bukkit.broadcastMessage("Running for: " + name);
 										Bukkit.getPlayer(name).setHealth(20);
 										Bukkit.getPlayer(name).setFoodLevel(20);
-										p.sendMessage("Your inv: " + Bukkit.getPlayer(name).getInventory().getContents());
-										invSaves.put(Bukkit.getPlayer(name).getUniqueId(), Bukkit.getPlayer(name).getInventory());
+										InventorySwitch(Bukkit.getPlayer(name));
 										p.getInventory().clear();
 										p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 										if(!selectedKit.containsKey(name)){
@@ -390,15 +393,29 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 	}
+    public void InventorySwitch(Player player) {
+        boolean found = false;
+        for (String uuid : extraInv.keySet()) {
+            if (uuid.equals(player.getUniqueId().toString())) {
+                found = true;
+                ItemStack[] items = extraInv.get(uuid);
+                extraInv.remove(player.getUniqueId().toString());
+                player.getInventory().clear();
+                player.getInventory().setArmorContents((ItemStack[]) ArrayUtils.subarray(items, 0, 4));
+                player.getInventory().setContents((ItemStack[]) ArrayUtils.subarray(items, 4, items.length));
+            }
+        }
 
-	public void PlayerInvCheck(String name){
-		Player p = Bukkit.getPlayer(name);
-		p.getInventory().clear();
-		p.getInventory().setContents(invSaves.get(p.getUniqueId()).getContents());
-		p.sendMessage("Saved INV: " + invSaves.get(p.getUniqueId()).getContents());
-		invSaves.remove(p.getUniqueId());
-	}
-
+        if (!found) {
+            ItemStack[] curr = (ItemStack[]) ArrayUtils.addAll(
+                    player.getInventory().getArmorContents(),
+                    player.getInventory().getContents()
+            );
+            extraInv.put(player.getUniqueId().toString(), curr);
+            player.getInventory().clear();
+        }
+    }
+	
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
 		if(active){
@@ -415,19 +432,19 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
-							PlayerInvCheck(p.getName());
+							InventorySwitch(p);
 						}
 					}, (20*10));
 
 				}else{
 					inGame.remove(e.getEntity().getName());
 					modeON.remove(e.getEntity().getName());
-					PlayerInvCheck(e.getEntity().getName());
+					InventorySwitch(p);
 					Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
 					Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
 					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
 					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
-					PlayerInvCheck(inGame.get(0));
+					InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
 					inGame.clear();
 					modeON.clear();
 					active = false;
