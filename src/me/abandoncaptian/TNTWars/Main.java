@@ -177,14 +177,12 @@ public class Main extends JavaPlugin implements Listener{
 								public void run() {
 									inGame.addAll(gameQueue);
 									modeON.addAll(inGame);
-									Bukkit.broadcastMessage("IN Game: " + inGame);
 									for(String name : inGame){
-										Bukkit.broadcastMessage("Running for: " + name);
+										InventorySwitch(Bukkit.getPlayer(name));
 										Bukkit.getPlayer(name).setHealth(20);
 										Bukkit.getPlayer(name).setFoodLevel(20);
-										InventorySwitch(Bukkit.getPlayer(name));
-										p.getInventory().clear();
-										p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
+										Bukkit.getPlayer(name).getInventory().clear();
+										Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 										if(!selectedKit.containsKey(name)){
 											int rand = (int) (Math.random()*8);
 											selectedKit.put(name, kitsList.get(rand));
@@ -423,7 +421,6 @@ public class Main extends JavaPlugin implements Listener{
 				Player p = (Player) e.getEntity();
 				e.getDrops().clear();
 				dead.add(p.getName());
-				p.getInventory().setStorageContents(null);
 				e.setDeathMessage(null);
 				int game = inGame.size();
 				if(game > 2){
@@ -432,14 +429,19 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
-							InventorySwitch(p);
+								InventorySwitch(p);
 						}
-					}, (20*10));
+					}, (20*5));
 
 				}else{
 					inGame.remove(e.getEntity().getName());
 					modeON.remove(e.getEntity().getName());
-					InventorySwitch(p);
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						@Override
+						public void run() {
+								InventorySwitch(p);
+						}
+					}, (20*5));
 					Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
 					Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
 					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
