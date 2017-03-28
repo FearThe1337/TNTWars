@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 //import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -28,7 +29,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -53,9 +53,7 @@ public class Main extends JavaPlugin implements Listener{
 	List<String> lore = new ArrayList<String>();
 	HashMap<String, String> selectedKit = new HashMap<String, String>();
 	HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
-	HashMap<String, HashMap<Integer, ItemStack>> invSaves = new HashMap<String, HashMap<Integer, ItemStack>>();
-	HashMap<String, PlayerInventory> invSavesTest = new HashMap<String, PlayerInventory>();
-	HashMap<String, ItemStack[]> savedItems = new HashMap<String, ItemStack[]>();
+	HashMap<UUID, PlayerInventory> invSaves = new HashMap<UUID, PlayerInventory>();
 
 	TNTPrimed primeTnt;
 	BukkitTask deathCount;
@@ -169,33 +167,17 @@ public class Main extends JavaPlugin implements Listener{
 					if(!active){
 						if(gameQueue.size() >= 2){
 							active = true;
+							
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								@Override
 								public void run() {
 									inGame.addAll(gameQueue);
 									modeON.addAll(inGame);
-									invSaves.clear();
 									for(String name : inGame){
 										Bukkit.getPlayer(name).setHealth(20);
 										Bukkit.getPlayer(name).setFoodLevel(20);
-										saveInventory(Bukkit.getPlayer(name));
-										//invSavesTest.put(name, Bukkit.getPlayer(name).getInventory());
-
-										/*
-										for(int index = 0; index < p.getInventory().getSize(); index++){
-											if(p.getInventory().getItem(index) == null){
-												Bukkit.broadcastMessage(name + ": is null : " + index);
-												continue;
-											}else{
-												Bukkit.broadcastMessage(name + ": " + p.getInventory().getItem(index) + " : " + index);
-												if(p.getInventory().getItem(index) != null){
-													invSaves.get(p.getName()).put(index, p.getInventory().getItem(index));
-												}
-											}
-										}
-										Bukkit.broadcastMessage(name);
-										Bukkit.broadcastMessage("INV: " + invSaves.get(name));*/
-										p.getInventory().setStorageContents(null);
+										invSaves.put(Bukkit.getPlayer(name).getUniqueId(), Bukkit.getPlayer(name).getInventory());
+										p.getInventory().clear();
 										p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 										if(!selectedKit.containsKey(name)){
 											int rand = (int) (Math.random()*8);
@@ -211,43 +193,6 @@ public class Main extends JavaPlugin implements Listener{
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								@Override
 								public void run() {
-									Bukkit.broadcastMessage("§bStarts in 1");
-								}
-							}, 20*29);
-							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-								@Override
-								public void run() {
-									Bukkit.broadcastMessage("§bStarts in 2");
-								}
-							}, 20*28);
-							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-								@Override
-								public void run() {
-									Bukkit.broadcastMessage("§bStarts in 3");
-								}
-							}, 20*27);
-							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-								@Override
-								public void run() {
-									Bukkit.broadcastMessage("§bStarts in 4");
-								}
-							}, 20*26);
-							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-								@Override
-								public void run() {
-									Bukkit.broadcastMessage("§bStarts in 5");
-								}
-							}, 20*25);
-							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-								@Override
-								public void run() {
-									Bukkit.broadcastMessage("§bStarts in 10");
-								}
-							}, 20*20);
-							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-								@Override
-								public void run() {
-									Bukkit.broadcastMessage("§cTNT Wars §bStarts in 30 seconds!");
 									Bukkit.broadcastMessage("§6Remember to do  §7[§b/TNT Kits§7] §6to select a kit!");
 									Bukkit.broadcastMessage("§c[Warning] §7- §cDo not bring items into game §7- §cYou will lose items!");
 									for(String name : gameQueue){
@@ -255,6 +200,14 @@ public class Main extends JavaPlugin implements Listener{
 									}
 								}
 							}, 0);
+							for(int i = 30; i > 0; i--) {
+								Bukkit.broadcastMessage("§bStarts in " + i);
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
 						}else{
 							p.sendMessage("§cNot enough players to start the game.");
 						}
@@ -387,7 +340,6 @@ public class Main extends JavaPlugin implements Listener{
 		if(inGame.contains(p.getName())){
 			inGame.remove(p.getName());
 			modeON.remove(p.getName());
-			restoreInventory(p);
 			int game = inGame.size();
 			Bukkit.broadcastMessage("§b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");
 			if(selectedKit.containsKey(p.getName())){
@@ -403,61 +355,10 @@ public class Main extends JavaPlugin implements Listener{
 		}
 	}
 
-
-
-	public void saveInventory(Player player)
-	{
-		this.savedItems.put(player.getName(), copyInventory(player.getInventory()));
-	}
-
-	public boolean restoreInventory(Player player)
-	{
-		ItemStack[] savedInventory = this.savedItems.remove(player.getName());
-		if(savedInventory == null)
-			return false;
-		restoreInventory(player, savedInventory);
-		return true;
-	}
-
-	private ItemStack[] copyInventory(Inventory inv)
-	{
-		ItemStack[] original = inv.getContents();
-		ItemStack[] copy = new ItemStack[original.length];
-		for(int i = 0; i < original.length; ++i)
-			if(original != null){
-				copy = original;
-			}
-		return copy;
-	}
-
-	private void restoreInventory(Player p, ItemStack[] inventory)
-	{
-		p.getInventory().setContents(inventory);
-	}
-
-
-
-
-
 	public void PlayerInvCheck(String name){
-		Bukkit.getPlayer(name).sendMessage("INV Saved: " + this.invSavesTest.keySet());
-		Bukkit.getPlayer(name).sendMessage("INV: " + this.invSavesTest.get(name).getContents());
-		PlayerInventory inv = this.invSavesTest.get(name);
-		for(ItemStack item : inv.getStorageContents()){
-			if(item == null)continue;
-			else Bukkit.getPlayer(name).getInventory().addItem(item);
-		}
-		//Bukkit.getPlayer(name).getInventory().equals(inv);
-		/*
-		Bukkit.broadcastMessage("INV Set: " + name);
-		Bukkit.broadcastMessage("Saved INv: " + invSaves.keySet());
 		Player p = Bukkit.getPlayer(name);
-		for(Entry<Integer, ItemStack> map : invSaves.get(name).entrySet()){
-			int index = map.getKey();
-			ItemStack item = map.getValue();
-			p.getInventory().setItem(index, item);
-		}*/
-		return;
+		p.getInventory().clear();
+		p.getInventory().setContents(invSaves.get(p.getUniqueId()).getContents());
 	}
 
 	@EventHandler
@@ -482,12 +383,12 @@ public class Main extends JavaPlugin implements Listener{
 			}else{
 				inGame.remove(e.getEntity().getName());
 				modeON.remove(e.getEntity().getName());
-				restoreInventory(p);
+				PlayerInvCheck(e.getEntity().getName());
 				Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
 				Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
-				restoreInventory(Bukkit.getPlayer(inGame.get(0)));
 				Bukkit.getPlayer(inGame.get(0)).setHealth(20);
 				Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
+				PlayerInvCheck(inGame.get(0));
 				inGame.clear();
 				modeON.clear();
 				active = false;
