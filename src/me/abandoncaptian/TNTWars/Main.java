@@ -179,6 +179,7 @@ public class Main extends JavaPlugin implements Listener{
 										invSaves.put(Bukkit.getPlayer(name).getUniqueId(), Bukkit.getPlayer(name).getInventory());
 										p.getInventory().clear();
 										p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
+										p.sendMessage("Your inv: " + Bukkit.getPlayer(name).getInventory().getContents());
 										if(!selectedKit.containsKey(name)){
 											int rand = (int) (Math.random()*8);
 											selectedKit.put(name, kitsList.get(rand));
@@ -193,6 +194,43 @@ public class Main extends JavaPlugin implements Listener{
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								@Override
 								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 1");
+								}
+							}, 20*29);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								@Override
+								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 2");
+								}
+							}, 20*28);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								@Override
+								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 3");
+								}
+							}, 20*27);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								@Override
+								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 4");
+								}
+							}, 20*26);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								@Override
+								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 5");
+								}
+							}, 20*25);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								@Override
+								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 10");
+								}
+							}, 20*20);
+							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+								@Override
+								public void run() {
+									Bukkit.broadcastMessage("§bStarts in 30");
 									Bukkit.broadcastMessage("§6Remember to do  §7[§b/TNT Kits§7] §6to select a kit!");
 									Bukkit.broadcastMessage("§c[Warning] §7- §cDo not bring items into game §7- §cYou will lose items!");
 									for(String name : gameQueue){
@@ -200,14 +238,6 @@ public class Main extends JavaPlugin implements Listener{
 									}
 								}
 							}, 0);
-							for(int i = 30; i > 0; i--) {
-								Bukkit.broadcastMessage("§bStarts in " + i);
-								try {
-									Thread.sleep(1000);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-							}
 						}else{
 							p.sendMessage("§cNot enough players to start the game.");
 						}
@@ -359,6 +389,8 @@ public class Main extends JavaPlugin implements Listener{
 		Player p = Bukkit.getPlayer(name);
 		p.getInventory().clear();
 		p.getInventory().setContents(invSaves.get(p.getUniqueId()).getContents());
+		p.sendMessage("Saved INV: " + invSaves.get(p.getUniqueId()).getContents());
+		invSaves.remove(p.getUniqueId());
 	}
 
 	@EventHandler
