@@ -31,17 +31,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.Vector;
 
 import me.abandoncaptian.TNTWars.KitHandler;
@@ -60,17 +56,15 @@ public class Main extends JavaPlugin implements Listener{
 	ItemStack tnt = new ItemStack(Material.TNT);
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
-	HashMap<String, String> selectedKit = new HashMap<String, String>();
 	HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
 	HashMap<UUID, PlayerInventory> invSaves = new HashMap<UUID, PlayerInventory>();
+	HashMap<String, String> selectedKit = new HashMap<String, String>();
+
+	/*
 	List<String> linkPlayers = new ArrayList<String>();
 	List<Integer> linkKills = new ArrayList<Integer>();
-	List<Integer> linkDeaths = new ArrayList<Integer>();
+	List<Integer> linkDeaths = new ArrayList<Integer>();*/
 	Map<String, ItemStack[]> extraInv;
-	ScoreboardManager boardMan = Bukkit.getScoreboardManager();
-	Scoreboard board = boardMan.getNewScoreboard();
-	Scoreboard clearBoard = boardMan.getNewScoreboard();
-	Objective boardObj = board.registerNewObjective("TEST", "dummy");
 
 	TNTPrimed primeTnt;
 	BukkitTask deathCount;
@@ -94,21 +88,13 @@ public class Main extends JavaPlugin implements Listener{
 			Log.info("File Didn't Exist ----");
 		}
 		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
-		for(String id : config.getStringList("PlayerStats")){
-			linkPlayers.add(id);
-			linkKills.add(config.getInt("PlayerStats."+id+".Kills"));
-			linkDeaths.add(config.getInt("PlayerStats."+id+".Deaths"));
-		}
 		kh = new KitHandler(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*5);
 		this.extraInv = new HashMap<>();
-		boardObj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		boardObj.setDisplayName("§6§l---- §c[ TNT Wars ] §6§l----");
-		Score score = boardObj.getScore("§bKills:  §6N/A");
-		score.setScore(10);
 		kitsList.add("Sniper");
 		kitsList.add("Short Fuse");
 		kitsList.add("Heavy Loader");
@@ -142,17 +128,6 @@ public class Main extends JavaPlugin implements Listener{
 		config.set("SpawnPoint.x", (int) this.spawnpoint.getX());
 		config.set("SpawnPoint.y",(int)  this.spawnpoint.getY());
 		config.set("SpawnPoint.z", (int) this.spawnpoint.getZ());
-		if(!config.contains("PlayerStats"))config.getConfigurationSection("PlayerStats");
-		for(String id : linkPlayers){
-			config.set("PlayerStats", id);
-			config.set("PlayerStats."+id+".Kills", linkKills.get(linkPlayers.indexOf(id)));
-			config.set("PlayerStats."+id+".Deaths", linkDeaths.get(linkPlayers.indexOf(id)));
-		}
-		try {
-			config.save(configFile);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		inGame.clear();
 		gameQueue.clear();
 		modeON.clear();
@@ -213,7 +188,7 @@ public class Main extends JavaPlugin implements Listener{
 					config.set("SpawnPoint.world", this.spawnpoint.getWorld().getName());
 					config.set("SpawnPoint.x", (int) this.spawnpoint.getX());
 					config.set("SpawnPoint.y",(int)  this.spawnpoint.getY());
-					config.set("SpawnPoint.z", (int) this.spawnpoint.getX());
+					config.set("SpawnPoint.z", (int) this.spawnpoint.getZ());
 					p.sendMessage("§6TNT Wars SpawnPoint Set!");
 					try {
 						this.config.save(configFile);
@@ -225,7 +200,6 @@ public class Main extends JavaPlugin implements Listener{
 					if(!active){
 						if(gameQueue.size() >= 2){
 							active = true;
-
 							Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 								@Override
 								public void run() {
@@ -292,7 +266,6 @@ public class Main extends JavaPlugin implements Listener{
 									Bukkit.broadcastMessage("§c[Warning] §7- §cDo not bring items into game §7- §cYou will lose items!");
 									for(String name : gameQueue){
 										kh.kitsMenu(Bukkit.getPlayer(name));
-										Bukkit.getPlayer(name).setScoreboard(board);
 									}
 								}
 							}, 0);
@@ -384,7 +357,7 @@ public class Main extends JavaPlugin implements Listener{
 							this.primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
 							this.primeTnt.setFuseTicks(fuse);
 							this.primeTnt.setCustomName(p.getName());
-							this.primeTnt.setCustomNameVisible(true);
+							this.primeTnt.setCustomNameVisible(false);
 							tntActive.put(this.primeTnt, p.getName());
 							if(selectedKit.get(p.getName()) == "Ender"){
 								Block block = p.getTargetBlock((HashSet<Byte>)null, 30);
@@ -480,6 +453,14 @@ public class Main extends JavaPlugin implements Listener{
 		}
 	}
 
+	public boolean hasSwitched(Player p) {
+		return extraInv.keySet().contains(p.getUniqueId().toString());
+	}
+
+	@EventHandler
+	public void gameConnect(PlayerJoinEvent e){
+		if(hasSwitched(e.getPlayer()))InventorySwitch(e.getPlayer());
+	}
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
 		if(active){
@@ -492,11 +473,11 @@ public class Main extends JavaPlugin implements Listener{
 				if(game > 2){
 					inGame.remove(e.getEntity().getName());
 					modeON.remove(e.getEntity().getName());
+					e.getEntity().teleport(this.spawnpoint);
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
 							p.getInventory().clear();
-							p.setScoreboard(clearBoard);
 							InventorySwitch(p);
 						}
 					}, (20*5));
@@ -504,11 +485,11 @@ public class Main extends JavaPlugin implements Listener{
 				}else{
 					inGame.remove(e.getEntity().getName());
 					modeON.remove(e.getEntity().getName());
+					e.getEntity().teleport(this.spawnpoint);
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
 							p.getInventory().clear();
-							p.setScoreboard(clearBoard);
 							InventorySwitch(p);
 						}
 					}, (20*5));
@@ -517,26 +498,9 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
 					Bukkit.getPlayer(inGame.get(0)).getInventory().clear();
 					InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
-					Bukkit.getPlayer(inGame.get(0)).setScoreboard(clearBoard);
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						@Override
-						public void run() {
-							if(!config.contains("PlayerStats"))config.getConfigurationSection("PlayerStats");
-							for(String id : linkPlayers){
-								config.set("PlayerStats", id);
-								config.set("PlayerStats."+id+".Kills", linkKills.get(linkPlayers.indexOf(id)));
-								config.set("PlayerStats."+id+".Deaths", linkDeaths.get(linkPlayers.indexOf(id)));
-							}
-							try {
-								getConfig().save(configFile);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							inGame.clear();
-							modeON.clear();
-						}
-					}, 5);
+					Bukkit.getPlayer(inGame.get(0)).teleport(this.spawnpoint);
+					inGame.clear();
+					modeON.clear();
 					active = false;
 					canKit = true;
 					selectedKit.clear();
@@ -550,10 +514,17 @@ public class Main extends JavaPlugin implements Listener{
 		if(active){
 			if(e.getEntity() instanceof Player){
 				Player p = (Player)e.getEntity();
-				if(e.getDamager() instanceof CraftTNTPrimed){				
+				if(e.getDamager() instanceof CraftTNTPrimed){
 					if(!modeON.contains(p.getName())){
 						e.setCancelled(true);
 						p.sendMessage("§7You got lucky this time, the next TNT won't be so kind!");
+					}	
+					if(!inGame.contains(p.getName()))return;
+					if(p.getName() == e.getDamager().getCustomName()){
+						if(selectedKit.get(p.getName()) == "Suicide Bomber"){
+							double dam = p.getLastDamage();
+							e.setDamage(dam/2);
+						}
 					}
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
@@ -561,21 +532,18 @@ public class Main extends JavaPlugin implements Listener{
 							if(dead.contains(p.getName())){
 								int game = inGame.size();
 								Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
-								Player killer = Bukkit.getPlayer(e.getDamager().getCustomName());
-								if(killer.getName() != e.getEntity().getName()){
-									if(linkPlayers.contains(killer.getUniqueId().toString())){
-										linkKills.set(linkPlayers.indexOf(killer.getUniqueId().toString()), linkKills.get(linkPlayers.indexOf(killer.getUniqueId().toString())) + 1);
-									}else{
-										linkKills.set(linkPlayers.indexOf(killer.getUniqueId().toString()), 1);
-										linkDeaths.set(linkPlayers.indexOf(killer.getUniqueId().toString()), 0);
-									}
-								}
-								if(linkPlayers.contains(e.getEntity().getUniqueId().toString())){
-									linkDeaths.set(linkPlayers.indexOf(e.getEntity().getUniqueId().toString()), linkDeaths.get(linkPlayers.indexOf(e.getEntity().getUniqueId().toString())) + 1);
-								}else{
-									linkKills.set(linkPlayers.indexOf(e.getEntity().getUniqueId().toString()), 0);
-									linkDeaths.set(linkPlayers.indexOf(e.getEntity().getUniqueId().toString()), 1);
-								}
+								dead.remove(p.getName());
+							}
+						}
+					}, 2);
+				}else{
+					if(!inGame.contains(p.getName()))return;
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						@Override
+						public void run() {
+							if(dead.contains(p.getName())){
+								int game = inGame.size();
+								Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed §7- §b" + game + " remain!");
 								dead.remove(p.getName());
 							}
 						}

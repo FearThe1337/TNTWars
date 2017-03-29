@@ -9,28 +9,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class Runnable1 implements Runnable {
+public class Runnable3 implements Runnable{
 	Main pl;
-	int max = 2;
 	boolean had = false;
 	boolean canGive = true;
-	public Runnable1(Main plugin){
+	int max = 2;
+	public Runnable3(Main plugin){
 		this.pl = plugin;
 	}
-
+	
 	@Override
-	public void run() { 
+	public void run() {
 		if(pl.active){
 			for(String name : pl.inGame){
 				this.had = false;
 				if(pl.selectedKit.containsKey(name)){
-					if(pl.selectedKit.get(name) == "Heavy Loader")continue;
-					else if(pl.selectedKit.get(name) == "Sniper")continue;
+					if(pl.selectedKit.get(name) == "Heavy Loader")this.max = 5;
+					else if(pl.selectedKit.get(name) == "Sniper")this.max = 1;
 				}
-				if(pl.selectedKit.containsKey(name)){
-					if(pl.selectedKit.get(name) == "Suicide Bomber")this.max = 1;
-					else this.max = 2;
-				}else this.max = 2;
 				Player p = Bukkit.getPlayer(name);
 				ItemStack tnt = new ItemStack(Material.TNT);
 				ItemMeta meta = tnt.getItemMeta();

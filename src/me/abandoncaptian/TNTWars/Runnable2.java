@@ -8,7 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class Runnable2 implements Runnable {
+public class Runnable2 implements Runnable{
 	Main pl;
 	public Runnable2(Main plugin){
 		this.pl = plugin;

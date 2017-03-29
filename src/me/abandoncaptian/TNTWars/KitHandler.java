@@ -14,10 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class KitHandler implements Listener{
+	static Inventory inv;
 	Main pl;
-	Inventory inv;
 	public KitHandler(Main plugin) {
-		this.pl = plugin;
+		pl = plugin;
 		ItemMeta meta;
 		List<String> lore = new ArrayList<String>();
 		inv = Bukkit.createInventory(null, 54, "§c§lTNT Wars §6Kits Menu");
@@ -27,6 +27,8 @@ public class KitHandler implements Listener{
 		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
 		lore.add("§7 - §6Get a more accurate toss from tnt");
 		lore.add("§fRequested By: §7nixcluster");
+		lore.add("§7 - §6Holds 1 TNT at a time");
+		lore.add("§7 - §6Longer TNT respawn rate");
 		meta.setLore(lore);
 		lore.clear();
 		kit1.setItemMeta(meta);
@@ -44,6 +46,7 @@ public class KitHandler implements Listener{
 		meta.setDisplayName("§b§lHeavy Loader");
 		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
 		lore.add("§7 - §6Hold up to 5 TNT at a time");
+		lore.add("§7 - §6Longer TNT respawn rate");
 		meta.setLore(lore);
 		lore.clear();
 		kit3.setItemMeta(meta);
@@ -60,7 +63,9 @@ public class KitHandler implements Listener{
 		meta = kit5.getItemMeta();
 		meta.setDisplayName("§b§lSuicide Bomber");
 		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
-		lore.add("§7 - §6activate your TNT for a instant explosion");
+		lore.add("§7 - §6Activate your TNT for a instant explosion");
+		lore.add("§7 - §6Receive 1/2 the damage from the TNT explosion");
+		lore.add("§7 - §6Holds 1 TNT at a time");
 		lore.add("§fRequested By: §7SashaLarie");
 		meta.setLore(lore);
 		lore.clear();
@@ -99,6 +104,15 @@ public class KitHandler implements Listener{
 		meta.setLore(lore);
 		lore.clear();
 		kit9.setItemMeta(meta);
+		ItemStack kit10 = new ItemStack(Material.BOOK);
+		meta = kit10.getItemMeta();
+		meta.setDisplayName("§b§lDonor Perks");
+		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
+		lore.add("§7 - §6Choose your donator settings");
+		lore.add("§7 - §6Comming Soon!");
+		meta.setLore(lore);
+		lore.clear();
+		kit10.setItemMeta(meta);
 		inv.setItem(10, kit1);
 		inv.setItem(11, kit2);
 		inv.setItem(12, kit3);
@@ -108,6 +122,7 @@ public class KitHandler implements Listener{
 		inv.setItem(16, kit7);
 		inv.setItem(22, kit8);
 		inv.setItem(40, kit9);
+		inv.setItem(45, kit10);
 	}
 
 	@EventHandler
@@ -164,8 +179,8 @@ public class KitHandler implements Listener{
 				p.sendMessage("§6You selected: " + itemName);
 				p.closeInventory();
 				break;
-			case "§b§lTBA":
-				p.sendMessage("§cYou cannot not select the TBA kit!");
+			case "§b§lDonor Perks":
+				p.sendMessage("§cThis feature is not implamented yet");
 				p.closeInventory();
 				break;
 			default: 
