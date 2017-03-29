@@ -77,7 +77,7 @@ public class KitHandler implements Listener{
 		meta = kit7.getItemMeta();
 		meta.setDisplayName("§b§lEnder");
 		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
-		lore.add("§7 - §6Teleport the TNT to look loation(20 Block Range)");
+		lore.add("§7 - §6Teleport the TNT to look location(20 Block Range)");
 		lore.add("§fRequested By: §7Mrs_Ender88");
 		meta.setLore(lore);
 		lore.clear();

@@ -1,6 +1,7 @@
 package me.abandoncaptian.TNTWars;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,11 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.util.Vector;
 
 import me.abandoncaptian.TNTWars.KitHandler;
@@ -50,13 +56,21 @@ public class Main extends JavaPlugin implements Listener{
 	List<String> inGame = new ArrayList<String>();
 	List<String> dead = new ArrayList<String>();
 	List<String> kitsList = new ArrayList<String>();
+	Location spawnpoint;
 	ItemStack tnt = new ItemStack(Material.TNT);
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
 	HashMap<String, String> selectedKit = new HashMap<String, String>();
 	HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
 	HashMap<UUID, PlayerInventory> invSaves = new HashMap<UUID, PlayerInventory>();
-    Map<String, ItemStack[]> extraInv;
+	List<String> linkPlayers = new ArrayList<String>();
+	List<Integer> linkKills = new ArrayList<Integer>();
+	List<Integer> linkDeaths = new ArrayList<Integer>();
+	Map<String, ItemStack[]> extraInv;
+	ScoreboardManager boardMan = Bukkit.getScoreboardManager();
+	Scoreboard board = boardMan.getNewScoreboard();
+	Scoreboard clearBoard = boardMan.getNewScoreboard();
+	Objective boardObj = board.registerNewObjective("TEST", "dummy");
 
 	TNTPrimed primeTnt;
 	BukkitTask deathCount;
@@ -73,12 +87,28 @@ public class Main extends JavaPlugin implements Listener{
 		Log.info("------------------------------------");
 		this.configFile = new File("plugins/TNTWars/config.yml");
 		this.config = YamlConfiguration.loadConfiguration(configFile);
+		if(!(configFile.exists())){
+			config.options().copyDefaults(true);
+			this.saveDefaultConfig();
+			this.saveConfig();
+			Log.info("File Didn't Exist ----");
+		}
+		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
+		for(String id : config.getStringList("PlayerStats")){
+			linkPlayers.add(id);
+			linkKills.add(config.getInt("PlayerStats."+id+".Kills"));
+			linkDeaths.add(config.getInt("PlayerStats."+id+".Deaths"));
+		}
 		kh = new KitHandler(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
-        this.extraInv = new HashMap<>();
+		this.extraInv = new HashMap<>();
+		boardObj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		boardObj.setDisplayName("§6§l---- §c[ TNT Wars ] §6§l----");
+		Score score = boardObj.getScore("§bKills:  §6N/A");
+		score.setScore(10);
 		kitsList.add("Sniper");
 		kitsList.add("Short Fuse");
 		kitsList.add("Heavy Loader");
@@ -92,12 +122,6 @@ public class Main extends JavaPlugin implements Listener{
 		lore.add("§bMade By: abandoncaptian");
 		meta.setLore(lore);
 		tnt.setItemMeta(meta);
-		if(!(configFile.exists())){
-			config.options().copyDefaults(true);
-			this.saveDefaultConfig();
-			this.saveConfig();
-			Log.info("File Didn't Exist ----");
-		}
 	}
 
 	@Override
@@ -113,6 +137,21 @@ public class Main extends JavaPlugin implements Listener{
 				modeON.remove(p.getName());
 				p.sendMessage("§6TNT Mode: turned off due to plugin reload.");
 			}
+		}
+		config.set("SpawnPoint.world", this.spawnpoint.getWorld().getName());
+		config.set("SpawnPoint.x", (int) this.spawnpoint.getX());
+		config.set("SpawnPoint.y",(int)  this.spawnpoint.getY());
+		config.set("SpawnPoint.z", (int) this.spawnpoint.getZ());
+		if(!config.contains("PlayerStats"))config.getConfigurationSection("PlayerStats");
+		for(String id : linkPlayers){
+			config.set("PlayerStats", id);
+			config.set("PlayerStats."+id+".Kills", linkKills.get(linkPlayers.indexOf(id)));
+			config.set("PlayerStats."+id+".Deaths", linkDeaths.get(linkPlayers.indexOf(id)));
+		}
+		try {
+			config.save(configFile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 		inGame.clear();
 		gameQueue.clear();
@@ -133,13 +172,14 @@ public class Main extends JavaPlugin implements Listener{
 					p.sendMessage("§6§l---- §c[ TNT Wars ] §6§l----");
 					p.sendMessage("§a/tnt [join/leave/kits]");
 					p.sendMessage("§b - Example: /tnt join");
-					if(p.hasPermission("tntwars.staff"))p.sendMessage("§a/tnt [start/end]");
+					if(p.hasPermission("tntwars.staff"))p.sendMessage("§a/tnt [start/end/setspawn]");
 					p.sendMessage("§6Author: §7abandoncaptian");
 				}else if(args[0].equalsIgnoreCase("join")){
 					if(gameQueue.contains(p.getName())){
 						p.sendMessage("§cAlready in the TNT Game Queue!");
 					}else{
 						gameQueue.add(p.getName());
+						p.teleport(this.spawnpoint);
 						int queued = gameQueue.size();
 						Bukkit.broadcastMessage("§b" + p.getName() + " §6has joined TNT Wars Queue §7- §bQueued: " + queued);
 					}
@@ -167,7 +207,21 @@ public class Main extends JavaPlugin implements Listener{
 							p.sendMessage("§cYou are not in the TNT Wars");
 						}
 					}
-				}else if(args[0].equalsIgnoreCase("start") && p.hasPermission("tntwars.gamestart")){
+				}else if(args[0].equalsIgnoreCase("setspawn") && p.hasPermission("tntwars.host")){
+
+					this.spawnpoint = p.getLocation();
+					config.set("SpawnPoint.world", this.spawnpoint.getWorld().getName());
+					config.set("SpawnPoint.x", (int) this.spawnpoint.getX());
+					config.set("SpawnPoint.y",(int)  this.spawnpoint.getY());
+					config.set("SpawnPoint.z", (int) this.spawnpoint.getX());
+					p.sendMessage("§6TNT Wars SpawnPoint Set!");
+					try {
+						this.config.save(configFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+				}else if(args[0].equalsIgnoreCase("start") && p.hasPermission("tntwars.host")){
 					if(!active){
 						if(gameQueue.size() >= 2){
 							active = true;
@@ -238,6 +292,7 @@ public class Main extends JavaPlugin implements Listener{
 									Bukkit.broadcastMessage("§c[Warning] §7- §cDo not bring items into game §7- §cYou will lose items!");
 									for(String name : gameQueue){
 										kh.kitsMenu(Bukkit.getPlayer(name));
+										Bukkit.getPlayer(name).setScoreboard(board);
 									}
 								}
 							}, 0);
@@ -247,7 +302,7 @@ public class Main extends JavaPlugin implements Listener{
 					}else{
 						p.sendMessage("§6TNT Wars is already started!");
 					}
-				}else if((args[0].equalsIgnoreCase("end") || args[0].equalsIgnoreCase("stop")) && p.hasPermission("tntwars.gameend")){
+				}else if((args[0].equalsIgnoreCase("end") || args[0].equalsIgnoreCase("stop")) && p.hasPermission("tntwars.host")){
 					if(active){
 						inGame.clear();
 						modeON.clear();
@@ -266,6 +321,13 @@ public class Main extends JavaPlugin implements Listener{
 					}else{
 						p.sendMessage("§cNeed to be in the queue to select a kit");
 					}
+				}else{
+					p.sendMessage("§cInvalid Argument!");
+					p.sendMessage(" ");
+					p.sendMessage("§6§l---- §c[ TNT Wars ] §6§l----");
+					p.sendMessage("§a/tnt [join/leave/kits]");
+					p.sendMessage("§b - Example: /tnt join");
+					if(p.hasPermission("tntwars.staff"))p.sendMessage("§a/tnt [start/end/setspawn]");
 				}
 			}
 		}
@@ -305,6 +367,7 @@ public class Main extends JavaPlugin implements Listener{
 								if(selectedKit.get(p.getName()) == "Sniper") power = 4;
 								else if((selectedKit.get(p.getName()) == "Suicide Bomber"))power = 0;
 								else if((selectedKit.get(p.getName()) == "Boomerang"))power = 3;
+								else if((selectedKit.get(p.getName()) == "Miner"))power = 0;
 								else power = 1.5;
 							}else power =  1.5;
 							if(selectedKit.containsKey(p.getName())){
@@ -312,6 +375,7 @@ public class Main extends JavaPlugin implements Listener{
 								else if((selectedKit.get(p.getName()) == "Ender"))fuse = 60;
 								else if((selectedKit.get(p.getName()) == "Suicide Bomber"))fuse = 0;
 								else if((selectedKit.get(p.getName()) == "Boomerang"))fuse = 30;
+								else if((selectedKit.get(p.getName()) == "Miner"))fuse = 40;
 								else fuse = 20;
 							}else fuse = 20;
 							Location eye = p.getEyeLocation();
@@ -391,29 +455,31 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 	}
-    public void InventorySwitch(Player player) {
-        boolean found = false;
-        for (String uuid : extraInv.keySet()) {
-            if (uuid.equals(player.getUniqueId().toString())) {
-                found = true;
-                ItemStack[] items = extraInv.get(uuid);
-                extraInv.remove(player.getUniqueId().toString());
-                player.getInventory().clear();
-                player.getInventory().setArmorContents((ItemStack[]) ArrayUtils.subarray(items, 0, 4));
-                player.getInventory().setContents((ItemStack[]) ArrayUtils.subarray(items, 4, items.length));
-            }
-        }
+	public void InventorySwitch(Player player) {
+		boolean found = false;
+		if(extraInv.size() > 0){
+			for (String uuid : extraInv.keySet()) {
+				if (uuid.equals(player.getUniqueId().toString())) {
+					found = true;
+					ItemStack[] items = extraInv.get(uuid);
+					extraInv.remove(player.getUniqueId().toString());
+					player.getInventory().clear();
+					player.getInventory().setArmorContents((ItemStack[]) ArrayUtils.subarray(items, 0, 4));
+					player.getInventory().setContents((ItemStack[]) ArrayUtils.subarray(items, 4, items.length));
+					break;
+				}
+			}
+		}
+		if (!found) {
+			ItemStack[] curr = (ItemStack[]) ArrayUtils.addAll(
+					player.getInventory().getArmorContents(),
+					player.getInventory().getContents()
+					);
+			extraInv.put(player.getUniqueId().toString(), curr);
+			player.getInventory().clear();
+		}
+	}
 
-        if (!found) {
-            ItemStack[] curr = (ItemStack[]) ArrayUtils.addAll(
-                    player.getInventory().getArmorContents(),
-                    player.getInventory().getContents()
-            );
-            extraInv.put(player.getUniqueId().toString(), curr);
-            player.getInventory().clear();
-        }
-    }
-	
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
 		if(active){
@@ -429,7 +495,9 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
-								InventorySwitch(p);
+							p.getInventory().clear();
+							p.setScoreboard(clearBoard);
+							InventorySwitch(p);
 						}
 					}, (20*5));
 
@@ -439,16 +507,36 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
-								InventorySwitch(p);
+							p.getInventory().clear();
+							p.setScoreboard(clearBoard);
+							InventorySwitch(p);
 						}
 					}, (20*5));
-					Bukkit.broadcastMessage("§cTNT Wars §6has ended!");
 					Bukkit.broadcastMessage("§c§l" + inGame.get(0) + " §bhas won!");
 					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
 					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
+					Bukkit.getPlayer(inGame.get(0)).getInventory().clear();
 					InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
-					inGame.clear();
-					modeON.clear();
+					Bukkit.getPlayer(inGame.get(0)).setScoreboard(clearBoard);
+					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+						@Override
+						public void run() {
+							if(!config.contains("PlayerStats"))config.getConfigurationSection("PlayerStats");
+							for(String id : linkPlayers){
+								config.set("PlayerStats", id);
+								config.set("PlayerStats."+id+".Kills", linkKills.get(linkPlayers.indexOf(id)));
+								config.set("PlayerStats."+id+".Deaths", linkDeaths.get(linkPlayers.indexOf(id)));
+							}
+							try {
+								getConfig().save(configFile);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							inGame.clear();
+							modeON.clear();
+						}
+					}, 5);
 					active = false;
 					canKit = true;
 					selectedKit.clear();
@@ -473,10 +561,25 @@ public class Main extends JavaPlugin implements Listener{
 							if(dead.contains(p.getName())){
 								int game = inGame.size();
 								Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
+								Player killer = Bukkit.getPlayer(e.getDamager().getCustomName());
+								if(killer.getName() != e.getEntity().getName()){
+									if(linkPlayers.contains(killer.getUniqueId().toString())){
+										linkKills.set(linkPlayers.indexOf(killer.getUniqueId().toString()), linkKills.get(linkPlayers.indexOf(killer.getUniqueId().toString())) + 1);
+									}else{
+										linkKills.set(linkPlayers.indexOf(killer.getUniqueId().toString()), 1);
+										linkDeaths.set(linkPlayers.indexOf(killer.getUniqueId().toString()), 0);
+									}
+								}
+								if(linkPlayers.contains(e.getEntity().getUniqueId().toString())){
+									linkDeaths.set(linkPlayers.indexOf(e.getEntity().getUniqueId().toString()), linkDeaths.get(linkPlayers.indexOf(e.getEntity().getUniqueId().toString())) + 1);
+								}else{
+									linkKills.set(linkPlayers.indexOf(e.getEntity().getUniqueId().toString()), 0);
+									linkDeaths.set(linkPlayers.indexOf(e.getEntity().getUniqueId().toString()), 1);
+								}
 								dead.remove(p.getName());
 							}
 						}
-					}, 5);
+					}, 2);
 				}
 			}
 		}
