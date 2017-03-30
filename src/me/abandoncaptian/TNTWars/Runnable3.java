@@ -13,44 +13,56 @@ public class Runnable3 implements Runnable{
 	Main pl;
 	boolean had = false;
 	boolean canGive = true;
-	int max = 2;
+	int max = 1;
+	boolean correctKit = true;
 	public Runnable3(Main plugin){
 		this.pl = plugin;
 	}
-	
+
 	@Override
 	public void run() {
 		if(pl.active){
 			for(String name : pl.inGame){
 				this.had = false;
 				if(pl.selectedKit.containsKey(name)){
-					if(pl.selectedKit.get(name) == "Heavy Loader")this.max = 5;
-					else if(pl.selectedKit.get(name) == "Sniper")this.max = 1;
-				}
-				Player p = Bukkit.getPlayer(name);
-				ItemStack tnt = new ItemStack(Material.TNT);
-				ItemMeta meta = tnt.getItemMeta();
-				List<String> lore = new ArrayList<String>();
-				meta.setDisplayName("§6§lThrowable §c§lTNT");
-				lore.add("§bRight click to throw");
-				lore.add("§bMade By: abandoncaptian");
-				meta.setLore(lore);
-				tnt.setItemMeta(meta);
-				for(int index = 0; index < p.getInventory().getSize(); index++){
-					ItemStack item = p.getInventory().getItem(index);
-					if(item != null){	
-						if(item.getItemMeta().getDisplayName() == tnt.getItemMeta().getDisplayName()){
-							this.had = true;
-							if(item.getAmount() < this.max){
-								tnt.setAmount(1);
-								p.getInventory().addItem(tnt);
-								break;
+					for(String kit : pl.kitsListHighRate){
+						if(pl.selectedKit.get(name) == kit){
+							correctKit = false;
+							break;
+						}else correctKit = true;
+					}
+					if(correctKit){
+						if(pl.selectedKit.get(name) == "Heavy Loader")this.max = 5;
+						if(pl.selectedKit.get(name) == "Sniper")this.max = 1;
+						if(pl.selectedKit.get(name) == "Potion Worker")this.max = 2;
+						if(pl.selectedKit.get(name) == "Doctor Who")this.max = 2;
+						if(pl.selectedKit.get(name) == "Tank")this.max = 1;
+						Player p = Bukkit.getPlayer(name);
+						ItemStack tnt = new ItemStack(Material.TNT);
+						ItemMeta meta = tnt.getItemMeta();
+						List<String> lore = new ArrayList<String>();
+						meta.setDisplayName("§6§lThrowable §c§lTNT");
+						lore.add("§bLeft click to throw");
+						lore.add("§bMade By: abandoncaptian");
+						meta.setLore(lore);
+						tnt.setItemMeta(meta);
+						for(int index = 0; index < p.getInventory().getSize(); index++){
+							ItemStack item = p.getInventory().getItem(index);
+							if(item != null){	
+								if(item.getItemMeta().getDisplayName() == tnt.getItemMeta().getDisplayName()){
+									this.had = true;
+									if(item.getAmount() < this.max){
+										tnt.setAmount(1);
+										p.getInventory().addItem(tnt);
+										break;
+									}
+								}
 							}
+						}if(!had){
+							tnt.setAmount(1);
+							p.getInventory().addItem(tnt);
 						}
 					}
-				}if(!had){
-					tnt.setAmount(1);
-					p.getInventory().addItem(tnt);
 				}
 			}
 		}

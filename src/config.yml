@@ -3,3 +3,13 @@
 #         TNT Wars Config          #
 #                                  #
 ####################################
+
+Game-Min: 2
+Game-Start-30Sec: 4
+Game-Max: 12
+Game-Queue-Time: 2
+SpawnPoint:
+  world: world
+  x: 0
+  y: 100
+  z: 0
