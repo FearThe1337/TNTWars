@@ -169,7 +169,6 @@ public class KitHandler implements Listener{
 						Player p = (Player) e.getWhoClicked();
 						ItemStack clicked = e.getCurrentItem();
 						if(clicked == null)return;
-						if(!clicked.getItemMeta().hasDisplayName())return;
 						String itemName = clicked.getItemMeta().getDisplayName();
 						switch(itemName){
 						case "§b§lSniper": 

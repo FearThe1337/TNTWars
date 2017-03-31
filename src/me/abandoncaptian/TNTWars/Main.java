@@ -653,16 +653,15 @@ public class Main extends JavaPlugin implements Listener{
 		if(!found){
 			Player p = Bukkit.getPlayer(pName);
 			int expL = p.getLevel();
-			p.sendMessage("LVL: " + expL);
 			Float exp = p.getExp();
-			p.sendMessage("EXP: " + exp);
 			if(expL > 0){
 				savedXPL.put(pName, expL);
 			}
 			if(exp > 0){
 				savedXP.put(pName, exp);
 			}
-
+			p.setLevel(0);
+			p.setExp(0);
 		}
 	}
 
@@ -727,7 +726,7 @@ public class Main extends JavaPlugin implements Listener{
 							InventorySwitch(p);
 							ExpSwitch(p.getName());
 						}
-					}, (20*5));
+					}, (20*3));
 					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 						@Override
 						public void run() {
