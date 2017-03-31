@@ -633,6 +633,7 @@ public class Main extends JavaPlugin implements Listener{
 				if(name.equals(pName)){
 					found = true;
 					Player p = Bukkit.getPlayer(name);
+					p.sendMessage("Found #1");
 					p.setLevel(savedXPL.get(name));
 					savedXPL.remove(name);
 					break;
@@ -644,6 +645,7 @@ public class Main extends JavaPlugin implements Listener{
 				if(name.equals(pName)){
 					found = true;
 					Player p = Bukkit.getPlayer(name);
+					p.sendMessage("Found #2");
 					p.setExp(savedXP.get(name));
 					savedXP.remove(name);
 					break;
@@ -652,6 +654,7 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		if(!found){
 			Player p = Bukkit.getPlayer(pName);
+			p.sendMessage("Not Found");
 			int expL = p.getLevel();
 			Float exp = p.getExp();
 			if(expL > 0){
@@ -746,12 +749,12 @@ public class Main extends JavaPlugin implements Listener{
 						@Override
 						public void run() {
 							if(dead.contains(p.getName())){
-								InventorySwitch(p);
-								ExpSwitch(p.getName());
 								int game = inGame.size();
 								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6was killed §7- §b" + game + " remain!");
 								dead.remove(p.getName());
 							}
+							InventorySwitch(p);
+							ExpSwitch(p.getName());
 						}
 					}, 5);
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + inGame.get(0) + " §6has won!");
