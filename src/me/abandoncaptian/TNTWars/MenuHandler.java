@@ -62,7 +62,7 @@ public class MenuHandler implements Listener{
 	@EventHandler
 	public void invClick(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(e.getClickedInventory().contains(inv.getItem(10))){
+		if(e.getClickedInventory().getSize() == inv.getSize()){
 			if(e.getClickedInventory().getTitle().equals("§c§lTNT Wars Menu")){
 				e.setCancelled(true);
 				ItemStack clicked = e.getCurrentItem();
