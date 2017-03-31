@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,15 +13,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class KitHandler implements Listener{
 	Inventory inv;
 	Main pl;
 	public KitHandler(Main plugin) {
 		pl = plugin;
-	}
-	
-	public void initInv(){
 		inv = Bukkit.createInventory(null, 54, "§c§lTNT Wars §6Kits Menu");
 		ItemMeta meta;
 		List<String> lore = new ArrayList<String>();
@@ -127,6 +126,17 @@ public class KitHandler implements Listener{
 		meta.setLore(lore);
 		lore.clear();
 		kit11.setItemMeta(meta);
+		ItemStack kit12 = new ItemStack(Material.LEATHER_CHESTPLATE);
+		LeatherArmorMeta lam = (LeatherArmorMeta)kit12.getItemMeta();
+		lam.setDisplayName("§b§lBribed");
+		lam.setColor(Color.fromRGB(170, 0, 0));
+		kit12.setItemMeta(lam);
+		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
+		lore.add("§7 - §6Spawn with random armor");
+		lore.add("§7In Honor Of timelord_emma's manager promotion");
+		lam.setLore(lore);
+		lore.clear();
+		kit12.setItemMeta(lam);
 		ItemStack random = new ItemStack(Material.ARROW);
 		meta = random.getItemMeta();
 		meta.setDisplayName("§b§lRandom");
@@ -151,9 +161,10 @@ public class KitHandler implements Listener{
 		inv.setItem(14, kit5);
 		inv.setItem(15, kit6);
 		inv.setItem(16, kit7);
-		inv.setItem(21, kit8);
-		inv.setItem(23, kit9);
 		inv.setItem(19, kit10);
+		inv.setItem(21, kit8);
+		inv.setItem(22, kit12);
+		inv.setItem(23, kit9);
 		inv.setItem(25, kit11);
 		inv.setItem(40, random);
 		inv.setItem(45, donor);
@@ -164,7 +175,7 @@ public class KitHandler implements Listener{
 		if(pl.starting1 || pl.starting2 || pl.active){
 			if(pl.gameQueue.contains(e.getWhoClicked().getName()) || pl.inGame.contains(e.getWhoClicked().getName())){
 				if(e.getClickedInventory().contains(inv.getItem(45))){
-					if(e.getClickedInventory().getTitle() == "§c§lTNT Wars §6Kits Menu"){
+					if(e.getClickedInventory().getTitle().equals("§c§lTNT Wars §6Kits Menu")){
 						e.setCancelled(true);
 						Player p = (Player) e.getWhoClicked();
 						ItemStack clicked = e.getCurrentItem();
@@ -229,6 +240,11 @@ public class KitHandler implements Listener{
 						case "§b§lRandom": 
 							p.sendMessage("§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Random");
+							p.closeInventory();
+							break;
+						case "§b§lBribed": 
+							p.sendMessage("§6You selected: " + itemName);
+							pl.selectedKit.put(p.getName(), "Bribed");
 							p.closeInventory();
 							break;
 						case "§b§lDonor Perks":

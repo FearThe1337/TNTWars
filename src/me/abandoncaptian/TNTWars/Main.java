@@ -51,6 +51,8 @@ public class Main extends JavaPlugin implements Listener{
 	File configFile;
 	FileConfiguration config;
 	KitHandler kh;
+	MenuHandler mh;
+	MenuHandlerHost mhh;
 	List<String> modeON = new ArrayList<String>();
 	List<String> gameQueue = new ArrayList<String>();
 	List<String> inGame = new ArrayList<String>();
@@ -58,6 +60,10 @@ public class Main extends JavaPlugin implements Listener{
 	List<String> kitsListLowRate = new ArrayList<String>();
 	List<String> kitsListHighRate = new ArrayList<String>();
 	List<String> kitsListAll = new ArrayList<String>();
+	List<Material> armorHelmet = new ArrayList<Material>();
+	List<Material> armorChestplate = new ArrayList<Material>();
+	List<Material> armorLegs = new ArrayList<Material>();
+	List<Material> armorBoots = new ArrayList<Material>();
 	List<PotionEffectType> potions = new ArrayList<PotionEffectType>();
 	int gameMin;
 	int gameStart30Sec;
@@ -112,7 +118,11 @@ public class Main extends JavaPlugin implements Listener{
 		gameQueueTime = (config.getInt("Game-Queue-Time")*1200);
 		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
 		kh = new KitHandler(this);
+		mh = new MenuHandler(this);
+		mhh = new MenuHandlerHost(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
+		Bukkit.getPluginManager().registerEvents(mh, this);
+		Bukkit.getPluginManager().registerEvents(mhh, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
@@ -129,6 +139,7 @@ public class Main extends JavaPlugin implements Listener{
 		kitsListHighRate.add("Glue Factory Worker");
 		kitsListHighRate.add("Ender");
 		kitsListHighRate.add("Boomerang");
+		kitsListHighRate.add("Bribed");
 		potions.add(PotionEffectType.BLINDNESS);
 		potions.add(PotionEffectType.CONFUSION);
 		potions.add(PotionEffectType.HUNGER);
@@ -148,6 +159,27 @@ public class Main extends JavaPlugin implements Listener{
 		kitsListAll.add("Potion Worker");
 		kitsListAll.add("Tank");
 		kitsListAll.add("Doctor Who");
+		kitsListAll.add("Bribed");
+		armorHelmet.add(Material.LEATHER_HELMET);
+		armorHelmet.add(Material.IRON_HELMET);
+		armorHelmet.add(Material.GOLD_HELMET);
+		armorHelmet.add(Material.CHAINMAIL_HELMET);
+		armorHelmet.add(Material.DIAMOND_HELMET);
+		armorChestplate.add(Material.LEATHER_CHESTPLATE);
+		armorChestplate.add(Material.IRON_CHESTPLATE);
+		armorChestplate.add(Material.GOLD_CHESTPLATE);
+		armorChestplate.add(Material.CHAINMAIL_CHESTPLATE);
+		armorChestplate.add(Material.DIAMOND_CHESTPLATE);
+		armorLegs.add(Material.LEATHER_LEGGINGS);
+		armorLegs.add(Material.IRON_LEGGINGS);
+		armorLegs.add(Material.GOLD_LEGGINGS);
+		armorLegs.add(Material.CHAINMAIL_LEGGINGS);
+		armorLegs.add(Material.DIAMOND_LEGGINGS);
+		armorBoots.add(Material.LEATHER_BOOTS);
+		armorBoots.add(Material.IRON_BOOTS);
+		armorBoots.add(Material.GOLD_BOOTS);
+		armorBoots.add(Material.CHAINMAIL_BOOTS);
+		armorBoots.add(Material.DIAMOND_BOOTS);
 		meta.setDisplayName("§6§lThrowable §c§lTNT");
 		lore.add("§bLeft click to throw");
 		lore.add("§bMade By: abandoncaptian");
@@ -185,11 +217,12 @@ public class Main extends JavaPlugin implements Listener{
 			{
 				Player p = (Player)theSender;
 				if(args.length == 0){
-					p.sendMessage("§6§l---- §c[ TNT Wars ] §6§l----");
-					p.sendMessage("§a/tnt [join/leave/kits]");
-					p.sendMessage("§b - Example: /tnt join");
-					if(p.hasPermission("tntwars.staff"))p.sendMessage("§a/tnt [forcestart/setspawn]");
-					p.sendMessage("§6Author: §7abandoncaptian");
+					if(p.hasPermission("tntwars.host")){
+						p.openInventory(mhh.inv);
+					}
+					else{
+						p.openInventory(mh.inv);
+					}
 				}
 
 				else if(args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("j"))
@@ -316,12 +349,8 @@ public class Main extends JavaPlugin implements Listener{
 						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cNeed to be in the queue to select a kit");
 					}
 				}else{
-					p.sendMessage("§cInvalid Argument!");
-					p.sendMessage(" ");
-					p.sendMessage("§6§l---- §c[ TNT Wars ] §6§l----");
-					p.sendMessage("§a/tnt [join/leave/kits]");
-					p.sendMessage("§b - Example: /tnt join");
-					if(p.hasPermission("tntwars.staff"))p.sendMessage("§a/tnt [start/end/setspawn]");
+					if(p.hasPermission("tntwars.host"))mhh.MenuHosts(p);
+					else mh.Menu(p);
 				}
 			}
 		}
@@ -358,6 +387,16 @@ public class Main extends JavaPlugin implements Listener{
 						}
 						if(selectedKit.get(name) == "Doctor Who"){
 							Bukkit.getPlayer(name).setHealthScale(40);
+						}
+						if(selectedKit.get(name) == "Bribed"){
+							int rand1 = (int) (Math.random()*4);
+							int rand2 = (int) (Math.random()*4);
+							int rand3 = (int) (Math.random()*4);
+							int rand4 = (int) (Math.random()*4);
+							Bukkit.getPlayer(name).getInventory().setHelmet(new ItemStack(armorHelmet.get(rand1)));
+							Bukkit.getPlayer(name).getInventory().setChestplate(new ItemStack(armorChestplate.get(rand2)));
+							Bukkit.getPlayer(name).getInventory().setLeggings(new ItemStack(armorLegs.get(rand3)));
+							Bukkit.getPlayer(name).getInventory().setBoots(new ItemStack(armorBoots.get(rand4)));
 						}
 					}
 					gameQueue.clear(); 
@@ -435,7 +474,6 @@ public class Main extends JavaPlugin implements Listener{
 
 	public void countDownPre(){
 		if(!active && !starting1){
-			kh.initInv();
 			starting1 = true;
 			Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in " + config.getInt("Game-Queue-Time") + " minutes.");
 			countQueue = Bukkit.getScheduler().runTaskLater(this, new Runnable(){
@@ -633,7 +671,6 @@ public class Main extends JavaPlugin implements Listener{
 				if(name.equals(pName)){
 					found = true;
 					Player p = Bukkit.getPlayer(name);
-					p.sendMessage("Found #1");
 					p.setLevel(savedXPL.get(name));
 					savedXPL.remove(name);
 					break;
@@ -645,7 +682,6 @@ public class Main extends JavaPlugin implements Listener{
 				if(name.equals(pName)){
 					found = true;
 					Player p = Bukkit.getPlayer(name);
-					p.sendMessage("Found #2");
 					p.setExp(savedXP.get(name));
 					savedXP.remove(name);
 					break;
@@ -654,7 +690,6 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		if(!found){
 			Player p = Bukkit.getPlayer(pName);
-			p.sendMessage("Not Found");
 			int expL = p.getLevel();
 			Float exp = p.getExp();
 			if(expL > 0){
@@ -717,46 +752,29 @@ public class Main extends JavaPlugin implements Listener{
 				dead.add(p.getName());
 				e.setDeathMessage(null);
 				p.setHealthScale(20);
+				int preGame = inGame.size();
+				inGame.remove(e.getEntity().getName());
+				modeON.remove(e.getEntity().getName());
 				int game = inGame.size();
-				if(game > 2){
-					inGame.remove(e.getEntity().getName());
-					modeON.remove(e.getEntity().getName());
-					e.getEntity().teleport(this.spawnpoint);
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						@Override
-						public void run() {
-							p.getInventory().clear();
-							InventorySwitch(p);
-							ExpSwitch(p.getName());
+				e.getEntity().teleport(this.spawnpoint);
+				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+					@Override
+					public void run() {
+						p.getInventory().clear();
+						InventorySwitch(p);
+						ExpSwitch(p.getName());
+					}
+				}, (20*3));
+				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+					@Override
+					public void run() {
+						if(dead.contains(p.getName())){
+							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + preGame + " remain!");
+							dead.remove(p.getName());
 						}
-					}, (20*3));
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						@Override
-						public void run() {
-							if(dead.contains(p.getName())){
-								int game = inGame.size();
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + game + " remain!");
-								dead.remove(p.getName());
-							}
-						}
-					}, 5);
-
-				}else{
-					inGame.remove(e.getEntity().getName());
-					modeON.remove(e.getEntity().getName());
-					e.getEntity().teleport(this.spawnpoint);
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						@Override
-						public void run() {
-							if(dead.contains(p.getName())){
-								int game = inGame.size();
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6was killed §7- §b" + game + " remain!");
-								dead.remove(p.getName());
-							}
-							InventorySwitch(p);
-							ExpSwitch(p.getName());
-						}
-					}, 5);
+					}
+				}, 5);
+				if(game == 1){
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + inGame.get(0) + " §6has won!");
 					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
 					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
