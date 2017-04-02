@@ -13,17 +13,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftTNTPrimed;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import me.abandoncaptian.TNTWars.Events.EntityExplode;
+import me.abandoncaptian.TNTWars.Events.PlayerDeath;
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 import me.abandoncaptian.TNTWars.Events.PlayerLeaveAndJoin;
 
@@ -40,14 +37,15 @@ public class Main extends JavaPlugin implements Listener{
 	PlayerLeaveAndJoin PLAJ;
 	EntityExplode EE;
 	LoadFunctions LF;
+	PlayerDeath PD;
 	public List<String> gameQueue = new ArrayList<String>();
 	public List<String> inGame = new ArrayList<String>();
-	List<String> dead = new ArrayList<String>();
+	public List<String> dead = new ArrayList<String>();
 	public int gameMin;
 	int gameStart30Sec;
 	int gameMax;
 	int gameQueueTime;
-	Location spawnpoint;
+	public Location spawnpoint;
 	public HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
 	public HashMap<String, String> selectedKit = new HashMap<String, String>();
 	BukkitTask deathCount;
@@ -82,12 +80,14 @@ public class Main extends JavaPlugin implements Listener{
 		PI = new PlayerInteract(this);
 		PLAJ = new PlayerLeaveAndJoin(this);
 		EE = new EntityExplode(this);
+		PD = new PlayerDeath(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(mhh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
 		Bukkit.getPluginManager().registerEvents(PLAJ, this);
 		Bukkit.getPluginManager().registerEvents(EE, this);
+		Bukkit.getPluginManager().registerEvents(PD, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
@@ -257,106 +257,5 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 		return true;
-	}
-
-	@EventHandler
-	public void gameDeath(PlayerDeathEvent e){
-		if(cd.active){
-			if(inGame.contains(e.getEntity().getName())){
-				Player p = (Player) e.getEntity();
-				e.getDrops().clear();
-				dead.add(p.getName());
-				e.setDeathMessage(null);
-				p.setHealthScale(20);
-				int preGame = inGame.size();
-				inGame.remove(e.getEntity().getName());
-				int game = inGame.size();
-				e.getEntity().teleport(this.spawnpoint);
-				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-					@Override
-					public void run() {
-						p.getInventory().clear();
-						IAE.InventorySwitch(p);
-						IAE.ExpSwitch(p.getName());
-					}
-				}, (20*3));
-				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-					@Override
-					public void run() {
-						if(dead.contains(p.getName())){
-							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + preGame + " remain!");
-							dead.remove(p.getName());
-						}
-					}
-				}, 5);
-				if(game == 1){
-					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + inGame.get(0) + " §6has won!");
-					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
-					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
-					Bukkit.getPlayer(inGame.get(0)).getInventory().clear();
-					IAE.InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
-					IAE.ExpSwitch(inGame.get(0));
-					Bukkit.getPlayer(inGame.get(0)).setHealthScale(20);
-					Bukkit.getPlayer(inGame.get(0)).teleport(this.spawnpoint);
-					inGame.clear();
-					kh.inv.clear();
-					cd.active = false;
-					cd.canKit = true;
-					cd.starting1 = false;
-					cd.starting2 = false;
-					selectedKit.clear();
-					kh.initInv();
-				}
-			}
-		}
-	}
-
-	@EventHandler
-	public void tntDamage(EntityDamageByEntityEvent e){
-		if(cd.active){
-			if(e.getEntity() instanceof Player){
-				Player p = (Player)e.getEntity();
-				if(e.getDamager() instanceof CraftTNTPrimed){
-					if(!inGame.contains(p.getName())){
-						e.setCancelled(true);
-						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
-					}	
-					if(!inGame.contains(p.getName()))return;
-					if(p.getName() == e.getDamager().getCustomName()){
-						if(selectedKit.get(p.getName()) == "Suicide Bomber"){
-							double dam = p.getLastDamage();
-							e.setDamage(dam/2);
-						}
-					}
-					if(selectedKit.get(p.getName()) == "Tank"){
-						double dam = p.getLastDamage();
-						e.setDamage(dam/2);
-					}
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						@Override
-						public void run() {
-							if(dead.contains(p.getName())){
-								int game = inGame.size();
-								if(e.getEntity().getName() == e.getDamager().getCustomName())Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6pulled a SashaLarie and killed themself §7- §b" + game + " remain!");
-								else Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
-								dead.remove(p.getName());
-							}
-						}
-					}, 2);
-				}else{
-					if(!inGame.contains(p.getName()))return;
-					Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-						@Override
-						public void run() {
-							if(dead.contains(p.getName())){
-								int game = inGame.size();
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + game + " remain!");
-								dead.remove(p.getName());
-							}
-						}
-					}, 2);
-				}
-			}
-		}
 	}
 }

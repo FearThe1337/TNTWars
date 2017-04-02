@@ -26,7 +26,7 @@ public class CountDowns {
 	public boolean starting1 = false;
 	public boolean starting2 = false;
 	public boolean active = false;
-	boolean canKit = true;
+	public boolean canKit = true;
 	List<Material> armorHelmet = new ArrayList<Material>();
 	List<Material> armorChestplate = new ArrayList<Material>();
 	List<Material> armorLegs = new ArrayList<Material>();

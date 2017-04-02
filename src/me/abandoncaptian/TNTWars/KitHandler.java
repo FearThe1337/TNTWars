@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class KitHandler implements Listener{
-	Inventory inv;
+	public Inventory inv;
 	Main pl;
 	public KitHandler(Main plugin) {
 		pl = plugin;
