@@ -20,7 +20,10 @@ public class KitHandler implements Listener{
 	Main pl;
 	public KitHandler(Main plugin) {
 		pl = plugin;
-		inv = Bukkit.createInventory(null, 54, "§c§lTNT Wars §6Kits Menu");
+		this.inv = Bukkit.createInventory(null, 54, "§c§lTNT Wars §6Kits Menu");
+	}
+	
+	public void initInv(){
 		ItemMeta meta;
 		List<String> lore = new ArrayList<String>();
 		ItemStack kit1 = new ItemStack(Material.BOW);
@@ -57,8 +60,8 @@ public class KitHandler implements Listener{
 		meta.setDisplayName("§b§lMiner");
 		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
 		lore.add("§7 - §6Place your TNT instead of throwing it");
-		lore.add("§7 - §6Left Click : 2 Sec Fuse");
-		lore.add("§7 - §6Right Click : 5 Sec Fuse");
+		lore.add("§7 - §6Right Click : 2 Sec Fuse");
+		lore.add("§7 - §6Left Click : 5 Sec Fuse");
 		meta.setLore(lore);
 		lore.clear();
 		kit4.setItemMeta(meta);
@@ -172,89 +175,94 @@ public class KitHandler implements Listener{
 
 	@EventHandler
 	public void invClick(InventoryClickEvent e){
+		Player p = (Player) e.getWhoClicked();
 		if(pl.gameQueue.contains(e.getWhoClicked().getName()) || pl.inGame.contains(e.getWhoClicked().getName())){
-			if(e.getClickedInventory().getSize() == inv.getSize()){
-				if(e.getClickedInventory().getTitle().equals("§c§lTNT Wars §6Kits Menu")){
-					e.setCancelled(true);
-					Player p = (Player) e.getWhoClicked();
-					ItemStack clicked = e.getCurrentItem();
-					if(clicked == null)return;
-					String itemName = clicked.getItemMeta().getDisplayName();
-					switch(itemName){
-					case "§b§lSniper": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Sniper");
-						p.closeInventory();
-						break;
-					case "§b§lShort Fuse": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Short Fuse");
-						p.closeInventory();
-						break;
-					case "§b§lHeavy Loader": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Heavy Loader");
-						p.closeInventory();
-						break;
-					case "§b§lMiner": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Miner");
-						p.closeInventory();
-						break;
-					case "§b§lSuicide Bomber": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Suicide Bomber");
-						p.closeInventory();
-						break;
-					case "§b§lGlue Factory Worker": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Glue Factory Worker");
-						p.closeInventory();
-						break;
-					case "§b§lEnder": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Ender");
-						p.closeInventory();
-						break;
-					case "§b§lBoomerang": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Boomerang");
-						p.closeInventory();
-						break;
-					case "§b§lPotion Worker": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Potion Worker");
-						p.closeInventory();
-						break;
-					case "§b§lDoctor Who": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Doctor Who");
-						p.closeInventory();
-						break;
-					case "§b§lTank": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Tank");
-						p.closeInventory();
-						break;
-					case "§b§lRandom": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Random");
-						p.closeInventory();
-						break;
-					case "§b§lBribed": 
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Bribed");
-						p.closeInventory();
-						break;
-					case "§b§lDonor Perks":
-						p.sendMessage("§cThis feature is not implamented yet");
-						break;
-					default: 
-						p.sendMessage("§Invalid Kit!");
-						p.closeInventory();
-						break;
+			Inventory clickedInv = e.getClickedInventory();
+			if(clickedInv != null){
+				if(clickedInv.getSize() == inv.getSize()){
+					if(clickedInv.getTitle().equals("§c§lTNT Wars §6Kits Menu")){
+						e.setCancelled(true);
+						ItemStack clicked = e.getCurrentItem();
+						if(clicked == null)return;
+						if(clicked.hasItemMeta()){
+							String itemName = clicked.getItemMeta().getDisplayName();
+							switch(itemName){
+							case "§b§lSniper": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Sniper");
+								p.closeInventory();
+								break;
+							case "§b§lShort Fuse": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Short Fuse");
+								p.closeInventory();
+								break;
+							case "§b§lHeavy Loader": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Heavy Loader");
+								p.closeInventory();
+								break;
+							case "§b§lMiner": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Miner");
+								p.closeInventory();
+								break;
+							case "§b§lSuicide Bomber": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Suicide Bomber");
+								p.closeInventory();
+								break;
+							case "§b§lGlue Factory Worker": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Glue Factory Worker");
+								p.closeInventory();
+								break;
+							case "§b§lEnder": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Ender");
+								p.closeInventory();
+								break;
+							case "§b§lBoomerang": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Boomerang");
+								p.closeInventory();
+								break;
+							case "§b§lPotion Worker": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Potion Worker");
+								p.closeInventory();
+								break;
+							case "§b§lDoctor Who": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Doctor Who");
+								p.closeInventory();
+								break;
+							case "§b§lTank": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Tank");
+								p.closeInventory();
+								break;
+							case "§b§lRandom": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Random");
+								p.closeInventory();
+								break;
+							case "§b§lBribed": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Bribed");
+								p.closeInventory();
+								break;
+							case "§b§lDonor Perks":
+								p.sendMessage("§cThis feature is not implamented yet");
+								break;
+							default: 
+								p.sendMessage("§Invalid Kit!");
+								p.closeInventory();
+								break;
+							}
+							return;
+						}
 					}
-					return;
 				}
 			}
 		}

@@ -53,7 +53,6 @@ public class Main extends JavaPlugin implements Listener{
 	KitHandler kh;
 	MenuHandler mh;
 	MenuHandlerHost mhh;
-	List<String> modeON = new ArrayList<String>();
 	List<String> gameQueue = new ArrayList<String>();
 	List<String> inGame = new ArrayList<String>();
 	List<String> dead = new ArrayList<String>();
@@ -185,6 +184,7 @@ public class Main extends JavaPlugin implements Listener{
 		lore.add("§bMade By: abandoncaptian");
 		meta.setLore(lore);
 		tnt.setItemMeta(meta);
+		kh.initInv();
 	}
 
 	@Override
@@ -195,15 +195,8 @@ public class Main extends JavaPlugin implements Listener{
 		Log.info("              Disabled!             ");
 		Log.info(" ");
 		Log.info("------------------------------------");
-		for (Player p : Bukkit.getOnlinePlayers()){
-			if(modeON.contains(p.getName())){
-				modeON.remove(p.getName());
-				p.sendMessage("§6TNT Mode: turned off due to plugin reload.");
-			}
-		}
 		inGame.clear();
 		gameQueue.clear();
-		modeON.clear();
 		selectedKit.clear();
 		active = false;
 		canKit = true;
@@ -268,23 +261,21 @@ public class Main extends JavaPlugin implements Listener{
 							int queued = gameQueue.size();
 							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars Queue §7- §bQueued: " + queued);
 							if(queued < gameMin){
-								if(queued < (gameMin-1)){
-									Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §6Not enough players to play §7(§bMinimum: " + gameMin + "§7)");
-									if(starting1){
-										countQueue.cancel();
-										starting1 = false;
-										starting2 = false;
-									}
-									if(starting2){
-										count30.cancel();
-										count10.cancel();
-										count5.cancel();
-										count4.cancel();
-										count3.cancel();
-										count2.cancel();
-										count1.cancel();
-										countStart.cancel();
-									}
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §6Not enough players to play §7(§bMinimum: " + gameMin + "§7)");
+								if(starting1){
+									countQueue.cancel();
+									starting1 = false;
+								}
+								if(starting2){
+									starting2 = false;
+									count30.cancel();
+									count10.cancel();
+									count5.cancel();
+									count4.cancel();
+									count3.cancel();
+									count2.cancel();
+									count1.cancel();
+									countStart.cancel();
 								}
 							}
 							if(selectedKit.containsKey(p.getName())){
@@ -296,7 +287,6 @@ public class Main extends JavaPlugin implements Listener{
 					}else{
 						if(inGame.contains(p.getName())){
 							inGame.remove(p.getName());
-							modeON.remove(p.getName());
 							int game = inGame.size();
 							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");
 							if(selectedKit.containsKey(p.getName())){
@@ -359,15 +349,16 @@ public class Main extends JavaPlugin implements Listener{
 
 	public void countDown30(){
 		if(!active){
+			starting2 = true;
 			countStart = Bukkit.getScheduler().runTaskLater(this, new Runnable(){
 				@Override
 				public void run() {
 					active = true;
 					inGame.addAll(gameQueue);
-					modeON.addAll(inGame);
 					starting2 = false;
 					starting1 = false;
 					for(String name : inGame){
+						Bukkit.getPlayer(name).closeInventory();
 						InventorySwitch(Bukkit.getPlayer(name));
 						ExpSwitch(name);
 						if(Bukkit.getPlayer(name).getGameMode() != GameMode.SURVIVAL) Bukkit.getPlayer(name).setGameMode(GameMode.SURVIVAL);
@@ -459,15 +450,15 @@ public class Main extends JavaPlugin implements Listener{
 				@Override
 				public void run() {
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 30 seconds");
-					starting2 = true;
-					starting1 = false;
 					for(String name : gameQueue){
-						Bukkit.getPlayer(name).closeInventory();
-						kh.kitsMenu(Bukkit.getPlayer(name));
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6Remember to do  §7[§b/TNT Kits§7] §6to select a kit!");
+						if(!selectedKit.containsKey(name)){
+							kh.kitsMenu(Bukkit.getPlayer(name));
+						}
+						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6Right click to throw your TNT");
 					}
 				}
 			}, 0);
+			starting2 = true;
 		}
 	}
 
@@ -490,13 +481,13 @@ public class Main extends JavaPlugin implements Listener{
 	@EventHandler
 	public void tntClick(PlayerInteractEvent e){
 		if(active){
-			if((e.getAction() == Action.RIGHT_CLICK_BLOCK) || (e.getAction() == Action.RIGHT_CLICK_AIR)){
+			if((e.getAction() == Action.LEFT_CLICK_BLOCK) || (e.getAction() == Action.LEFT_CLICK_AIR)){
 				Player p = e.getPlayer();
 				if(selectedKit.get(p.getName()) == "Miner"){
 					ItemStack item = p.getItemInHand();
 					if(item.getType() == Material.TNT){
 						if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
-							if(modeON.contains(p.getName())){
+							if(inGame.contains(p.getName())){
 								this.primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
 								tntActive.put(this.primeTnt, p.getName());
 								this.primeTnt.setFuseTicks(20*5);
@@ -514,12 +505,12 @@ public class Main extends JavaPlugin implements Listener{
 				}
 				return;
 			}
-			if((e.getAction() == Action.LEFT_CLICK_AIR) || (e.getAction() == Action.LEFT_CLICK_BLOCK)){
+			if((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)){
 				Player p = e.getPlayer();
 				ItemStack item = p.getItemInHand();
 				if(item.getType() == Material.TNT){
 					if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
-						if(modeON.contains(p.getName())){
+						if(inGame.contains(p.getName())){
 							double power = 0;
 							int fuse;
 							if(selectedKit.containsKey(p.getName())){
@@ -618,7 +609,6 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}else if(inGame.contains(p.getName())){
 			inGame.remove(p.getName());
-			modeON.remove(p.getName());
 			int game = inGame.size();
 			Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left §7- §b" + game + " remain!");
 			if(selectedKit.containsKey(p.getName())){
@@ -754,7 +744,6 @@ public class Main extends JavaPlugin implements Listener{
 				p.setHealthScale(20);
 				int preGame = inGame.size();
 				inGame.remove(e.getEntity().getName());
-				modeON.remove(e.getEntity().getName());
 				int game = inGame.size();
 				e.getEntity().teleport(this.spawnpoint);
 				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
@@ -784,13 +773,13 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getPlayer(inGame.get(0)).setHealthScale(20);
 					Bukkit.getPlayer(inGame.get(0)).teleport(this.spawnpoint);
 					inGame.clear();
-					modeON.clear();
 					kh.inv.clear();
 					active = false;
 					canKit = true;
 					starting1 = false;
 					starting2 = false;
 					selectedKit.clear();
+					kh.initInv();
 				}
 			}
 		}
@@ -802,7 +791,7 @@ public class Main extends JavaPlugin implements Listener{
 			if(e.getEntity() instanceof Player){
 				Player p = (Player)e.getEntity();
 				if(e.getDamager() instanceof CraftTNTPrimed){
-					if(!modeON.contains(p.getName())){
+					if(!inGame.contains(p.getName())){
 						e.setCancelled(true);
 						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
 					}	
