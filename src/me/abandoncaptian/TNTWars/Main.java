@@ -6,12 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-//import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -36,7 +32,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -53,6 +48,7 @@ public class Main extends JavaPlugin implements Listener{
 	KitHandler kh;
 	MenuHandler mh;
 	MenuHandlerHost mhh;
+	InvAndExp IAE;
 	List<String> gameQueue = new ArrayList<String>();
 	List<String> inGame = new ArrayList<String>();
 	List<String> dead = new ArrayList<String>();
@@ -84,11 +80,7 @@ public class Main extends JavaPlugin implements Listener{
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
 	HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
-	HashMap<UUID, PlayerInventory> invSaves = new HashMap<UUID, PlayerInventory>();
 	HashMap<String, String> selectedKit = new HashMap<String, String>();
-	Map<String, ItemStack[]> extraInv;
-	Map<String, Integer> savedXPL = new HashMap<String, Integer>();
-	Map<String, Float> savedXP = new HashMap<String, Float>();
 
 	TNTPrimed primeTnt;
 	BukkitTask deathCount;
@@ -119,6 +111,7 @@ public class Main extends JavaPlugin implements Listener{
 		kh = new KitHandler(this);
 		mh = new MenuHandler(this);
 		mhh = new MenuHandlerHost(this);
+		IAE = new InvAndExp(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(mhh, this);
@@ -126,7 +119,6 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable3(this), 0, 20*5);
-		this.extraInv = new HashMap<>();
 		kitsListLowRate.add("Sniper");
 		kitsListLowRate.add("Heavy Loader");
 		kitsListLowRate.add("Potion Worker");
@@ -359,8 +351,8 @@ public class Main extends JavaPlugin implements Listener{
 					starting1 = false;
 					for(String name : inGame){
 						Bukkit.getPlayer(name).closeInventory();
-						InventorySwitch(Bukkit.getPlayer(name));
-						ExpSwitch(name);
+						IAE.InventorySwitch(Bukkit.getPlayer(name));
+						IAE.ExpSwitch(name);
 						if(Bukkit.getPlayer(name).getGameMode() != GameMode.SURVIVAL) Bukkit.getPlayer(name).setGameMode(GameMode.SURVIVAL);
 						Bukkit.getPlayer(name).setInvulnerable(false);
 						Bukkit.getPlayer(name).setHealth(20);
@@ -627,7 +619,7 @@ public class Main extends JavaPlugin implements Listener{
 					ents.clear();
 					players.clear();
 					ents = e.getEntity().getNearbyEntities(6, 6, 6);
-					if(ents.size() > 1){
+					if(ents.size() >= 1){
 						for(Entity ent : ents){
 							if(ent instanceof Player){
 								if(inGame.contains(ent.getName())){
@@ -654,84 +646,11 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 	}
-	public void ExpSwitch(String pName) {
-		boolean found = false;
-		if(savedXPL.size() > 0){
-			for(String name : savedXPL.keySet()){
-				if(name.equals(pName)){
-					found = true;
-					Player p = Bukkit.getPlayer(name);
-					p.setLevel(savedXPL.get(name));
-					savedXPL.remove(name);
-					break;
-				}
-			}
-		}
-		if(savedXP.size() > 0){
-			for(String name : savedXP.keySet()){
-				if(name.equals(pName)){
-					found = true;
-					Player p = Bukkit.getPlayer(name);
-					p.setExp(savedXP.get(name));
-					savedXP.remove(name);
-					break;
-				}
-			}
-		}
-		if(!found){
-			Player p = Bukkit.getPlayer(pName);
-			int expL = p.getLevel();
-			Float exp = p.getExp();
-			if(expL > 0){
-				savedXPL.put(pName, expL);
-			}
-			if(exp > 0){
-				savedXP.put(pName, exp);
-			}
-			p.setLevel(0);
-			p.setExp(0);
-		}
-	}
-
-	public void InventorySwitch(Player player) {
-		boolean found = false;
-		if(extraInv.size() > 0){
-			for (String uuid : extraInv.keySet()) {
-				if (uuid.equals(player.getUniqueId().toString())) {
-					found = true;
-					ItemStack[] items = extraInv.get(uuid);
-					extraInv.remove(player.getUniqueId().toString());
-					player.getInventory().clear();
-					player.getInventory().setArmorContents((ItemStack[]) ArrayUtils.subarray(items, 0, 4));
-					player.getInventory().setContents((ItemStack[]) ArrayUtils.subarray(items, 4, items.length));
-					break;
-				}
-			}
-		}
-		if (!found) {
-			ItemStack[] curr = (ItemStack[]) ArrayUtils.addAll(
-					player.getInventory().getArmorContents(),
-					player.getInventory().getContents()
-					);
-			extraInv.put(player.getUniqueId().toString(), curr);
-			player.getInventory().clear();
-		}
-	}
-
-	public boolean hasSwitchedInv(Player p) {
-		return extraInv.keySet().contains(p.getUniqueId().toString());
-	}
-
-	public boolean hasSwitchedExp(Player p) {
-		if(savedXP.keySet().contains(p.getName()) || savedXPL.keySet().contains(p.getName())){
-			return true;
-		}else return false;
-	}
 
 	@EventHandler
 	public void gameConnect(PlayerJoinEvent e){
-		if(hasSwitchedInv(e.getPlayer()))InventorySwitch(e.getPlayer());
-		if(hasSwitchedExp(e.getPlayer()))ExpSwitch(e.getPlayer().getName());
+		if(IAE.hasSwitchedInv(e.getPlayer()))IAE.InventorySwitch(e.getPlayer());
+		if(IAE.hasSwitchedExp(e.getPlayer()))IAE.ExpSwitch(e.getPlayer().getName());
 	}
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
@@ -750,8 +669,8 @@ public class Main extends JavaPlugin implements Listener{
 					@Override
 					public void run() {
 						p.getInventory().clear();
-						InventorySwitch(p);
-						ExpSwitch(p.getName());
+						IAE.InventorySwitch(p);
+						IAE.ExpSwitch(p.getName());
 					}
 				}, (20*3));
 				Bukkit.getScheduler().runTaskLater(this, new Runnable(){
@@ -768,8 +687,8 @@ public class Main extends JavaPlugin implements Listener{
 					Bukkit.getPlayer(inGame.get(0)).setHealth(20);
 					Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
 					Bukkit.getPlayer(inGame.get(0)).getInventory().clear();
-					InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
-					ExpSwitch(inGame.get(0));
+					IAE.InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
+					IAE.ExpSwitch(inGame.get(0));
 					Bukkit.getPlayer(inGame.get(0)).setHealthScale(20);
 					Bukkit.getPlayer(inGame.get(0)).teleport(this.spawnpoint);
 					inGame.clear();
