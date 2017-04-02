@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class Runnable3 implements Runnable{
 	Main pl;
+	CountDowns cd;
 	boolean had = false;
 	boolean canGive = true;
 	int max = 1;
@@ -21,7 +22,7 @@ public class Runnable3 implements Runnable{
 
 	@Override
 	public void run() {
-		if(pl.active){
+		if(cd.active){
 			for(String name : pl.inGame){
 				this.had = false;
 				if(pl.selectedKit.containsKey(name)){

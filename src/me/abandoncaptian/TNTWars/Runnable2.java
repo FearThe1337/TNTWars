@@ -8,20 +8,24 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import me.abandoncaptian.TNTWars.Events.PlayerInteract;
+
 public class Runnable2 implements Runnable{
 	Main pl;
+	CountDowns cd;
+	PlayerInteract PI;
 	public Runnable2(Main plugin){
 		this.pl = plugin;
 	}
 
 	@Override
 	public void run() {
-		if(pl.active){
+		if(cd.active){
 			List<Entity> tnts = new ArrayList<Entity>();
 			tnts.addAll(pl.tntActive.keySet());
 			for(Entity ent : tnts){
 				if(pl.selectedKit.get(pl.tntActive.get(ent)) == "Glue Factory Worker"){
-					Player p = Bukkit.getPlayer(pl.primeTnt.getCustomName());
+					Player p = Bukkit.getPlayer(PI.primeTnt.getCustomName());
 					if(ent.isOnGround()){
 						Vector vec = p.getEyeLocation().getDirection().normalize().multiply(0);
 						ent.setVelocity(vec);
