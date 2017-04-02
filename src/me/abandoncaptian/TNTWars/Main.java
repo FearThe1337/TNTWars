@@ -97,6 +97,26 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable3(this), 0, 20*5);
+		initKitsAndPotions();
+		kh.initInv();
+	}
+
+	@Override
+	public void onDisable()
+	{
+		Log.info("----------- [ TNT Wars ] -----------");
+		Log.info(" ");
+		Log.info("              Disabled!             ");
+		Log.info(" ");
+		Log.info("------------------------------------");
+		inGame.clear();
+		gameQueue.clear();
+		selectedKit.clear();
+		cd.active = false;
+		cd.canKit = true;
+	}
+
+	public void initKitsAndPotions(){
 		kitsListLowRate.add("Sniper");
 		kitsListLowRate.add("Heavy Loader");
 		kitsListLowRate.add("Potion Worker");
@@ -129,24 +149,8 @@ public class Main extends JavaPlugin implements Listener{
 		kitsListAll.add("Tank");
 		kitsListAll.add("Doctor Who");
 		kitsListAll.add("Bribed");
-		kh.initInv();
 	}
-
-	@Override
-	public void onDisable()
-	{
-		Log.info("----------- [ TNT Wars ] -----------");
-		Log.info(" ");
-		Log.info("              Disabled!             ");
-		Log.info(" ");
-		Log.info("------------------------------------");
-		inGame.clear();
-		gameQueue.clear();
-		selectedKit.clear();
-		cd.active = false;
-		cd.canKit = true;
-	}
-
+	
 	public boolean onCommand(CommandSender theSender, Command cmd, String commandLabel, String[] args)
 	{
 		if (commandLabel.equalsIgnoreCase("tnt") || commandLabel.equalsIgnoreCase("tw"))
