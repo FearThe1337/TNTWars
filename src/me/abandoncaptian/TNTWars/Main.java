@@ -67,9 +67,6 @@ public class Main extends JavaPlugin implements Listener{
 			Log.info("File Didn't Exist ----");
 		}
 		LF = new LoadFunctions(this);
-		LF.initKitsAll();
-		LF.initKitsRates();
-		LF.initPotions();
 		gameMin = config.getInt("Game-Min");
 		gameStart30Sec = config.getInt("Game-Start-30Sec");
 		gameMax = config.getInt("Game-Max");

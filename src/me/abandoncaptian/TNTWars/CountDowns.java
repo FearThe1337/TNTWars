@@ -25,7 +25,7 @@ public class CountDowns {
 	public BukkitTask countQueue;
 	public boolean starting1 = false;
 	public boolean starting2 = false;
-	public boolean active = false;
+	public boolean active;
 	public boolean canKit = true;
 	List<Material> armorHelmet = new ArrayList<Material>();
 	List<Material> armorChestplate = new ArrayList<Material>();
@@ -53,6 +53,7 @@ public class CountDowns {
 		armorBoots.add(Material.GOLD_BOOTS);
 		armorBoots.add(Material.CHAINMAIL_BOOTS);
 		armorBoots.add(Material.DIAMOND_BOOTS);
+		active = false;
 		IAE = new InvAndExp(plugin);
 		kh = new KitHandler(plugin);
 		LF = new LoadFunctions(plugin);
@@ -63,6 +64,7 @@ public class CountDowns {
 			countStart = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
 				@Override
 				public void run() {
+					Bukkit.broadcastMessage("setting active");
 					active = true;
 					pl.inGame.addAll(pl.gameQueue);
 					starting2 = false;
@@ -82,8 +84,9 @@ public class CountDowns {
 							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
 							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou didn't choose a kit! §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
 						}else if(pl.selectedKit.get(name) == "Random"){
+							Bukkit.broadcastMessage("" + LF.kitsListAll.size());
 							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
-							pl.selectedKit.put(name,LF.kitsListAll.get(rand));
+							pl.selectedKit.put(name, pl.LF.kitsListAll.get(rand));
 							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
 						}
 						if(pl.selectedKit.get(name) == "Doctor Who"){
