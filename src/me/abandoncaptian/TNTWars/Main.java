@@ -23,14 +23,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
+import me.abandoncaptian.TNTWars.Events.PlayerLeaveAndJoin;
 
 public class Main extends JavaPlugin implements Listener{
 	Logger Log = Bukkit.getLogger();
@@ -42,7 +41,8 @@ public class Main extends JavaPlugin implements Listener{
 	InvAndExp IAE;
 	CountDowns cd;
 	PlayerInteract PI;
-	List<String> gameQueue = new ArrayList<String>();
+	PlayerLeaveAndJoin PLAJ;
+	public List<String> gameQueue = new ArrayList<String>();
 	public List<String> inGame = new ArrayList<String>();
 	List<String> dead = new ArrayList<String>();
 	List<String> kitsListLowRate = new ArrayList<String>();
@@ -53,7 +53,7 @@ public class Main extends JavaPlugin implements Listener{
 	List<Material> armorLegs = new ArrayList<Material>();
 	List<Material> armorBoots = new ArrayList<Material>();
 	List<PotionEffectType> potions = new ArrayList<PotionEffectType>();
-	int gameMin;
+	public int gameMin;
 	int gameStart30Sec;
 	int gameMax;
 	int gameQueueTime;
@@ -89,15 +89,19 @@ public class Main extends JavaPlugin implements Listener{
 		IAE = new InvAndExp(this);
 		cd = new CountDowns(this);
 		PI = new PlayerInteract(this);
+		PLAJ = new PlayerLeaveAndJoin(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(mhh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
+		Bukkit.getPluginManager().registerEvents(PLAJ, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable3(this), 0, 20*5);
-		initKitsAndPotions();
+		initKitsAll();
+		initKitsRates();
+		initPotions();
 		kh.initInv();
 	}
 
@@ -116,7 +120,7 @@ public class Main extends JavaPlugin implements Listener{
 		cd.canKit = true;
 	}
 
-	public void initKitsAndPotions(){
+	public void initKitsRates(){
 		kitsListLowRate.add("Sniper");
 		kitsListLowRate.add("Heavy Loader");
 		kitsListLowRate.add("Potion Worker");
@@ -129,14 +133,9 @@ public class Main extends JavaPlugin implements Listener{
 		kitsListHighRate.add("Ender");
 		kitsListHighRate.add("Boomerang");
 		kitsListHighRate.add("Bribed");
-		potions.add(PotionEffectType.BLINDNESS);
-		potions.add(PotionEffectType.CONFUSION);
-		potions.add(PotionEffectType.HUNGER);
-		potions.add(PotionEffectType.LEVITATION);
-		potions.add(PotionEffectType.POISON);
-		potions.add(PotionEffectType.SLOW);
-		potions.add(PotionEffectType.WEAKNESS);
-		potions.add(PotionEffectType.WITHER);
+	}
+	
+	public void initKitsAll(){
 		kitsListAll.add("Sniper");
 		kitsListAll.add("Short Fuse");
 		kitsListAll.add("Heavy Loader");
@@ -149,6 +148,17 @@ public class Main extends JavaPlugin implements Listener{
 		kitsListAll.add("Tank");
 		kitsListAll.add("Doctor Who");
 		kitsListAll.add("Bribed");
+	}
+
+	public void initPotions(){
+		potions.add(PotionEffectType.BLINDNESS);
+		potions.add(PotionEffectType.CONFUSION);
+		potions.add(PotionEffectType.HUNGER);
+		potions.add(PotionEffectType.LEVITATION);
+		potions.add(PotionEffectType.POISON);
+		potions.add(PotionEffectType.SLOW);
+		potions.add(PotionEffectType.WEAKNESS);
+		potions.add(PotionEffectType.WITHER);
 	}
 	
 	public boolean onCommand(CommandSender theSender, Command cmd, String commandLabel, String[] args)
@@ -296,50 +306,6 @@ public class Main extends JavaPlugin implements Listener{
 		return true;
 	}
 
-
-	@EventHandler
-	public void playerLeaveGame(PlayerQuitEvent e){
-		Player p = e.getPlayer();
-		if(!cd.active){
-			if(gameQueue.contains(p.getName())){
-				int preQue = gameQueue.size();
-				gameQueue.remove(p.getName());
-				int queued = gameQueue.size();
-				if(preQue >= gameMin){
-					if(queued < gameMin){
-						Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l]  §6Not enough players to play §7(§bMinimum: " + gameMin + "§7)");
-						if(cd.starting1){
-							cd.countQueue.cancel();
-							cd.starting1 = false;
-							cd.starting2 = false;
-						}
-						if(cd.starting2){
-							cd.count30.cancel();
-							cd.count10.cancel();
-							cd.count5.cancel();
-							cd.count4.cancel();
-							cd.count3.cancel();
-							cd.count2.cancel();
-							cd.count1.cancel();
-							cd.countStart.cancel();
-						}
-					}
-				}
-				Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left queue §7- §bQueued: " + queued);
-				if(selectedKit.containsKey(p.getName())){
-					selectedKit.remove(p.getName());
-				}
-			}
-		}else if(inGame.contains(p.getName())){
-			inGame.remove(p.getName());
-			int game = inGame.size();
-			Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left §7- §b" + game + " remain!");
-			if(selectedKit.containsKey(p.getName())){
-				selectedKit.remove(p.getName());
-			}
-		}
-	}
-
 	@EventHandler
 	public void tntExplode(EntityExplodeEvent e){
 		if(cd.active){
@@ -378,11 +344,6 @@ public class Main extends JavaPlugin implements Listener{
 		}
 	}
 
-	@EventHandler
-	public void gameConnect(PlayerJoinEvent e){
-		if(IAE.hasSwitchedInv(e.getPlayer()))IAE.InventorySwitch(e.getPlayer());
-		if(IAE.hasSwitchedExp(e.getPlayer()))IAE.ExpSwitch(e.getPlayer().getName());
-	}
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
 		if(cd.active){

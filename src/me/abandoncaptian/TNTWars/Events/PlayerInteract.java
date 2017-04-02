@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.Main;
 
-public class PlayerInteract  implements Listener{
+public class PlayerInteract implements Listener{
 	Main pl;
 	CountDowns cd;
 	ItemStack tnt = new ItemStack(Material.TNT);
