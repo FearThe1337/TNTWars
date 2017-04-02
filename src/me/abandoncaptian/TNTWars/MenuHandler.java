@@ -26,18 +26,18 @@ public class MenuHandler implements Listener{
 						"§bClick to join TNT Wars"),
 				10
 				);
-		addMenuItem(new ItemStack(Material.WOOL, 1, (short)14),
-				"§aLeave TNT Wars",
-				Lists.newArrayList(
-						"§6§l---- §c[ TNT Wars ] §6§l----",
-						"§bClick to leave TNT Wars"),
-				13
-		);
 		addMenuItem(new ItemStack(Material.CHEST),
 				"§aTNT Wars Kits",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to see TNT Wars kits"),
+				13
+		);
+		addMenuItem(new ItemStack(Material.WOOL, 1, (short)14),
+				"§aLeave TNT Wars",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§bClick to leave TNT Wars"),
 				16
 		);
 		addMenuItem(new ItemStack(Material.ARROW),

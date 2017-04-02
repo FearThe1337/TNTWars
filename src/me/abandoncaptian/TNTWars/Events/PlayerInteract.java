@@ -30,6 +30,7 @@ public class PlayerInteract implements Listener{
 	public TNTPrimed primeTnt;
 	public PlayerInteract(Main plugin) {
 		pl = plugin;
+		cd = new CountDowns(plugin);
 		meta.setDisplayName("§6§lThrowable §c§lTNT");
 		lore.add("§bLeft click to throw");
 		lore.add("§bMade By: abandoncaptian");

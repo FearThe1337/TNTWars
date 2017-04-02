@@ -19,6 +19,7 @@ public class Runnable1 implements Runnable {
 	boolean correctKit = true;
 	public Runnable1(Main plugin){
 		this.pl = plugin;
+		cd = new CountDowns(plugin);
 	}
 
 	@Override

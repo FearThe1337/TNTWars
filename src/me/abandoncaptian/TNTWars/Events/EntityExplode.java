@@ -20,8 +20,9 @@ public class EntityExplode implements Listener{
 	Main pl;
 	CountDowns cd;
 	LoadFunctions LF;
-	public EntityExplode(Main Plugin){
-		pl = Plugin;
+	public EntityExplode(Main plugin){
+		pl = plugin;
+		cd = new CountDowns(plugin);
 	}
 	
 	@EventHandler

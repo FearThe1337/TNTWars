@@ -17,6 +17,7 @@ public class PlayerLeaveAndJoin implements Listener{
 	CountDowns cd;
 	public PlayerLeaveAndJoin(Main plugin) {
 		pl = plugin;
+		IAE = new InvAndExp(plugin);
 	}
 	
 	@EventHandler

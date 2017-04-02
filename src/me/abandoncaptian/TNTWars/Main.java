@@ -66,17 +66,21 @@ public class Main extends JavaPlugin implements Listener{
 			this.saveConfig();
 			Log.info("File Didn't Exist ----");
 		}
+		LF = new LoadFunctions(this);
+		LF.initKitsAll();
+		LF.initKitsRates();
+		LF.initPotions();
 		gameMin = config.getInt("Game-Min");
 		gameStart30Sec = config.getInt("Game-Start-30Sec");
 		gameMax = config.getInt("Game-Max");
 		gameQueueTime = (config.getInt("Game-Queue-Time")*1200);
 		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
-		LF = new LoadFunctions(this);
+		cd = new CountDowns(this);
 		kh = new KitHandler(this);
+		kh.initInv();
 		mh = new MenuHandler(this);
 		mhh = new MenuHandlerHost(this);
 		IAE = new InvAndExp(this);
-		cd = new CountDowns(this);
 		PI = new PlayerInteract(this);
 		PLAJ = new PlayerLeaveAndJoin(this);
 		EE = new EntityExplode(this);
@@ -89,13 +93,10 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getPluginManager().registerEvents(EE, this);
 		Bukkit.getPluginManager().registerEvents(PD, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
+		cd.active = false;
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable3(this), 0, 20*5);
-		LF.initKitsAll();
-		LF.initKitsRates();
-		LF.initPotions();
-		kh.initInv();
 	}
 
 	@Override

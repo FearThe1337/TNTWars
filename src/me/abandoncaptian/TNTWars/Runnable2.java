@@ -16,11 +16,11 @@ public class Runnable2 implements Runnable{
 	PlayerInteract PI;
 	public Runnable2(Main plugin){
 		this.pl = plugin;
+		cd = new CountDowns(plugin);
 	}
-
 	@Override
 	public void run() {
-		if(cd.active){
+		if(pl.cd.active){
 			List<Entity> tnts = new ArrayList<Entity>();
 			tnts.addAll(pl.tntActive.keySet());
 			for(Entity ent : tnts){

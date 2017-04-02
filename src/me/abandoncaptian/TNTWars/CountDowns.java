@@ -53,6 +53,9 @@ public class CountDowns {
 		armorBoots.add(Material.GOLD_BOOTS);
 		armorBoots.add(Material.CHAINMAIL_BOOTS);
 		armorBoots.add(Material.DIAMOND_BOOTS);
+		IAE = new InvAndExp(plugin);
+		kh = new KitHandler(plugin);
+		LF = new LoadFunctions(plugin);
 	}
 	public void countDown30(){
 		if(!active){
