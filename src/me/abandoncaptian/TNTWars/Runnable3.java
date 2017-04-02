@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class Runnable3 implements Runnable{
 	Main pl;
 	CountDowns cd;
+	LoadFunctions LF;
 	boolean had = false;
 	boolean canGive = true;
 	int max = 1;
@@ -26,7 +27,7 @@ public class Runnable3 implements Runnable{
 			for(String name : pl.inGame){
 				this.had = false;
 				if(pl.selectedKit.containsKey(name)){
-					for(String kit : pl.kitsListHighRate){
+					for(String kit : LF.kitsListHighRate){
 						if(pl.selectedKit.get(name) == kit){
 							correctKit = false;
 							break;

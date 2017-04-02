@@ -13,6 +13,7 @@ public class CountDowns {
 	Main pl;
 	InvAndExp IAE;
 	KitHandler kh;
+	LoadFunctions LF;
 	public BukkitTask count30;
 	public BukkitTask count10;
 	public BukkitTask count5;
@@ -74,13 +75,13 @@ public class CountDowns {
 						Bukkit.getPlayer(name).getInventory().clear();
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 						if(!pl.selectedKit.containsKey(name)){
-							int rand = (int) (Math.random()*(pl.kitsListAll.size()-1));
-							pl.selectedKit.put(name, pl.kitsListAll.get(rand));
-							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou didn't choose a kit! §6We selected §b" + pl.kitsListAll.get(rand) + " §6for you");
+							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
+							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
+							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou didn't choose a kit! §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
 						}else if(pl.selectedKit.get(name) == "Random"){
-							int rand = (int) (Math.random()*(pl.kitsListAll.size()-1));
-							pl.selectedKit.put(name,pl. kitsListAll.get(rand));
-							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6We selected §b" + pl.kitsListAll.get(rand) + " §6for you");
+							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
+							pl.selectedKit.put(name,LF.kitsListAll.get(rand));
+							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
 						}
 						if(pl.selectedKit.get(name) == "Doctor Who"){
 							Bukkit.getPlayer(name).setHealthScale(40);

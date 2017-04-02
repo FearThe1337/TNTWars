@@ -9,25 +9,21 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftTNTPrimed;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+import me.abandoncaptian.TNTWars.Events.EntityExplode;
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 import me.abandoncaptian.TNTWars.Events.PlayerLeaveAndJoin;
 
@@ -42,17 +38,11 @@ public class Main extends JavaPlugin implements Listener{
 	CountDowns cd;
 	PlayerInteract PI;
 	PlayerLeaveAndJoin PLAJ;
+	EntityExplode EE;
+	LoadFunctions LF;
 	public List<String> gameQueue = new ArrayList<String>();
 	public List<String> inGame = new ArrayList<String>();
 	List<String> dead = new ArrayList<String>();
-	List<String> kitsListLowRate = new ArrayList<String>();
-	List<String> kitsListHighRate = new ArrayList<String>();
-	List<String> kitsListAll = new ArrayList<String>();
-	List<Material> armorHelmet = new ArrayList<Material>();
-	List<Material> armorChestplate = new ArrayList<Material>();
-	List<Material> armorLegs = new ArrayList<Material>();
-	List<Material> armorBoots = new ArrayList<Material>();
-	List<PotionEffectType> potions = new ArrayList<PotionEffectType>();
 	public int gameMin;
 	int gameStart30Sec;
 	int gameMax;
@@ -83,6 +73,7 @@ public class Main extends JavaPlugin implements Listener{
 		gameMax = config.getInt("Game-Max");
 		gameQueueTime = (config.getInt("Game-Queue-Time")*1200);
 		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
+		LF = new LoadFunctions(this);
 		kh = new KitHandler(this);
 		mh = new MenuHandler(this);
 		mhh = new MenuHandlerHost(this);
@@ -90,18 +81,20 @@ public class Main extends JavaPlugin implements Listener{
 		cd = new CountDowns(this);
 		PI = new PlayerInteract(this);
 		PLAJ = new PlayerLeaveAndJoin(this);
+		EE = new EntityExplode(this);
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(mhh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
 		Bukkit.getPluginManager().registerEvents(PLAJ, this);
+		Bukkit.getPluginManager().registerEvents(EE, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable1(this), 0, 20*3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable2(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable3(this), 0, 20*5);
-		initKitsAll();
-		initKitsRates();
-		initPotions();
+		LF.initKitsAll();
+		LF.initKitsRates();
+		LF.initPotions();
 		kh.initInv();
 	}
 
@@ -120,46 +113,6 @@ public class Main extends JavaPlugin implements Listener{
 		cd.canKit = true;
 	}
 
-	public void initKitsRates(){
-		kitsListLowRate.add("Sniper");
-		kitsListLowRate.add("Heavy Loader");
-		kitsListLowRate.add("Potion Worker");
-		kitsListLowRate.add("Tank");
-		kitsListLowRate.add("Doctor Who");
-		kitsListHighRate.add("Short Fuse");
-		kitsListHighRate.add("Miner");
-		kitsListHighRate.add("Suicide Bomber");
-		kitsListHighRate.add("Glue Factory Worker");
-		kitsListHighRate.add("Ender");
-		kitsListHighRate.add("Boomerang");
-		kitsListHighRate.add("Bribed");
-	}
-	
-	public void initKitsAll(){
-		kitsListAll.add("Sniper");
-		kitsListAll.add("Short Fuse");
-		kitsListAll.add("Heavy Loader");
-		kitsListAll.add("Miner");
-		kitsListAll.add("Suicide Bomber");
-		kitsListAll.add("Glue Factory Worker");
-		kitsListAll.add("Ender");
-		kitsListAll.add("Boomerang");
-		kitsListAll.add("Potion Worker");
-		kitsListAll.add("Tank");
-		kitsListAll.add("Doctor Who");
-		kitsListAll.add("Bribed");
-	}
-
-	public void initPotions(){
-		potions.add(PotionEffectType.BLINDNESS);
-		potions.add(PotionEffectType.CONFUSION);
-		potions.add(PotionEffectType.HUNGER);
-		potions.add(PotionEffectType.LEVITATION);
-		potions.add(PotionEffectType.POISON);
-		potions.add(PotionEffectType.SLOW);
-		potions.add(PotionEffectType.WEAKNESS);
-		potions.add(PotionEffectType.WITHER);
-	}
 	
 	public boolean onCommand(CommandSender theSender, Command cmd, String commandLabel, String[] args)
 	{
@@ -304,44 +257,6 @@ public class Main extends JavaPlugin implements Listener{
 			}
 		}
 		return true;
-	}
-
-	@EventHandler
-	public void tntExplode(EntityExplodeEvent e){
-		if(cd.active){
-			if(e.getEntity() instanceof CraftTNTPrimed){
-				if(selectedKit.get(e.getEntity().getCustomName()) == "Potion Worker"){
-					List<Entity> ents = new ArrayList<Entity>();
-					List<Player> players = new ArrayList<Player>();
-					ents.clear();
-					players.clear();
-					ents = e.getEntity().getNearbyEntities(6, 6, 6);
-					if(ents.size() >= 1){
-						for(Entity ent : ents){
-							if(ent instanceof Player){
-								if(inGame.contains(ent.getName())){
-									int rand = (int) (Math.random()*7);
-									((LivingEntity) ent).addPotionEffect(new PotionEffect(potions.get(rand), (20*2), 2));
-									ents.remove(ent);
-								}
-							}else{
-								ents.remove(ent);
-							}
-						}
-						if(ents.get(0) instanceof Player){
-							if(inGame.contains(ents.get(0).getName())){
-								int rand = (int) (Math.random()*7);
-								((LivingEntity) ents.get(0)).addPotionEffect(new PotionEffect(potions.get(rand), (20*2), 2));
-								ents.remove(ents.get(0));
-							}
-						}else{
-							ents.remove(ents.get(0) );
-						}
-					}
-				}
-				tntActive.remove(e.getEntity());
-			}
-		}
 	}
 
 	@EventHandler
