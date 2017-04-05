@@ -41,7 +41,7 @@ public class PlayerInteract implements Listener{
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void tntClick(PlayerInteractEvent e){
-		if(cd.active){
+		if(pl.cd.active){
 			if((e.getAction() == Action.LEFT_CLICK_BLOCK) || (e.getAction() == Action.LEFT_CLICK_AIR)){
 				Player p = e.getPlayer();
 				if(pl.selectedKit.get(p.getName()) == "Miner"){
@@ -49,11 +49,11 @@ public class PlayerInteract implements Listener{
 					if(item.getType() == Material.TNT){
 						if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
 							if(pl.inGame.contains(p.getName())){
-								this.primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
+								primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
 								pl.tntActive.put(this.primeTnt, p.getName());
-								this.primeTnt.setFuseTicks(20*5);
-								this.primeTnt.setCustomName(p.getName());
-								this.primeTnt.setCustomNameVisible(false);
+								primeTnt.setFuseTicks(20*5);
+								primeTnt.setCustomName(p.getName());
+								primeTnt.setCustomNameVisible(true);
 								e.setCancelled(true);
 							}
 						}
@@ -92,18 +92,18 @@ public class PlayerInteract implements Listener{
 							Location eye = p.getEyeLocation();
 							Vector vec = eye.getDirection().normalize().multiply(power);
 							eye.setY(eye.getY() + 0.4);
-							this.primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
-							this.primeTnt.setFuseTicks(fuse);
-							this.primeTnt.setCustomName(p.getName());
-							this.primeTnt.setCustomNameVisible(false);
-							pl.tntActive.put(this.primeTnt, p.getName());
+							primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
+							primeTnt.setFuseTicks(fuse);
+							primeTnt.setCustomName(p.getName());
+							primeTnt.setCustomNameVisible(true);
+							pl.tntActive.put(primeTnt, p.getName());
 							if(pl.selectedKit.get(p.getName()) == "Ender"){
 								Block block = p.getTargetBlock((HashSet<Byte>)null, 30);
 								Location bLoc = block.getLocation();
 								bLoc.setY(bLoc.getY() + 2);
-								this.primeTnt.teleport(bLoc);
+								primeTnt.teleport(bLoc);
 							}else{
-								this.primeTnt.setVelocity(vec);
+								primeTnt.setVelocity(vec);
 							}
 							if(pl.selectedKit.containsKey(p.getName())){
 								if((pl.selectedKit.get(p.getName()) == "Boomerang")){

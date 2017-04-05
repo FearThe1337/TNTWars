@@ -20,17 +20,15 @@ public class Runnable1 implements Runnable {
 	public Runnable1(Main plugin){
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
+		LF = new LoadFunctions(plugin);
 	}
 
 	@Override
 	public void run() {
-		Bukkit.broadcastMessage("Active: " + cd.active);
-		if(cd.active){
+		if(pl.cd.active){
 			for(String name : pl.inGame){
-				Bukkit.broadcastMessage("Name: " + name);
 				this.had = false;
 				if(pl.selectedKit.containsKey(name)){
-					Bukkit.broadcastMessage("has a kit");
 					for(String kit : LF.kitsListLowRate){
 						if(pl.selectedKit.get(name) == kit){
 							correctKit = false;
@@ -38,7 +36,6 @@ public class Runnable1 implements Runnable {
 						}else correctKit = true;
 					}
 					if(correctKit){
-						Bukkit.broadcastMessage("Valid kit");
 						if(pl.selectedKit.get(name) == "Suicide Bomber")this.max = 1;
 						else this.max = 2;
 						Player p = Bukkit.getPlayer(name);

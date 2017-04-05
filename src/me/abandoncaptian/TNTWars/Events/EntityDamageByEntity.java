@@ -17,42 +17,43 @@ public class EntityDamageByEntity implements Listener{
 	CountDowns cd;
 	InvAndExp IAE;
 	KitHandler kh;
-	public EntityDamageByEntity(Main Plugin){
-		pl = Plugin;
+	public EntityDamageByEntity(Main plugin){
+		pl = plugin;
+		cd = new CountDowns(plugin);
 	}
-	
+
 	@EventHandler
 	public void tntDamage(EntityDamageByEntityEvent e){
-		if(cd.active){
+		if(pl.cd.active){
 			if(e.getEntity() instanceof Player){
 				Player p = (Player)e.getEntity();
 				if(e.getDamager() instanceof CraftTNTPrimed){
-					if(!pl.inGame.contains(p.getName())){
-						e.setCancelled(true);
-						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
-					}	
-					if(!pl.inGame.contains(p.getName()))return;
-					if(p.getName() == e.getDamager().getCustomName()){
-						if(pl.selectedKit.get(p.getName()) == "Suicide Bomber"){
+					if(pl.inGame.contains(p.getName())){
+						if(p.getName() == e.getDamager().getCustomName()){
+							if(pl.selectedKit.get(p.getName()) == "Suicide Bomber"){
+								double dam = p.getLastDamage();
+								e.setDamage(dam/2);
+							}
+						}
+						if(pl.selectedKit.get(p.getName()) == "Tank"){
 							double dam = p.getLastDamage();
 							e.setDamage(dam/2);
 						}
-					}
-					if(pl.selectedKit.get(p.getName()) == "Tank"){
-						double dam = p.getLastDamage();
-						e.setDamage(dam/2);
-					}
-					Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
-						@Override
-						public void run() {
-							if(pl.dead.contains(p.getName())){
-								int game = pl.inGame.size();
-								if(e.getEntity().getName() == e.getDamager().getCustomName())Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6pulled a SashaLarie and killed themself §7- §b" + game + " remain!");
-								else Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
-								pl.dead.remove(p.getName());
+						Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+							@Override
+							public void run() {
+								if(pl.dead.contains(p.getName())){
+									pl.dead.remove(p.getName());
+									int game = pl.inGame.size();
+									if(e.getEntity().getName() == e.getDamager().getCustomName())Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6pulled a SashaLarie and killed themself §7- §b" + game + " remain!");
+									else Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
+								}
 							}
-						}
-					}, 2);
+						}, 1);
+					}else{
+						e.setCancelled(true);
+						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
+					}
 				}else{
 					if(!pl.inGame.contains(p.getName()))return;
 					Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
@@ -62,9 +63,10 @@ public class EntityDamageByEntity implements Listener{
 								int game = pl.inGame.size();
 								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + game + " remain!");
 								pl.dead.remove(p.getName());
+								pl.inGame.remove(p.getName());
 							}
 						}
-					}, 2);
+					}, 1);
 				}
 			}
 		}

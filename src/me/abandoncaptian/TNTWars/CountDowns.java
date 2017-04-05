@@ -64,7 +64,6 @@ public class CountDowns {
 			countStart = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
 				@Override
 				public void run() {
-					Bukkit.broadcastMessage("setting active");
 					active = true;
 					pl.inGame.addAll(pl.gameQueue);
 					starting2 = false;
@@ -84,7 +83,6 @@ public class CountDowns {
 							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
 							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou didn't choose a kit! §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
 						}else if(pl.selectedKit.get(name) == "Random"){
-							Bukkit.broadcastMessage("" + LF.kitsListAll.size());
 							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
 							pl.selectedKit.put(name, pl.LF.kitsListAll.get(rand));
 							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
@@ -163,6 +161,7 @@ public class CountDowns {
 				@Override
 				public void run() {
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 30 seconds");
+					kh.initInv();
 					for(String name : pl.gameQueue){
 						if(!pl.selectedKit.containsKey(name)){
 							kh.kitsMenu(Bukkit.getPlayer(name));
@@ -179,6 +178,7 @@ public class CountDowns {
 	public void countDownPre(){
 		if(!active && !starting1){
 			starting1 = true;
+			kh.initInv();
 			Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in " + pl.config.getInt("Game-Queue-Time") + " minutes.");
 			countQueue = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
 				@Override

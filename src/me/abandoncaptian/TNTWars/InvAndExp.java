@@ -1,8 +1,5 @@
 package me.abandoncaptian.TNTWars;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,34 +7,30 @@ import org.bukkit.inventory.ItemStack;
 
 public class InvAndExp {
 	Main pl;
-	Map<String, ItemStack[]> extraInv;
-	Map<String, Integer> savedXPL = new HashMap<String, Integer>();
-	Map<String, Float> savedXP = new HashMap<String, Float>();
 	public InvAndExp(Main plugin) {
 		pl = plugin;
-		this.extraInv = new HashMap<>();
 	}
 	
 	public void ExpSwitch(String pName) {
 		boolean found = false;
-		if(savedXPL.size() > 0){
-			for(String name : savedXPL.keySet()){
+		if(pl.savedXPL.size() > 0){
+			for(String name : pl.savedXPL.keySet()){
 				if(name.equals(pName)){
 					found = true;
 					Player p = Bukkit.getPlayer(name);
-					p.setLevel(savedXPL.get(name));
-					savedXPL.remove(name);
+					p.setLevel(pl.savedXPL.get(name));
+					pl.savedXPL.remove(name);
 					break;
 				}
 			}
 		}
-		if(savedXP.size() > 0){
-			for(String name : savedXP.keySet()){
+		if(pl.savedXP.size() > 0){
+			for(String name : pl.savedXP.keySet()){
 				if(name.equals(pName)){
 					found = true;
 					Player p = Bukkit.getPlayer(name);
-					p.setExp(savedXP.get(name));
-					savedXP.remove(name);
+					p.setExp(pl.savedXP.get(name));
+					pl.savedXP.remove(name);
 					break;
 				}
 			}
@@ -47,10 +40,10 @@ public class InvAndExp {
 			int expL = p.getLevel();
 			Float exp = p.getExp();
 			if(expL > 0){
-				savedXPL.put(pName, expL);
+				pl.savedXPL.put(pName, expL);
 			}
 			if(exp > 0){
-				savedXP.put(pName, exp);
+				pl.savedXP.put(pName, exp);
 			}
 			p.setLevel(0);
 			p.setExp(0);
@@ -59,12 +52,12 @@ public class InvAndExp {
 
 	public void InventorySwitch(Player player) {
 		boolean found = false;
-		if(extraInv.size() > 0){
-			for (String uuid : extraInv.keySet()) {
+		if(pl.extraInv.size() > 0){
+			for (String uuid : pl.extraInv.keySet()) {
 				if (uuid.equals(player.getUniqueId().toString())) {
 					found = true;
-					ItemStack[] items = extraInv.get(uuid);
-					extraInv.remove(player.getUniqueId().toString());
+					ItemStack[] items = pl.extraInv.get(uuid);
+					pl.extraInv.remove(player.getUniqueId().toString());
 					player.getInventory().clear();
 					player.getInventory().setArmorContents((ItemStack[]) ArrayUtils.subarray(items, 0, 4));
 					player.getInventory().setContents((ItemStack[]) ArrayUtils.subarray(items, 4, items.length));
@@ -77,17 +70,17 @@ public class InvAndExp {
 					player.getInventory().getArmorContents(),
 					player.getInventory().getContents()
 					);
-			extraInv.put(player.getUniqueId().toString(), curr);
+			pl.extraInv.put(player.getUniqueId().toString(), curr);
 			player.getInventory().clear();
 		}
 	}
 
 	public boolean hasSwitchedInv(Player p) {
-		return extraInv.keySet().contains(p.getUniqueId().toString());
+		return pl.extraInv.keySet().contains(p.getUniqueId().toString());
 	}
 
 	public boolean hasSwitchedExp(Player p) {
-		if(savedXP.keySet().contains(p.getName()) || savedXPL.keySet().contains(p.getName())){
+		if(pl.savedXP.keySet().contains(p.getName()) || pl.savedXPL.keySet().contains(p.getName())){
 			return true;
 		}else return false;
 	}

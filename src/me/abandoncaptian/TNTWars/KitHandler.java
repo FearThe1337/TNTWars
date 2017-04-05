@@ -140,6 +140,14 @@ public class KitHandler implements Listener{
 		lam.setLore(lore);
 		lore.clear();
 		kit12.setItemMeta(lam);
+		ItemStack kit13 = new ItemStack(Material.NETHER_STAR);
+		meta = kit13.getItemMeta();
+		meta.setDisplayName("§b§lHail Mary");
+		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
+		lore.add("§7 - §6Your TNT causes a larger explosion");
+		meta.setLore(lore);
+		lore.clear();
+		kit13.setItemMeta(meta);
 		ItemStack random = new ItemStack(Material.ARROW);
 		meta = random.getItemMeta();
 		meta.setDisplayName("§b§lRandom");
@@ -164,11 +172,12 @@ public class KitHandler implements Listener{
 		inv.setItem(14, kit5);
 		inv.setItem(15, kit6);
 		inv.setItem(16, kit7);
-		inv.setItem(19, kit10);
-		inv.setItem(21, kit8);
-		inv.setItem(22, kit12);
-		inv.setItem(23, kit9);
-		inv.setItem(25, kit11);
+		inv.setItem(19, kit8);
+		inv.setItem(20, kit9);
+		inv.setItem(21, kit10);
+		inv.setItem(23, kit11);
+		inv.setItem(24, kit12);
+		inv.setItem(25, kit13);
 		inv.setItem(40, random);
 		inv.setItem(45, donor);
 	}
@@ -250,6 +259,11 @@ public class KitHandler implements Listener{
 							case "§b§lBribed": 
 								p.sendMessage("§6You selected: " + itemName);
 								pl.selectedKit.put(p.getName(), "Bribed");
+								p.closeInventory();
+								break;
+							case "§b§lHail Mary": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Hail Mary");
 								p.closeInventory();
 								break;
 							case "§b§lDonor Perks":

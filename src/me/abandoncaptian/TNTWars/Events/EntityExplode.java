@@ -3,6 +3,7 @@ package me.abandoncaptian.TNTWars.Events;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftTNTPrimed;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -57,6 +58,10 @@ public class EntityExplode implements Listener{
 							ents.remove(ents.get(0) );
 						}
 					}
+				}else if(pl.selectedKit.get(e.getEntity().getCustomName()) == "Hail Mary"){
+					Location loc = e.getEntity().getLocation();
+					e.setCancelled(true);
+					loc.getWorld().createExplosion(loc, 10);
 				}
 				pl.tntActive.remove(e.getEntity());
 			}

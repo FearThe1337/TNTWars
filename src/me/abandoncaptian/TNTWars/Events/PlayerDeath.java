@@ -16,55 +16,54 @@ public class PlayerDeath implements Listener{
 	CountDowns cd;
 	InvAndExp IAE;
 	KitHandler kh;
-	public PlayerDeath(Main Plugin){
-		pl = Plugin;
+	public PlayerDeath(Main plugin){
+		pl = plugin;
+		kh = new KitHandler(plugin);
+		IAE = new InvAndExp(plugin);
 	}
-	
+
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e){
-		if(cd.active){
+		if(pl.cd.active){
 			if(pl.inGame.contains(e.getEntity().getName())){
 				Player p = (Player) e.getEntity();
 				e.getDrops().clear();
 				pl.dead.add(p.getName());
 				e.setDeathMessage(null);
 				p.setHealthScale(20);
-				int preGame = pl.inGame.size();
-				pl.inGame.remove(e.getEntity().getName());
+				pl.inGame.remove(p.getName());
 				int game = pl.inGame.size();
 				e.getEntity().teleport(pl.spawnpoint);
 				Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
 					@Override
 					public void run() {
+						p.closeInventory();
 						p.getInventory().clear();
-						IAE.InventorySwitch(p);
-						IAE.ExpSwitch(p.getName());
+						pl.IAE.InventorySwitch(p);
+						pl.IAE.ExpSwitch(p.getName());
 					}
 				}, (20*3));
-				Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
-					@Override
-					public void run() {
-						if(pl.dead.contains(p.getName())){
-							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + preGame + " remain!");
-							pl.dead.remove(p.getName());
-						}
-					}
-				}, 5);
 				if(game == 1){
-					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + pl.inGame.get(0) + " §6has won!");
+					String winner = pl.inGame.get(0);
+					Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+						@Override
+						public void run() {
+							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + winner + " §6has won!");
+						}
+					}, 2);
 					Bukkit.getPlayer(pl.inGame.get(0)).setHealth(20);
 					Bukkit.getPlayer(pl.inGame.get(0)).setFoodLevel(20);
 					Bukkit.getPlayer(pl.inGame.get(0)).getInventory().clear();
-					IAE.InventorySwitch(Bukkit.getPlayer(pl.inGame.get(0)));
-					IAE.ExpSwitch(pl.inGame.get(0));
+					Bukkit.getPlayer(pl.inGame.get(0)).closeInventory();
+					pl.IAE.InventorySwitch(Bukkit.getPlayer(pl.inGame.get(0)));
+					pl.IAE.ExpSwitch(pl.inGame.get(0));
 					Bukkit.getPlayer(pl.inGame.get(0)).setHealthScale(20);
 					Bukkit.getPlayer(pl.inGame.get(0)).teleport(pl.spawnpoint);
 					pl.inGame.clear();
-					kh.inv.clear();
-					cd.active = false;
-					cd.canKit = true;
-					cd.starting1 = false;
-					cd.starting2 = false;
+					pl.cd.active = false;
+					pl.cd.canKit = true;
+					pl.cd.starting1 = false;
+					pl.cd.starting2 = false;
 					pl.selectedKit.clear();
 					kh.initInv();
 				}

@@ -18,13 +18,14 @@ public class LoadFunctions {
 	List<Material> armorBoots = new ArrayList<Material>();
 	public List<PotionEffectType> potions = new ArrayList<PotionEffectType>();
 	
-	public LoadFunctions(Main Plugin){
-		pl = Plugin;
+	public LoadFunctions(Main plugin){
+		pl = plugin;
 		kitsListLowRate.add("Sniper");
 		kitsListLowRate.add("Heavy Loader");
 		kitsListLowRate.add("Potion Worker");
 		kitsListLowRate.add("Tank");
 		kitsListLowRate.add("Doctor Who");
+		kitsListLowRate.add("Hail Mary");
 		kitsListHighRate.add("Short Fuse");
 		kitsListHighRate.add("Miner");
 		kitsListHighRate.add("Suicide Bomber");
@@ -44,6 +45,7 @@ public class LoadFunctions {
 		kitsListAll.add("Tank");
 		kitsListAll.add("Doctor Who");
 		kitsListAll.add("Bribed");
+		kitsListAll.add("Hail Mary");
 		potions.add(PotionEffectType.BLINDNESS);
 		potions.add(PotionEffectType.CONFUSION);
 		potions.add(PotionEffectType.HUNGER);

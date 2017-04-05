@@ -25,7 +25,7 @@ public class Runnable2 implements Runnable{
 			tnts.addAll(pl.tntActive.keySet());
 			for(Entity ent : tnts){
 				if(pl.selectedKit.get(pl.tntActive.get(ent)) == "Glue Factory Worker"){
-					Player p = Bukkit.getPlayer(PI.primeTnt.getCustomName());
+					Player p = Bukkit.getPlayer(pl.tntActive.get(ent));
 					if(ent.isOnGround()){
 						Vector vec = p.getEyeLocation().getDirection().normalize().multiply(0);
 						ent.setVelocity(vec);

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -16,9 +17,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import me.abandoncaptian.TNTWars.Events.BlockPlace;
+import me.abandoncaptian.TNTWars.Events.EntityDamageByEntity;
 import me.abandoncaptian.TNTWars.Events.EntityExplode;
 import me.abandoncaptian.TNTWars.Events.PlayerDeath;
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
@@ -31,16 +35,21 @@ public class Main extends JavaPlugin implements Listener{
 	KitHandler kh;
 	MenuHandler mh;
 	MenuHandlerHost mhh;
-	InvAndExp IAE;
-	CountDowns cd;
+	public InvAndExp IAE;
+	public CountDowns cd;
 	PlayerInteract PI;
 	PlayerLeaveAndJoin PLAJ;
 	EntityExplode EE;
 	LoadFunctions LF;
 	PlayerDeath PD;
+	EntityDamageByEntity EDBE;
+	BlockPlace BP;
 	public List<String> gameQueue = new ArrayList<String>();
 	public List<String> inGame = new ArrayList<String>();
 	public List<String> dead = new ArrayList<String>();
+	public Map<String, ItemStack[]> extraInv;
+	public Map<String, Integer> savedXPL = new HashMap<String, Integer>();
+	public Map<String, Float> savedXP = new HashMap<String, Float>();
 	public int gameMin;
 	int gameStart30Sec;
 	int gameMax;
@@ -80,14 +89,19 @@ public class Main extends JavaPlugin implements Listener{
 		IAE = new InvAndExp(this);
 		PI = new PlayerInteract(this);
 		PLAJ = new PlayerLeaveAndJoin(this);
+		EDBE = new EntityDamageByEntity(this);
 		EE = new EntityExplode(this);
 		PD = new PlayerDeath(this);
+		BP = new BlockPlace(this);
+		extraInv = new HashMap<>();
 		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(mhh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
 		Bukkit.getPluginManager().registerEvents(PLAJ, this);
 		Bukkit.getPluginManager().registerEvents(EE, this);
+		Bukkit.getPluginManager().registerEvents(EDBE, this);
+		Bukkit.getPluginManager().registerEvents(BP, this);
 		Bukkit.getPluginManager().registerEvents(PD, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		cd.active = false;
@@ -111,7 +125,7 @@ public class Main extends JavaPlugin implements Listener{
 		cd.canKit = true;
 	}
 
-	
+
 	public boolean onCommand(CommandSender theSender, Command cmd, String commandLabel, String[] args)
 	{
 		if (commandLabel.equalsIgnoreCase("tnt") || commandLabel.equalsIgnoreCase("tw"))
@@ -143,6 +157,7 @@ public class Main extends JavaPlugin implements Listener{
 									kh.kitsMenu(Bukkit.getPlayer(p.getName()));
 								}
 								int queued = gameQueue.size();
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has joined queue §7- §bQueued: " + queued);
 								if(queued == gameMin){
 									cd.countDownPre();
 								}else if(queued == gameStart30Sec){
@@ -152,7 +167,6 @@ public class Main extends JavaPlugin implements Listener{
 										cd.starting1 = false;
 									}
 								}
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has joined queue §7- §bQueued: " + queued);
 							}else{
 								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cTNT Wars Queue is full");
 							}
@@ -198,9 +212,43 @@ public class Main extends JavaPlugin implements Listener{
 						if(inGame.contains(p.getName())){
 							inGame.remove(p.getName());
 							int game = inGame.size();
-							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");
-							if(selectedKit.containsKey(p.getName())){
-								selectedKit.remove(p.getName());
+							if(game == 1){
+								String winner = inGame.get(0);
+								Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+									@Override
+									public void run() {
+										Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars!");
+										Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + winner + " §6has won!");
+									}
+								}, 2);
+								p.closeInventory();
+								p.getInventory().clear();
+								IAE.InventorySwitch(p);
+								IAE.ExpSwitch(p.getName());
+								p.setHealthScale(20);
+								p.teleport(spawnpoint);
+								p.setHealth(20);
+								p.setFoodLevel(20);
+								Bukkit.getPlayer(inGame.get(0)).setHealth(20);
+								Bukkit.getPlayer(inGame.get(0)).setFoodLevel(20);
+								Bukkit.getPlayer(inGame.get(0)).getInventory().clear();
+								Bukkit.getPlayer(inGame.get(0)).closeInventory();
+								IAE.InventorySwitch(Bukkit.getPlayer(inGame.get(0)));
+								IAE.ExpSwitch(inGame.get(0));
+								Bukkit.getPlayer(inGame.get(0)).setHealthScale(20);
+								Bukkit.getPlayer(inGame.get(0)).teleport(spawnpoint);
+								inGame.clear();
+								cd.active = false;
+								cd.canKit = true;
+								cd.starting1 = false;
+								cd.starting2 = false;
+								selectedKit.clear();
+								kh.initInv();
+							}else{
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");
+								if(selectedKit.containsKey(p.getName())){
+									selectedKit.remove(p.getName());
+								}
 							}
 						}else{
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in the TNT Wars game");

@@ -20,17 +20,15 @@ public class Runnable3 implements Runnable{
 	public Runnable3(Main plugin){
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
+		LF = new LoadFunctions(plugin);
 	}
 
 	@Override
 	public void run() {
-		if(cd.active){
-			Bukkit.broadcastMessage("Active 3: " + cd.active);
+		if(pl.cd.active){
 			for(String name : pl.inGame){
-				Bukkit.broadcastMessage("Name 3: " + name);
 				this.had = false;
 				if(pl.selectedKit.containsKey(name)){
-					Bukkit.broadcastMessage("has a kit 3");
 					for(String kit : LF.kitsListHighRate){
 						if(pl.selectedKit.get(name) == kit){
 							correctKit = false;
@@ -38,12 +36,12 @@ public class Runnable3 implements Runnable{
 						}else correctKit = true;
 					}
 					if(correctKit){
-						Bukkit.broadcastMessage("Valid kit");
 						if(pl.selectedKit.get(name) == "Heavy Loader")this.max = 5;
 						if(pl.selectedKit.get(name) == "Sniper")this.max = 1;
 						if(pl.selectedKit.get(name) == "Potion Worker")this.max = 2;
 						if(pl.selectedKit.get(name) == "Doctor Who")this.max = 2;
 						if(pl.selectedKit.get(name) == "Tank")this.max = 1;
+						if(pl.selectedKit.get(name) == "Hail Mary")this.max = 1;
 						Player p = Bukkit.getPlayer(name);
 						ItemStack tnt = new ItemStack(Material.TNT);
 						ItemMeta meta = tnt.getItemMeta();

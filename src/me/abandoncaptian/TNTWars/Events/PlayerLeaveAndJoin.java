@@ -23,7 +23,7 @@ public class PlayerLeaveAndJoin implements Listener{
 	@EventHandler
 	public void playerLeaveGame(PlayerQuitEvent e){
 		Player p = e.getPlayer();
-		if(!cd.active){
+		if(!pl.cd.active){
 			if(pl.gameQueue.contains(p.getName())){
 				int preQue = pl.gameQueue.size();
 				pl.gameQueue.remove(p.getName());
