@@ -18,7 +18,7 @@ public class MenuHandler implements Listener{
 	Main pl;
 	public MenuHandler(Main plugin) {
 		pl = plugin;
-		inv = Bukkit.createInventory(null, 45, "§c§lTNT Wars Menu");
+		inv = Bukkit.createInventory(null, 45, "§7§l[§c§lTNT Wars§7§l] §6§lMenu");
 		addMenuItem(new ItemStack(Material.WOOL, 1, (short)13),
 				"§aJoin TNT Wars",
 				Lists.newArrayList(
@@ -64,7 +64,7 @@ public class MenuHandler implements Listener{
 		Inventory clickedInv = e.getClickedInventory();
 		if(clickedInv != null){
 			if(clickedInv.getSize() == inv.getSize()){
-				if(clickedInv.getTitle().equals("§c§lTNT Wars Menu")){
+				if(clickedInv.getTitle().equals("§7§l[§c§lTNT Wars§7§l] §6§lMenu")){
 					e.setCancelled(true);
 					ItemStack clicked = e.getCurrentItem();
 					if(clicked == null)return;

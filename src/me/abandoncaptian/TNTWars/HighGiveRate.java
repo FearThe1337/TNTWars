@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class Runnable1 implements Runnable {
+public class HighGiveRate implements Runnable {
 	Main pl;
 	CountDowns cd;
 	LoadFunctions LF;
@@ -17,7 +17,7 @@ public class Runnable1 implements Runnable {
 	boolean had = false;
 	boolean canGive = true;
 	boolean correctKit = true;
-	public Runnable1(Main plugin){
+	public HighGiveRate(Main plugin){
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
 		LF = new LoadFunctions(plugin);

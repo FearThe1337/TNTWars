@@ -10,11 +10,11 @@ import org.bukkit.util.Vector;
 
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 
-public class Runnable2 implements Runnable{
+public class StickTNTCheck implements Runnable{
 	Main pl;
 	CountDowns cd;
 	PlayerInteract PI;
-	public Runnable2(Main plugin){
+	public StickTNTCheck(Main plugin){
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
 	}
