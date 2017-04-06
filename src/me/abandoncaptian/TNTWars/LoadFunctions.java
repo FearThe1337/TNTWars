@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.potion.PotionEffectType;
 
 public class LoadFunctions {
 	Main pl;
@@ -16,7 +15,6 @@ public class LoadFunctions {
 	List<Material> armorChestplate = new ArrayList<Material>();
 	List<Material> armorLegs = new ArrayList<Material>();
 	List<Material> armorBoots = new ArrayList<Material>();
-	public List<PotionEffectType> potions = new ArrayList<PotionEffectType>();
 	
 	public LoadFunctions(Main plugin){
 		pl = plugin;
@@ -33,6 +31,7 @@ public class LoadFunctions {
 		kitsListHighRate.add("Ender");
 		kitsListHighRate.add("Boomerang");
 		kitsListHighRate.add("Bribed");
+		kitsListHighRate.add("Space Man");
 		kitsListAll.add("Sniper");
 		kitsListAll.add("Short Fuse");
 		kitsListAll.add("Heavy Loader");
@@ -46,13 +45,6 @@ public class LoadFunctions {
 		kitsListAll.add("Doctor Who");
 		kitsListAll.add("Bribed");
 		kitsListAll.add("Hail Mary");
-		potions.add(PotionEffectType.BLINDNESS);
-		potions.add(PotionEffectType.CONFUSION);
-		potions.add(PotionEffectType.HUNGER);
-		potions.add(PotionEffectType.LEVITATION);
-		potions.add(PotionEffectType.POISON);
-		potions.add(PotionEffectType.SLOW);
-		potions.add(PotionEffectType.WEAKNESS);
-		potions.add(PotionEffectType.WITHER);
+		kitsListAll.add("Space Man");
 	}
 }

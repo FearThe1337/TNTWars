@@ -23,12 +23,11 @@ public class EntityExplode implements Listener{
 	LoadFunctions LF;
 	public EntityExplode(Main plugin){
 		pl = plugin;
-		cd = new CountDowns(plugin);
 	}
-	
+
 	@EventHandler
 	public void tntExplode(EntityExplodeEvent e){
-		if(cd.active){
+		if(pl.cd.active){
 			if(e.getEntity() instanceof CraftTNTPrimed){
 				if(pl.selectedKit.get(e.getEntity().getCustomName()) == "Potion Worker"){
 					List<Entity> ents = new ArrayList<Entity>();
@@ -36,32 +35,34 @@ public class EntityExplode implements Listener{
 					ents.clear();
 					players.clear();
 					ents = e.getEntity().getNearbyEntities(6, 6, 6);
-					if(ents.size() >= 1){
-						for(Entity ent : ents){
-							if(ent instanceof Player){
-								if(pl.inGame.contains(ent.getName())){
-									int rand = (int) (Math.random()*7);
-									((LivingEntity) ent).addPotionEffect(new PotionEffect(LF.potions.get(rand), (20*2), 2));
+					if(ents != null){
+						if(ents.size() > 1){
+							for(Entity ent : ents){
+								if(ent instanceof Player){
+									if(pl.inGame.contains(ent.getName())){
+										int rand = (int) (Math.random()*7);
+										((LivingEntity) ent).addPotionEffect(new PotionEffect(pl.potions.get(rand), (20*2), 2));
+										ents.remove(ent);
+									}
+								}else{
 									ents.remove(ent);
 								}
-							}else{
-								ents.remove(ent);
 							}
-						}
-						if(ents.get(0) instanceof Player){
+						}else if(ents.get(0) instanceof Player){
 							if(pl.inGame.contains(ents.get(0).getName())){
 								int rand = (int) (Math.random()*7);
-								((LivingEntity) ents.get(0)).addPotionEffect(new PotionEffect(LF.potions.get(rand), (20*2), 2));
+								((LivingEntity) ents.get(0)).addPotionEffect(new PotionEffect(pl.potions.get(rand), (20*2), 2));
 								ents.remove(ents.get(0));
 							}
 						}else{
 							ents.remove(ents.get(0) );
 						}
 					}
-				}else if(pl.selectedKit.get(e.getEntity().getCustomName()) == "Hail Mary"){
+				}
+				if(pl.selectedKit.get(e.getEntity().getCustomName()) == "Hail Mary"){
 					Location loc = e.getEntity().getLocation();
+					loc.getWorld().createExplosion(loc, 5);
 					e.setCancelled(true);
-					loc.getWorld().createExplosion(loc, 10);
 				}
 				pl.tntActive.remove(e.getEntity());
 			}

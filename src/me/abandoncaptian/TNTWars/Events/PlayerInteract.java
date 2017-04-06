@@ -94,8 +94,12 @@ public class PlayerInteract implements Listener{
 							eye.setY(eye.getY() + 0.4);
 							primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
 							primeTnt.setFuseTicks(fuse);
+							primeTnt.setGlowing(true);
 							primeTnt.setCustomName(p.getName());
-							primeTnt.setCustomNameVisible(true);
+							primeTnt.setCustomNameVisible(false);
+							if(pl.selectedKit.get(p.getName()) == "Space Man"){
+								primeTnt.setGravity(false);
+							}
 							pl.tntActive.put(primeTnt, p.getName());
 							if(pl.selectedKit.get(p.getName()) == "Ender"){
 								Block block = p.getTargetBlock((HashSet<Byte>)null, 30);

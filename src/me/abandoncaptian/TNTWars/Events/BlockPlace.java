@@ -1,5 +1,6 @@
 package me.abandoncaptian.TNTWars.Events;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -11,6 +12,7 @@ public class BlockPlace implements Listener{
 		pl = plugin;
 	}
 	
+	@EventHandler
 	public void placeBlock(BlockPlaceEvent e){
 		if(pl.inGame.contains(e.getPlayer().getName())){
 			e.setCancelled(true);

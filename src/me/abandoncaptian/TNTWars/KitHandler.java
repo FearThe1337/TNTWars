@@ -60,6 +60,7 @@ public class KitHandler implements Listener{
 		meta.setDisplayName("§b§lMiner");
 		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
 		lore.add("§7 - §6Place your TNT instead of throwing it");
+		lore.add("§7 - §6Recieve a 10 Minute speed boost");
 		lore.add("§7 - §6Right Click : 2 Sec Fuse");
 		lore.add("§7 - §6Left Click : 5 Sec Fuse");
 		meta.setLore(lore);
@@ -148,6 +149,14 @@ public class KitHandler implements Listener{
 		meta.setLore(lore);
 		lore.clear();
 		kit13.setItemMeta(meta);
+		ItemStack kit14 = new ItemStack(Material.GLASS);
+		meta = kit14.getItemMeta();
+		meta.setDisplayName("§b§lSpace Man");
+		lore.add("§6§l---- §c[ TNT Wars ] §6§l----");
+		lore.add("§7 - §6Your TNT has no gravity");
+		meta.setLore(lore);
+		lore.clear();
+		kit14.setItemMeta(meta);
 		ItemStack random = new ItemStack(Material.ARROW);
 		meta = random.getItemMeta();
 		meta.setDisplayName("§b§lRandom");
@@ -175,9 +184,10 @@ public class KitHandler implements Listener{
 		inv.setItem(19, kit8);
 		inv.setItem(20, kit9);
 		inv.setItem(21, kit10);
-		inv.setItem(23, kit11);
-		inv.setItem(24, kit12);
-		inv.setItem(25, kit13);
+		inv.setItem(22, kit11);
+		inv.setItem(23, kit12);
+		inv.setItem(24, kit13);
+		inv.setItem(25, kit14);
 		inv.setItem(40, random);
 		inv.setItem(45, donor);
 	}
@@ -264,6 +274,11 @@ public class KitHandler implements Listener{
 							case "§b§lHail Mary": 
 								p.sendMessage("§6You selected: " + itemName);
 								pl.selectedKit.put(p.getName(), "Hail Mary");
+								p.closeInventory();
+								break;
+							case "§b§lSpace Man": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Space Man");
 								p.closeInventory();
 								break;
 							case "§b§lDonor Perks":
