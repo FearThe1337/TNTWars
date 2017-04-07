@@ -1,5 +1,8 @@
 package me.abandoncaptian.TNTWars.Events;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +26,25 @@ public class PlayerLeaveAndJoin implements Listener{
 	@EventHandler
 	public void playerLeaveGame(PlayerQuitEvent e){
 		Player p = e.getPlayer();
+
+		if(pl.Perks.containsKey(p.getName())){
+			if(pl.Perks.get(p.getName()).containsKey("Fireworks")){
+				pl.perksConfig.set(p.getName()+".Fireworks", pl.Perks.get(p.getName()).get("Fireworks"));
+			}else{
+				pl.perksConfig.set(p.getName()+".Fireworks", false);
+			}
+			if(pl.Perks.get(p.getName()).containsKey("Outline")){
+				pl.perksConfig.set(p.getName()+".Outline", pl.Perks.get(p.getName()).get("Outline"));
+			}else{
+				pl.perksConfig.set(p.getName()+".Outline", false);
+			}
+			pl.Perks.remove(p.getName());
+			try {
+				pl.perksConfig.save(pl.perksFile);
+			} catch (IOException e1) {
+			}
+		}
+		
 		if(!pl.cd.active){
 			if(pl.gameQueue.contains(p.getName())){
 				int preQue = pl.gameQueue.size();
@@ -74,16 +96,16 @@ public class PlayerLeaveAndJoin implements Listener{
 				IAE.ExpSwitch(p.getName());
 				p.setHealthScale(20);
 				p.teleport(pl.spawnpoint);
+				p.setCanPickupItems(true);
 				p.setHealth(20);
 				p.setFoodLevel(20);
-				Bukkit.getPlayer(pl.inGame.get(0)).setHealth(20);
-				Bukkit.getPlayer(pl.inGame.get(0)).setFoodLevel(20);
-				Bukkit.getPlayer(pl.inGame.get(0)).getInventory().clear();
-				Bukkit.getPlayer(pl.inGame.get(0)).closeInventory();
-				IAE.InventorySwitch(Bukkit.getPlayer(pl.inGame.get(0)));
-				IAE.ExpSwitch(pl.inGame.get(0));
-				Bukkit.getPlayer(pl.inGame.get(0)).setHealthScale(20);
-				Bukkit.getPlayer(pl.inGame.get(0)).teleport(pl.spawnpoint);
+				Bukkit.getPlayer(winner).setHealth(20);
+				Bukkit.getPlayer(winner).setFoodLevel(20);
+				Bukkit.getPlayer(winner).getInventory().clear();
+				Bukkit.getPlayer(winner).closeInventory();
+				IAE.InventorySwitch(Bukkit.getPlayer(winner));
+				IAE.ExpSwitch(winner);
+				Bukkit.getPlayer(winner).setHealthScale(20);
 				pl.inGame.clear();
 				cd.active = false;
 				cd.canKit = true;
@@ -102,6 +124,17 @@ public class PlayerLeaveAndJoin implements Listener{
 
 	@EventHandler
 	public void gameConnect(PlayerJoinEvent e){
+		Player p = e.getPlayer();
+		if(pl.perksConfig.contains(p.getName())){
+			pl.Perks.put(p.getName(),  new HashMap<String, Boolean>());
+			pl.Perks.get(p.getName()).put("Fireworks", pl.perksConfig.getBoolean(p.getName()+".Fireworks"));
+			pl.Perks.get(p.getName()).put("Outline", pl.perksConfig.getBoolean(p.getName()+".Outline"));
+		}
+		if(pl.tpBack.containsKey(p.getName())){
+			p.teleport(pl.tpBack.get(p.getName()));
+			pl.tpBack.remove(p.getName());
+		}
+		
 		if(IAE.hasSwitchedInv(e.getPlayer()))IAE.InventorySwitch(e.getPlayer());
 		if(IAE.hasSwitchedExp(e.getPlayer()))IAE.ExpSwitch(e.getPlayer().getName());
 	}

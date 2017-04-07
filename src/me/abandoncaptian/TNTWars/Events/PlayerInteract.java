@@ -53,7 +53,12 @@ public class PlayerInteract implements Listener{
 								pl.tntActive.put(this.primeTnt, p.getName());
 								primeTnt.setFuseTicks(20*5);
 								primeTnt.setCustomName(p.getName());
-								primeTnt.setCustomNameVisible(true);
+								primeTnt.setCustomNameVisible(false);
+								if(pl.Perks.containsKey(p.getName())){
+									if(pl.Perks.get(p.getName()).get("Outline")){
+										primeTnt.setGlowing(true);
+									}
+								}
 								e.setCancelled(true);
 							}
 						}
@@ -94,9 +99,13 @@ public class PlayerInteract implements Listener{
 							eye.setY(eye.getY() + 0.4);
 							primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
 							primeTnt.setFuseTicks(fuse);
-							primeTnt.setGlowing(true);
 							primeTnt.setCustomName(p.getName());
 							primeTnt.setCustomNameVisible(false);
+							if(pl.Perks.containsKey(p.getName())){
+								if(pl.Perks.get(p.getName()).get("Outline")){
+									primeTnt.setGlowing(true);
+								}
+							}
 							if(pl.selectedKit.get(p.getName()) == "Space Man"){
 								primeTnt.setGravity(false);
 							}

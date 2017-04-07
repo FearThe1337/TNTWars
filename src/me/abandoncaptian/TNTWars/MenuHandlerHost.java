@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 public class MenuHandlerHost implements Listener{
 	Inventory inv;
 	Main pl;
+	DonorPerksMenu DPM;
 	public MenuHandlerHost(Main plugin) {
 		pl = plugin;
 		inv = Bukkit.createInventory(null, 54, "§7§l[§c§lTNT Wars§7§l] §6§lHost Menu");
@@ -33,35 +34,40 @@ public class MenuHandlerHost implements Listener{
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to see TNT Wars kits"),
 				13
-		);
+				);
 		addMenuItem(new ItemStack(Material.WOOL, 1, (short)14),
 				"§aLeave TNT Wars",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to leave TNT Wars"),
 				16
-		);
+				);
 		addMenuItem(new ItemStack(Material.TNT),
 				"§aForce Start TNT Wars",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to force start TNT Wars"),
 				21
-		);
+				);
 		addMenuItem(new ItemStack(Material.BEACON),
 				"§aSet TNT Wars Spawn",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to set TNT Wars spawn"),
 				23
-		);
+				);
 		addMenuItem(new ItemStack(Material.ARROW),
 				"§aClose TNT Wars Menu",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to close TNT Wars menu"),
 				40
-		);
+				);
+		addMenuItem(new ItemStack(Material.BOOK), "§b§lDonor Perks",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Choose your donator settings",
+						"§7 - §6Coming Soon!"), 45);
 	}
 
 	private void addMenuItem(ItemStack item, String name, List<String> lore, int invPos) {
@@ -110,6 +116,15 @@ public class MenuHandlerHost implements Listener{
 						case "§aForce Start TNT Wars": 
 							p.performCommand("tw forcestart");
 							p.closeInventory();
+							break;
+						case "§b§lDonor Perks":
+							p.closeInventory();
+							Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+								@Override
+								public void run() {
+									pl.DPM.openInv(p);
+								}
+							}, 1);
 							break;
 						case "§aClose TNT Wars Menu": 
 							p.closeInventory();

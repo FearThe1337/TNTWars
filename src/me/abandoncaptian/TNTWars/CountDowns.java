@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -72,14 +71,6 @@ public class CountDowns {
 					starting1 = false;
 					pl.ChangeBoard();
 					for(String name : pl.inGame){
-						Bukkit.getPlayer(name).closeInventory();
-						IAE.InventorySwitch(Bukkit.getPlayer(name));
-						IAE.ExpSwitch(name);
-						if(Bukkit.getPlayer(name).getGameMode() != GameMode.SURVIVAL) Bukkit.getPlayer(name).setGameMode(GameMode.SURVIVAL);
-						Bukkit.getPlayer(name).setInvulnerable(false);
-						Bukkit.getPlayer(name).setHealth(20);
-						Bukkit.getPlayer(name).setFoodLevel(20);
-						Bukkit.getPlayer(name).getInventory().clear();
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 						if(!pl.selectedKit.containsKey(name)){
 							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
@@ -177,18 +168,19 @@ public class CountDowns {
 					kh.initInv();
 					for(String name : pl.gameQueue){
 						if(!pl.selectedKit.containsKey(name)){
-							kh.kitsMenu(Bukkit.getPlayer(name));
+							pl.kh.kitsMenu(Bukkit.getPlayer(name));
 						}
 						Bukkit.getPlayer(name).sendMessage("§6§l--------------------------------- §7§l[§c§lTNT Wars§7§l] §6§l----------------------------------");
 						Bukkit.getPlayer(name).sendMessage(" ");
 						Bukkit.getPlayer(name).sendMessage("                          §6Right click to throw your TNT");
-						Bukkit.getPlayer(name).sendMessage("               §6Diffrent kits do give an advantage in some way");
+						Bukkit.getPlayer(name).sendMessage("               §6Different kits do give an advantage in some way");
 						Bukkit.getPlayer(name).sendMessage(" ");
 						Bukkit.getPlayer(name).sendMessage("                          §6Developed By: §b§labandoncaptian");
 						Bukkit.getPlayer(name).sendMessage("                               §6Idea By: §b§lMrs_Ender88");
 						Bukkit.getPlayer(name).sendMessage(" ");
 						Bukkit.getPlayer(name).sendMessage("§6§l--------------------------------------------------------------------------------------");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 30", 0, 60, 0);
+						pl.kh.initInv();
 					}
 				}
 			}, 0);
@@ -200,7 +192,7 @@ public class CountDowns {
 	public void countDownPre(){
 		if(!active && !starting1){
 			starting1 = true;
-			kh.initInv();
+			pl.kh.initInv();
 			Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in " + pl.config.getInt("Game-Queue-Time") + " minute(s).");
 			countQueue = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
 				@Override

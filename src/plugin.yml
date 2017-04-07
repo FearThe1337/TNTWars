@@ -3,7 +3,5 @@ version: 1.0
 main: me.abandoncaptian.TNTWars.Main
 description: TNT Wars made by abandoncaptian
 commands:
-  tnt:
-    description: Command for TNTWars
   tw:
     description: Alias command for TNTWars

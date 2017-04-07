@@ -33,18 +33,19 @@ public class PlayerDeath implements Listener{
 		if(pl.cd.active){
 			if(pl.inGame.contains(e.getEntity().getName())){
 				Player p = (Player) e.getEntity();
-			    PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
-			    CraftPlayer craftPlayer = (CraftPlayer)p;
-			    craftPlayer.getHandle().playerConnection.a(packet);
+				PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
+				CraftPlayer craftPlayer = (CraftPlayer)p;
+				craftPlayer.getHandle().playerConnection.a(packet);
 				Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-					
+
 					@Override
 					public void run() {
 						p.sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bYou were eliminated", 0, 60, 0);
-						p.closeInventory();
 						p.getInventory().clear();
 						pl.IAE.InventorySwitch(p);
 						pl.IAE.ExpSwitch(p.getName());
+						p.teleport(pl.tpBack.get(p.getName()));
+						pl.tpBack.remove(p.getName());
 					}
 				}, 5);
 				e.getDrops().clear();
@@ -52,6 +53,7 @@ public class PlayerDeath implements Listener{
 				pl.spec.add(p.getName());
 				e.setDeathMessage(null);
 				p.setHealthScale(20);
+				p.setCanPickupItems(true);
 				pl.inGame.remove(p.getName());
 				pl.UpdateBoard(true, p.getName());
 				int game = pl.inGame.size();
@@ -67,16 +69,20 @@ public class PlayerDeath implements Listener{
 					for(String name : pl.spec){
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§b" + pl.inGame.get(0) + " has won!", 0, 120, 0);
 					}
-					Bukkit.getPlayer(pl.inGame.get(0)).setHealth(20);
-					Bukkit.getPlayer(pl.inGame.get(0)).setFoodLevel(20);
-					Bukkit.getPlayer(pl.inGame.get(0)).getInventory().clear();
-					Bukkit.getPlayer(pl.inGame.get(0)).closeInventory();
-					pl.UpdateBoard(true, pl.inGame.get(0));
-					pl.IAE.InventorySwitch(Bukkit.getPlayer(pl.inGame.get(0)));
-					pl.IAE.ExpSwitch(pl.inGame.get(0));
-					Bukkit.getPlayer(pl.inGame.get(0)).setHealthScale(20);
-					Bukkit.getPlayer(pl.inGame.get(0)).teleport(pl.spawnpoint);
-					Bukkit.getPlayer(pl.inGame.get(0)).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bYou Won", 0, 120, 0);
+					Bukkit.getPlayer(winner).setHealth(20);
+					Bukkit.getPlayer(winner).setFoodLevel(20);
+					Bukkit.getPlayer(winner).getInventory().clear();
+					Bukkit.getPlayer(winner).closeInventory();
+					pl.UpdateBoard(true, winner);
+					pl.IAE.InventorySwitch(Bukkit.getPlayer(winner));
+					pl.IAE.ExpSwitch(winner);
+					Bukkit.getPlayer(winner).teleport(pl.tpBack.get(Bukkit.getPlayer(winner).getName()));
+					pl.tpBack.remove(Bukkit.getPlayer(winner).getName());
+					Bukkit.getPlayer(winner).setHealthScale(20);
+					Bukkit.getPlayer(winner).setCanPickupItems(true);
+					Bukkit.getPlayer(winner).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bYou Won", 0, 120, 0);
+					Bukkit.getPlayer(winner).getActivePotionEffects().clear();
+					pl.kh.initInv();
 					pl.inGame.clear();
 					pl.cd.active = false;
 					pl.cd.canKit = true;

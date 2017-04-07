@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftTNTPrimed;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,8 +63,15 @@ public class EntityExplode implements Listener{
 				}
 				if(pl.selectedKit.get(e.getEntity().getCustomName()) == "Hail Mary"){
 					Location loc = e.getEntity().getLocation();
-					loc.getWorld().createExplosion(loc, 5);
+					loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 5, false, false);
 					e.setCancelled(true);
+				}
+				if(pl.Perks.containsKey(e.getEntity().getCustomName())){
+					if(pl.Perks.get(e.getEntity().getCustomName()).get("Fireworks")){
+						Location loc = e.getEntity().getLocation();
+						Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+						fw.setGlowing(true);
+					}
 				}
 				pl.tntActive.remove(e.getEntity());
 			}

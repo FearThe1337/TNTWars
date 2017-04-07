@@ -19,14 +19,15 @@ import com.google.common.collect.Lists;
 public class KitHandler implements Listener{
 	public Inventory inv;
 	Main pl;
+	DonorPerksMenu DPM;
 	public KitHandler(Main plugin) {
 		pl = plugin;
-		this.inv = Bukkit.createInventory(null, 54, "§c§lTNT Wars §6Kits Menu");
+		this.inv = Bukkit.createInventory(null, 54, "§7§l[§c§lTNT Wars§7§l] §6§lKit Menu");
 	}
 
 	public void initInv(){		
 		//Row 1
-		
+
 		addMenuItem(new ItemStack(Material.BOW), "§b§lSniper",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
@@ -73,9 +74,9 @@ public class KitHandler implements Listener{
 						"§7 - §6Teleport the TNT to look location(30 Block Range)",
 						" ", 
 						"§fRequested By: §7Mrs_Ender88"), 16);
-		
+
 		//Row 2
-		
+
 		addMenuItem(new ItemStack(Material.STICK), "§b§lBoomerang",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
@@ -98,7 +99,7 @@ public class KitHandler implements Listener{
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6take 1/2 damage from TNT"), 22);
-		addSpecialMenuItem(new ItemStack(Material.LEATHER_CHESTPLATE), "§b§lDoctor Who", Color.fromRGB(170, 0, 0),
+		addSpecialMenuItem(new ItemStack(Material.LEATHER_CHESTPLATE), "§b§lBribed", Color.fromRGB(170, 0, 0),
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Spawn with random armor",
@@ -131,7 +132,7 @@ public class KitHandler implements Listener{
 		item.setItemMeta(meta);
 		inv.setItem(invPos, item);
 	}
-	
+
 	private void addSpecialMenuItem(ItemStack item, String name, Color color, List<String> lore, int invPos) {
 		LeatherArmorMeta meta;
 		meta = (LeatherArmorMeta)item.getItemMeta();
@@ -145,11 +146,23 @@ public class KitHandler implements Listener{
 	@EventHandler
 	public void invClick(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(pl.gameQueue.contains(e.getWhoClicked().getName()) || pl.inGame.contains(e.getWhoClicked().getName())){
+		if(pl.inGame.contains(e.getWhoClicked().getName())){
 			Inventory clickedInv = e.getClickedInventory();
 			if(clickedInv != null){
 				if(clickedInv.getSize() == inv.getSize()){
-					if(clickedInv.getTitle().equals("§c§lTNT Wars §6Kits Menu")){
+					if(clickedInv.getTitle().equals("§7§l[§c§lTNT Wars§7§l] §6§lKit Menu")){
+						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou can't change kits while in-game.");
+						e.setCancelled(true);
+						p.closeInventory();
+					}
+				}
+			}
+		}
+		if(pl.gameQueue.contains(e.getWhoClicked().getName())){
+			Inventory clickedInv = e.getClickedInventory();
+			if(clickedInv != null){
+				if(clickedInv.getSize() == inv.getSize()){
+					if(clickedInv.getTitle().equals("§7§l[§c§lTNT Wars§7§l] §6§lKit Menu")){
 						e.setCancelled(true);
 						ItemStack clicked = e.getCurrentItem();
 						if(clicked == null)return;
@@ -232,10 +245,15 @@ public class KitHandler implements Listener{
 								p.closeInventory();
 								break;
 							case "§b§lDonor Perks":
-								p.sendMessage("§cThis feature is not implamented yet");
+								p.closeInventory();
+								Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+									@Override
+									public void run() {
+										pl.DPM.openInv(p);
+									}
+								}, 1);
 								break;
 							default: 
-								p.sendMessage("§Invalid Kit!");
 								p.closeInventory();
 								break;
 							}
