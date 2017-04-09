@@ -42,6 +42,7 @@ public class LowGiveRate implements Runnable{
 						if(pl.selectedKit.get(name) == "Doctor Who")this.max = 2;
 						if(pl.selectedKit.get(name) == "Tank")this.max = 1;
 						if(pl.selectedKit.get(name) == "Hail Mary")this.max = 1;
+						if(pl.selectedKit.get(name) == "Storm")this.max = 2;
 						Player p = Bukkit.getPlayer(name);
 						ItemStack tnt = new ItemStack(Material.TNT);
 						ItemMeta meta = tnt.getItemMeta();

@@ -29,6 +29,15 @@ public class EntityDamageByEntity implements Listener{
 				Player p = (Player)e.getEntity();
 				if(e.getDamager() instanceof CraftTNTPrimed){
 					if(pl.inGame.contains(p.getName())){
+						if(pl.selectedKit.get(e.getDamager().getCustomName()) == "Vampire"){
+							double dam = p.getLastDamage();
+							if(dam > 4){
+								Player damager = Bukkit.getPlayer(e.getDamager().getCustomName());
+								if(damager.getHealth() <= 18){
+									damager.setHealth(damager.getHealth() + 2);
+								}
+							}
+						}
 						if(p.getName() == e.getDamager().getCustomName()){
 							if(pl.selectedKit.get(p.getName()) == "Suicide Bomber"){
 								double dam = p.getLastDamage();
@@ -37,7 +46,7 @@ public class EntityDamageByEntity implements Listener{
 						}
 						if(pl.selectedKit.get(p.getName()) == "Tank"){
 							double dam = p.getLastDamage();
-							e.setDamage(dam/2);
+							e.setDamage(dam/1.5);
 						}
 						Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
 							@Override

@@ -44,8 +44,6 @@ public class PlayerDeath implements Listener{
 						p.getInventory().clear();
 						pl.IAE.InventorySwitch(p);
 						pl.IAE.ExpSwitch(p.getName());
-						p.teleport(pl.tpBack.get(p.getName()));
-						pl.tpBack.remove(p.getName());
 					}
 				}, 5);
 				e.getDrops().clear();
@@ -68,6 +66,8 @@ public class PlayerDeath implements Listener{
 					}, 2);
 					for(String name : pl.spec){
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§b" + pl.inGame.get(0) + " has won!", 0, 120, 0);
+						Bukkit.getPlayer(name).teleport(pl.tpBack.get(name));
+						pl.tpBack.remove(name);
 					}
 					Bukkit.getPlayer(winner).setHealth(20);
 					Bukkit.getPlayer(winner).setFoodLevel(20);

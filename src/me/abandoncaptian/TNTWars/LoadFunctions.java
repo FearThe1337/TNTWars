@@ -24,6 +24,7 @@ public class LoadFunctions {
 		kitsListLowRate.add("Tank");
 		kitsListLowRate.add("Doctor Who");
 		kitsListLowRate.add("Hail Mary");
+		kitsListLowRate.add("Storm");
 		kitsListHighRate.add("Short Fuse");
 		kitsListHighRate.add("Miner");
 		kitsListHighRate.add("Suicide Bomber");
@@ -32,6 +33,7 @@ public class LoadFunctions {
 		kitsListHighRate.add("Boomerang");
 		kitsListHighRate.add("Bribed");
 		kitsListHighRate.add("Space Man");
+		kitsListHighRate.add("Vampire");
 		kitsListAll.add("Sniper");
 		kitsListAll.add("Short Fuse");
 		kitsListAll.add("Heavy Loader");
@@ -46,5 +48,7 @@ public class LoadFunctions {
 		kitsListAll.add("Bribed");
 		kitsListAll.add("Hail Mary");
 		kitsListAll.add("Space Man");
+		kitsListAll.add("Storm");
+		kitsListAll.add("Vampire");
 	}
 }

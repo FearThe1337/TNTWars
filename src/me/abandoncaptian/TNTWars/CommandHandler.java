@@ -203,6 +203,22 @@ public class CommandHandler implements CommandExecutor{
 						e.printStackTrace();
 					}
 
+				}
+				else if(args[0].equalsIgnoreCase("setspecpoint") && p.hasPermission("tntwars.host"))
+
+				{
+					pl.specpoint = p.getLocation();
+					pl.config.set("SpecPoint.world", pl.specpoint.getWorld().getName());
+					pl.config.set("SpecPoint.x", (int) pl.specpoint.getX());
+					pl.config.set("SpecPoint.y",(int)  pl.specpoint.getY());
+					pl.config.set("SpecPoint.z", (int) pl.specpoint.getZ());
+					p.sendMessage("§6TNT Wars Spec Point Set!");
+					try {
+						pl.config.save(pl.configFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 				}else if(args[0].equalsIgnoreCase("forcestart") && p.hasPermission("tntwars.host")){
 					if(!pl.cd.starting2){
 						if(pl.gameQueue.size() >= pl.gameMin){

@@ -71,6 +71,7 @@ public class Main extends JavaPlugin implements Listener{
 	int gameMax;
 	int gameQueueTime;
 	public Location spawnpoint;
+	public Location specpoint;
 	public HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
 	public HashMap<String, String> selectedKit = new HashMap<String, String>();
 	BukkitTask deathCount;
@@ -105,6 +106,7 @@ public class Main extends JavaPlugin implements Listener{
 		gameMax = config.getInt("Game-Max");
 		gameQueueTime = (config.getInt("Game-Queue-Time")*1200);
 		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
+		this.specpoint = new Location(Bukkit.getWorld((String) config.get("SpecPoint.world")), config.getInt("SpecPoint.x"), config.getInt("SpecPoint.y"), config.getInt("SpecPoint.z"));
 		cd = new CountDowns(this);
 		kh = new KitHandler(this);
 		kh.initInv();

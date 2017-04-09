@@ -47,14 +47,21 @@ public class MenuHandlerHost implements Listener{
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to force start TNT Wars"),
-				21
+				20
 				);
 		addMenuItem(new ItemStack(Material.BEACON),
 				"§aSet TNT Wars Spawn",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§bClick to set TNT Wars spawn"),
-				23
+				22
+				);
+		addMenuItem(new ItemStack(Material.GLASS),
+				"§aSet TNT Wars Spec Point",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§bClick to set TNT Wars spec point"),
+				24
 				);
 		addMenuItem(new ItemStack(Material.ARROW),
 				"§aClose TNT Wars Menu",
@@ -111,6 +118,10 @@ public class MenuHandlerHost implements Listener{
 							break;
 						case "§aSet TNT Wars Spawn": 
 							p.performCommand("tw setspawn");
+							p.closeInventory();
+							break;
+						case "§aSet TNT Wars Spec Point": 
+							p.performCommand("tw setspecpoint");
 							p.closeInventory();
 							break;
 						case "§aForce Start TNT Wars": 

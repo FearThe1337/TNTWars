@@ -36,12 +36,12 @@ public class KitHandler implements Listener{
 						"§7 - §6Holds 1 TNT at a time",
 						" ",
 						"§fRequested By: §7nixcluster"), 10);
-		addMenuItem(new ItemStack(Material.REDSTONE), "§b§lShort Fuse",
+		addMenuItem(new ItemStack(Material.BLAZE_ROD), "§b§lDoctor Who",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Your TNT has a shorter fuse",
+						"§7 - §6You have x2 health at the start",
 						" ", 
-						"§fRequested By: §7Mr_Ender86"), 11);
+						"§fRequested By: §7Mrs_Ender88"), 11);
 		addMenuItem(new ItemStack(Material.RED_SHULKER_BOX), "§b§lHeavy Loader",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
@@ -89,12 +89,12 @@ public class KitHandler implements Listener{
 						"§7 - §6Cause a potion effect to players near the explosion",
 						" ",
 						"§fRequested By: §7Mr_Ender86"), 20);
-		addMenuItem(new ItemStack(Material.BLAZE_ROD), "§b§lDoctor Who",
+		addMenuItem(new ItemStack(Material.REDSTONE_BLOCK), "§b§lShort Fuse",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6You have x2 health at the start",
+						"§7 - §6Your TNT has a shorter fuse",
 						" ", 
-						"§fRequested By: §7Mrs_Ender88"), 21);
+						"§fRequested By: §7Mr_Ender86"), 21);
 		addMenuItem(new ItemStack(Material.DIAMOND_CHESTPLATE), "§b§lTank",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
@@ -113,10 +113,54 @@ public class KitHandler implements Listener{
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT has no gravity"), 25);
+
+		//Row 3
+
+		addMenuItem(new ItemStack(Material.BLAZE_POWDER), "§b§lStorm",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Your TNT rains from the sky",
+						" ", 
+						"§fRequested By: §7TeraStorm"), 28);
+		addMenuItem(new ItemStack(Material.REDSTONE), "§b§lVampire",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6If your TNT Strikes an enemy,",
+						"§7 - §6gain 1 heart",
+						" ", 
+						"§fRequested By: §7TeraStorm"), 29);
+		addMenuItem(new ItemStack(Material.BARRIER), "§b§lTBA",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Coming Soon"), 30);
+		addMenuItem(new ItemStack(Material.BARRIER), "§b§lTBA",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Coming Soon"), 31);
+		addMenuItem(new ItemStack(Material.BARRIER), "§b§lTBA",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Coming Soon"), 32);
+		addMenuItem(new ItemStack(Material.BARRIER), "§b§lTBA",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Coming Soon"), 33);
+		addMenuItem(new ItemStack(Material.BARRIER), "§b§lTBA",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Coming Soon"), 34);
+
+		//Extra
+
 		addMenuItem(new ItemStack(Material.ARROW), "§b§lRandom",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Click for a random kit"), 40);
+						"§7 - §6Click for a random kit"), 49);
+		/*
+		addMenuItem(new ItemStack(Material.INK_SACK), "§b§lVirg Special",
+				Lists.newArrayList(
+						"§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Exclusive to: TheVirginian"), 53);*/
 		addMenuItem(new ItemStack(Material.BOOK), "§b§lDonor Perks",
 				Lists.newArrayList(
 						"§6§l---- §c[ TNT Wars ] §6§l----",
@@ -243,6 +287,28 @@ public class KitHandler implements Listener{
 								p.sendMessage("§6You selected: " + itemName);
 								pl.selectedKit.put(p.getName(), "Space Man");
 								p.closeInventory();
+								break;
+							case "§b§lStorm": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Storm");
+								p.closeInventory();
+								break;
+							case "§b§lVampire": 
+								p.sendMessage("§6You selected: " + itemName);
+								pl.selectedKit.put(p.getName(), "Vampire");
+								p.closeInventory();
+								break;
+							case "§b§lVirg Special": 
+								if(p.getName().equals("abandoncaptian") || p.getName().equals("TheVirginian")){
+									p.sendMessage("§6You selected: " + itemName);
+									pl.selectedKit.put(p.getName(), "Virg Special");
+									p.closeInventory();
+								}else{
+									p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis kit is exclusive to TheVirgian");
+								}
+								break;
+							case "§b§lTBA":
+								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis is not a usable Kit");
 								break;
 							case "§b§lDonor Perks":
 								p.closeInventory();

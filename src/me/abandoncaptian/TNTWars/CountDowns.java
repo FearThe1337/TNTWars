@@ -72,6 +72,8 @@ public class CountDowns {
 					pl.ChangeBoard();
 					for(String name : pl.inGame){
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
+						Bukkit.getPlayer(name).setHealth(20);
+						Bukkit.getPlayer(name).setFoodLevel(20);
 						if(!pl.selectedKit.containsKey(name)){
 							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
 							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
