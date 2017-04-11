@@ -32,6 +32,7 @@ public class CountDowns {
 	List<Material> armorChestplate = new ArrayList<Material>();
 	List<Material> armorLegs = new ArrayList<Material>();
 	List<Material> armorBoots = new ArrayList<Material>();
+
 	public CountDowns(Main plugin) {
 		pl = plugin;
 		armorHelmet.add(Material.LEATHER_HELMET);
@@ -59,10 +60,11 @@ public class CountDowns {
 		kh = new KitHandler(plugin);
 		LF = new LoadFunctions(plugin);
 	}
-	public void countDown30(){
-		if(!active){
+
+	public void countDown30() {
+		if (!active) {
 			starting2 = true;
-			countStart = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			countStart = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
 					active = true;
@@ -70,117 +72,127 @@ public class CountDowns {
 					starting2 = false;
 					starting1 = false;
 					pl.ChangeBoard();
-					for(String name : pl.inGame){
+					for (String name : pl.inGame) {
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 						Bukkit.getPlayer(name).setHealth(20);
 						Bukkit.getPlayer(name).setFoodLevel(20);
-						if(!pl.selectedKit.containsKey(name)){
-							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
+						if (!pl.selectedKit.containsKey(name)) {
+							int rand = (int) (Math.random() * (LF.kitsListAll.size() - 1));
 							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
-							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou didn't choose a kit! §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
-						}else if(pl.selectedKit.get(name) == "Random"){
-							int rand = (int) (Math.random()*(LF.kitsListAll.size()-1));
+							Bukkit.getPlayer(name)
+									.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou didn't choose a kit! §6We selected §b"
+											+ LF.kitsListAll.get(rand) + " §6for you");
+						} else if (pl.selectedKit.get(name) == "Random") {
+							int rand = (int) (Math.random() * (LF.kitsListAll.size() - 1));
 							pl.selectedKit.put(name, pl.LF.kitsListAll.get(rand));
-							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6We selected §b" + LF.kitsListAll.get(rand) + " §6for you");
+							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §6We selected §b"
+									+ LF.kitsListAll.get(rand) + " §6for you");
 						}
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bKit : " + pl.selectedKit.get(name), 10, 60, 10);
-						if(pl.selectedKit.get(name) == "Doctor Who"){
+						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]",
+								"§bKit : " + pl.selectedKit.get(name), 10, 60, 10);
+						if (pl.selectedKit.get(name) == "Doctor Who") {
 							Bukkit.getPlayer(name).setHealthScale(40);
 						}
-						if(pl.selectedKit.get(name) == "Miner"){
-							Bukkit.getPlayer(name).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, ((20*60)*10), 1));
+						if (pl.selectedKit.get(name) == "Miner") {
+							Bukkit.getPlayer(name)
+									.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, ((20 * 60) * 10), 1));
 						}
-						if(pl.selectedKit.get(name) == "Bribed"){
-							int rand1 = (int) (Math.random()*4);
-							int rand2 = (int) (Math.random()*4);
-							int rand3 = (int) (Math.random()*4);
-							int rand4 = (int) (Math.random()*4);
+						if (pl.selectedKit.get(name) == "Bribed") {
+							int rand1 = (int) (Math.random() * 4);
+							int rand2 = (int) (Math.random() * 4);
+							int rand3 = (int) (Math.random() * 4);
+							int rand4 = (int) (Math.random() * 4);
 							Bukkit.getPlayer(name).getInventory().setHelmet(new ItemStack(armorHelmet.get(rand1)));
-							Bukkit.getPlayer(name).getInventory().setChestplate(new ItemStack(armorChestplate.get(rand2)));
+							Bukkit.getPlayer(name).getInventory()
+									.setChestplate(new ItemStack(armorChestplate.get(rand2)));
 							Bukkit.getPlayer(name).getInventory().setLeggings(new ItemStack(armorLegs.get(rand3)));
 							Bukkit.getPlayer(name).getInventory().setBoots(new ItemStack(armorBoots.get(rand4)));
 						}
 					}
-					pl.gameQueue.clear(); 
+					pl.gameQueue.clear();
 					canKit = false;
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §6TNT Wars has started!");
 				}
-			}, 20*30);
-			count1 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 30);
+			count1 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					for(String name: pl.gameQueue){
+					for (String name : pl.gameQueue) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 1");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 1", 0, 20, 0);
 					}
 				}
-			}, 20*29);
-			count2 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 29);
+			count2 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					for(String name: pl.gameQueue){
+					for (String name : pl.gameQueue) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 2");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 2", 0, 20, 0);
 					}
 				}
-			}, 20*28);
-			count3 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 28);
+			count3 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					for(String name: pl.gameQueue){
+					for (String name : pl.gameQueue) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 3");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 3", 0, 20, 0);
 					}
 				}
-			}, 20*27);
-			count4 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 27);
+			count4 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					for(String name:pl. gameQueue){
+					for (String name : pl.gameQueue) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 4");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 4", 0, 20, 0);
 					}
 				}
-			}, 20*26);
-			count5 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 26);
+			count5 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					for(String name: pl.gameQueue){
+					for (String name : pl.gameQueue) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 5");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 5", 0, 20, 0);
 					}
 				}
-			}, 20*25);
-			count10 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 25);
+			count10 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					for(String name : pl.gameQueue){
-						if(!pl.selectedKit.containsKey(name)){
+					for (String name : pl.gameQueue) {
+						if (!pl.selectedKit.containsKey(name)) {
 							kh.kitsMenu(Bukkit.getPlayer(name));
 						}
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 10");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 10", 3, 15, 2);
 					}
 				}
-			}, 20*20);
-			count30 = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			}, 20 * 20);
+			count30 = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 30 seconds");
 					kh.initInv();
-					for(String name : pl.gameQueue){
-						if(!pl.selectedKit.containsKey(name)){
+					for (String name : pl.gameQueue) {
+						if (!pl.selectedKit.containsKey(name)) {
 							pl.kh.kitsMenu(Bukkit.getPlayer(name));
 						}
-						Bukkit.getPlayer(name).sendMessage("§6§l--------------------------------- §7§l[§c§lTNT Wars§7§l] §6§l----------------------------------");
+						Bukkit.getPlayer(name).sendMessage(
+								"§6§l--------------------------------- §7§l[§c§lTNT Wars§7§l] §6§l----------------------------------");
 						Bukkit.getPlayer(name).sendMessage(" ");
 						Bukkit.getPlayer(name).sendMessage("                          §6Right click to throw your TNT");
-						Bukkit.getPlayer(name).sendMessage("               §6Different kits do give an advantage in some way");
+						Bukkit.getPlayer(name)
+								.sendMessage("               §6Different kits do give an advantage in some way");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("                          §6Developed By: §b§labandoncaptian");
+						Bukkit.getPlayer(name)
+								.sendMessage("                          §6Developed By: §b§labandoncaptian");
 						Bukkit.getPlayer(name).sendMessage("                               §6Idea By: §b§lMrs_Ender88");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("§6§l--------------------------------------------------------------------------------------");
+						Bukkit.getPlayer(name).sendMessage(
+								"§6§l--------------------------------------------------------------------------------------");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 30", 0, 60, 0);
 						pl.kh.initInv();
 					}
@@ -190,19 +202,19 @@ public class CountDowns {
 		}
 	}
 
-
-	public void countDownPre(){
-		if(!active && !starting1){
+	public void countDownPre() {
+		if (!active && !starting1) {
 			starting1 = true;
 			pl.kh.initInv();
-			Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in " + pl.config.getInt("Game-Queue-Time") + " minute(s).");
-			countQueue = Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+			Bukkit.broadcastMessage(
+					"§7§l[§c§lTNT Wars§7§l] §bStarts in " + pl.config.getInt("Game-Queue-Time") + " minute(s).");
+			countQueue = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
 					countDown30();
 				}
-			}, (pl.gameQueueTime-600));
+			}, (pl.gameQueueTime - 600));
 		}
 	}
-	
+
 }

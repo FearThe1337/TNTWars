@@ -17,7 +17,8 @@ public class HighGiveRate implements Runnable {
 	boolean had = false;
 	boolean canGive = true;
 	boolean correctKit = true;
-	public HighGiveRate(Main plugin){
+
+	public HighGiveRate(Main plugin) {
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
 		LF = new LoadFunctions(plugin);
@@ -25,19 +26,22 @@ public class HighGiveRate implements Runnable {
 
 	@Override
 	public void run() {
-		if(pl.cd.active){
-			for(String name : pl.inGame){
+		if (pl.cd.active) {
+			for (String name : pl.inGame) {
 				this.had = false;
-				if(pl.selectedKit.containsKey(name)){
-					for(String kit : LF.kitsListLowRate){
-						if(pl.selectedKit.get(name) == kit){
+				if (pl.selectedKit.containsKey(name)) {
+					for (String kit : LF.kitsListLowRate) {
+						if (pl.selectedKit.get(name) == kit) {
 							correctKit = false;
 							break;
-						}else correctKit = true;
+						} else
+							correctKit = true;
 					}
-					if(correctKit){
-						if(pl.selectedKit.get(name) == "Suicide Bomber")this.max = 1;
-						else this.max = 2;
+					if (correctKit) {
+						if (pl.selectedKit.get(name) == "Suicide Bomber")
+							this.max = 1;
+						else
+							this.max = 2;
 						Player p = Bukkit.getPlayer(name);
 						ItemStack tnt = new ItemStack(Material.TNT);
 						ItemMeta meta = tnt.getItemMeta();
@@ -47,23 +51,24 @@ public class HighGiveRate implements Runnable {
 						lore.add("§bMade By: abandoncaptian");
 						meta.setLore(lore);
 						tnt.setItemMeta(meta);
-						for(int index = 0; index < p.getInventory().getSize(); index++){
+						for (int index = 0; index < p.getInventory().getSize(); index++) {
 							ItemStack item = p.getInventory().getItem(index);
-							if(item != null){	
-								if(item.getItemMeta().getDisplayName() == tnt.getItemMeta().getDisplayName()){
+							if (item != null) {
+								if (item.getItemMeta().getDisplayName() == tnt.getItemMeta().getDisplayName()) {
 									this.had = true;
-									if(item.getAmount() < this.max){
+									if (item.getAmount() < this.max) {
 										tnt.setAmount(1);
 										p.getInventory().addItem(tnt);
 										break;
 									}
 								}
 							}
-						}if(!had){
+						}
+						if (!had) {
 							tnt.setAmount(1);
 							p.getInventory().addItem(tnt);
 						}
-					}else{
+					} else {
 						continue;
 					}
 				}

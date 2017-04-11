@@ -10,23 +10,25 @@ import org.bukkit.util.Vector;
 
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 
-public class StickTNTCheck implements Runnable{
+public class StickTNTCheck implements Runnable {
 	Main pl;
 	CountDowns cd;
 	PlayerInteract PI;
-	public StickTNTCheck(Main plugin){
+
+	public StickTNTCheck(Main plugin) {
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
 	}
+
 	@Override
 	public void run() {
-		if(pl.cd.active){
+		if (pl.cd.active) {
 			List<Entity> tnts = new ArrayList<Entity>();
 			tnts.addAll(pl.tntActive.keySet());
-			for(Entity ent : tnts){
-				if(pl.selectedKit.get(pl.tntActive.get(ent)) == "Glue Factory Worker"){
+			for (Entity ent : tnts) {
+				if (pl.selectedKit.get(pl.tntActive.get(ent)) == "Glue Factory Worker") {
 					Player p = Bukkit.getPlayer(pl.tntActive.get(ent));
-					if(ent.isOnGround()){
+					if (ent.isOnGround()) {
 						Vector vec = p.getEyeLocation().getDirection().normalize().multiply(0);
 						ent.setVelocity(vec);
 					}

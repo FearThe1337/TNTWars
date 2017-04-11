@@ -23,13 +23,14 @@ import org.bukkit.util.Vector;
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.Main;
 
-public class PlayerInteract implements Listener{
+public class PlayerInteract implements Listener {
 	Main pl;
 	CountDowns cd;
 	ItemStack tnt = new ItemStack(Material.TNT);
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
 	public TNTPrimed primeTnt;
+
 	public PlayerInteract(Main plugin) {
 		pl = plugin;
 		cd = new CountDowns(plugin);
@@ -42,120 +43,140 @@ public class PlayerInteract implements Listener{
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void tntClick(PlayerInteractEvent e){
-		if(pl.cd.active){
-			if((e.getAction() == Action.LEFT_CLICK_BLOCK) || (e.getAction() == Action.LEFT_CLICK_AIR)){
+	public void tntClick(PlayerInteractEvent e) {
+		if (pl.cd.active) {
+			if ((e.getAction() == Action.LEFT_CLICK_BLOCK) || (e.getAction() == Action.LEFT_CLICK_AIR)) {
 				Player p = e.getPlayer();
-				if(pl.selectedKit.get(p.getName()) == "Miner"){
+				if (pl.selectedKit.get(p.getName()) == "Miner") {
 					ItemStack item = p.getItemInHand();
-					if(item.getType() == Material.TNT){
-						if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
-							if(pl.inGame.contains(p.getName())){
+					if (item.getType() == Material.TNT) {
+						if (item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")) {
+							if (pl.inGame.contains(p.getName())) {
 								primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
 								pl.tntActive.put(this.primeTnt, p.getName());
-								primeTnt.setFuseTicks(20*5);
+								primeTnt.setFuseTicks(20 * 5);
 								primeTnt.setCustomName(p.getName());
 								primeTnt.setCustomNameVisible(false);
-								if(pl.Perks.containsKey(p.getName())){
-									if(pl.Perks.get(p.getName()).get("Outline")){
+								if (pl.Perks.containsKey(p.getName())) {
+									if (pl.Perks.get(p.getName()).get("Outline")) {
 										primeTnt.setGlowing(true);
 									}
 								}
 								e.setCancelled(true);
 							}
 						}
-						if((p.getItemInHand().getAmount()-1)>=1){
-							p.getItemInHand().setAmount(p.getItemInHand().getAmount()-1);
-						}else{
+						if ((p.getItemInHand().getAmount() - 1) >= 1) {
+							p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
+						} else {
 							p.getItemInHand().setAmount(0);
 						}
 					}
 				}
 				return;
 			}
-			if((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)){
+			if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 				Player p = e.getPlayer();
 				ItemStack item = p.getItemInHand();
-				if(item.getType() == Material.TNT){
-					if(item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")){
-						if(pl.inGame.contains(p.getName())){
+				if (item.getType() == Material.TNT) {
+					if (item.getItemMeta().getDisplayName().equals("§6§lThrowable §c§lTNT")) {
+						if (pl.inGame.contains(p.getName())) {
 							double power = 0;
 							int fuse;
-							if(pl.selectedKit.containsKey(p.getName())){
-								if(pl.selectedKit.get(p.getName()) == "Sniper") power = 4;
-								else if((pl.selectedKit.get(p.getName()) == "Suicide Bomber"))power = 0;
-								else if((pl.selectedKit.get(p.getName()) == "Boomerang"))power = 3;
-								else if((pl.selectedKit.get(p.getName()) == "Miner"))power = 0;
-								else if((pl.selectedKit.get(p.getName()) == "Space Man"))power = 2;
-								else if((pl.selectedKit.get(p.getName()) == "Storm"))power = 0;
-								else if((pl.selectedKit.get(p.getName()) == "Shotgun"))power = 3;
-								else if((pl.selectedKit.get(p.getName()) == "Virg Special"))power = 4;
-								else power = 1.5;
-							}else power =  1.5;
-							if(pl.selectedKit.containsKey(p.getName())){
-								if(pl.selectedKit.get(p.getName()) == "Short Fuse")fuse = 10;
-								else if((pl.selectedKit.get(p.getName()) == "Ender"))fuse = 60;
-								else if((pl.selectedKit.get(p.getName()) == "Suicide Bomber"))fuse = 0;
-								else if((pl.selectedKit.get(p.getName()) == "Boomerang"))fuse = 30;
-								else if((pl.selectedKit.get(p.getName()) == "Miner"))fuse = 40;
-								else if((pl.selectedKit.get(p.getName()) == "Storm"))fuse = 60;
-								else if((pl.selectedKit.get(p.getName()) == "Shutgun"))fuse = 20;
-								else fuse = 20;
-							}else fuse = 20;
+							if (pl.selectedKit.containsKey(p.getName())) {
+								if (pl.selectedKit.get(p.getName()) == "Sniper")
+									power = 4;
+								else if ((pl.selectedKit.get(p.getName()) == "Suicide Bomber"))
+									power = 0;
+								else if ((pl.selectedKit.get(p.getName()) == "Boomerang"))
+									power = 3;
+								else if ((pl.selectedKit.get(p.getName()) == "Miner"))
+									power = 0;
+								else if ((pl.selectedKit.get(p.getName()) == "Space Man"))
+									power = 2;
+								else if ((pl.selectedKit.get(p.getName()) == "Storm"))
+									power = 0;
+								else if ((pl.selectedKit.get(p.getName()) == "Shotgun"))
+									power = 3;
+								else if ((pl.selectedKit.get(p.getName()) == "Virg Special"))
+									power = 4;
+								else
+									power = 1.5;
+							} else
+								power = 1.5;
+							if (pl.selectedKit.containsKey(p.getName())) {
+								if (pl.selectedKit.get(p.getName()) == "Short Fuse")
+									fuse = 10;
+								else if ((pl.selectedKit.get(p.getName()) == "Ender"))
+									fuse = 60;
+								else if ((pl.selectedKit.get(p.getName()) == "Suicide Bomber"))
+									fuse = 0;
+								else if ((pl.selectedKit.get(p.getName()) == "Boomerang"))
+									fuse = 30;
+								else if ((pl.selectedKit.get(p.getName()) == "Miner"))
+									fuse = 40;
+								else if ((pl.selectedKit.get(p.getName()) == "Storm"))
+									fuse = 60;
+								else if ((pl.selectedKit.get(p.getName()) == "Shutgun"))
+									fuse = 20;
+								else
+									fuse = 20;
+							} else
+								fuse = 20;
 							Location eye = p.getEyeLocation();
 							eye.setY(eye.getY() + 0.4);
-							if(pl.selectedKit.get(p.getName()) == "Storm"){
-								Block block = p.getTargetBlock((HashSet<Byte>)null, 30);
+							if (pl.selectedKit.get(p.getName()) == "Storm") {
+								Block block = p.getTargetBlock((HashSet<Byte>) null, 30);
 								Location bLoc = block.getLocation();
 								bLoc.setY(bLoc.getY() + 30);
 								primeTnt = (TNTPrimed) p.getWorld().spawn(bLoc, TNTPrimed.class);
-							}else if(pl.selectedKit.get(p.getName()) == "Virg Special"){
+							} else if (pl.selectedKit.get(p.getName()) == "Virg Special") {
 								Entity squid = eye.getWorld().spawnEntity(eye, EntityType.SQUID);
 								eye.setPitch(p.getLocation().getPitch());
 								Vector vec = eye.getDirection().normalize().multiply(power);
 								squid.setVelocity(vec);
-								if((p.getItemInHand().getAmount()-1)>=1){
-									p.getItemInHand().setAmount(p.getItemInHand().getAmount()-1);
-								}else{
+								if ((p.getItemInHand().getAmount() - 1) >= 1) {
+									p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
+								} else {
 									p.getItemInHand().setAmount(0);
 								}
 								Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-									
+
 									@Override
 									public void run() {
 										Location squidLoc = squid.getLocation();
 										squid.remove();
-										squidLoc.getWorld().createExplosion(squidLoc.getX(), squidLoc.getY(), squidLoc.getZ(), 3, false, false);
+										squidLoc.getWorld().createExplosion(squidLoc.getX(), squidLoc.getY(),
+												squidLoc.getZ(), 3, false, false);
 									}
 								}, 40);
 								return;
-							}else{
+							} else {
 								primeTnt = (TNTPrimed) p.getWorld().spawn(eye, TNTPrimed.class);
 							}
 							Vector vec = eye.getDirection().normalize().multiply(power);
 							primeTnt.setFuseTicks(fuse);
 							primeTnt.setCustomName(p.getName());
 							primeTnt.setCustomNameVisible(false);
-							if(pl.Perks.containsKey(p.getName())){
-								if(pl.Perks.get(p.getName()).get("Outline")){
+							if (pl.Perks.containsKey(p.getName())) {
+								if (pl.Perks.get(p.getName()).get("Outline")) {
 									primeTnt.setGlowing(true);
 								}
 							}
-							if(pl.selectedKit.get(p.getName()) == "Space Man"){
+							if (pl.selectedKit.get(p.getName()) == "Space Man") {
 								primeTnt.setGravity(false);
 							}
 							pl.tntActive.put(primeTnt, p.getName());
-							if(pl.selectedKit.get(p.getName()) == "Ender"){
-								Block block = p.getTargetBlock((HashSet<Byte>)null, 30);
+							if (pl.selectedKit.get(p.getName()) == "Ender") {
+								Block block = p.getTargetBlock((HashSet<Byte>) null, 30);
 								Location bLoc = block.getLocation();
 								bLoc.setY(bLoc.getY() + 2);
 								primeTnt.teleport(bLoc);
-							}else{
+							} else {
 								primeTnt.setVelocity(vec);
 							}
-							if(pl.selectedKit.containsKey(p.getName())){
-								if((pl.selectedKit.get(p.getName()) == "Boomerang")){
-									Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+							if (pl.selectedKit.containsKey(p.getName())) {
+								if ((pl.selectedKit.get(p.getName()) == "Boomerang")) {
+									Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 										@Override
 										public void run() {
 											Vector vec = eye.getDirection().normalize().multiply(-1);
@@ -164,19 +185,19 @@ public class PlayerInteract implements Listener{
 									}, 10);
 								}
 							}
-							if((p.getItemInHand().getAmount()-1)>=1){
-								p.getItemInHand().setAmount(p.getItemInHand().getAmount()-1);
-							}else{
+							if ((p.getItemInHand().getAmount() - 1) >= 1) {
+								p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
+							} else {
 								p.getItemInHand().setAmount(0);
 							}
-						}else{
+						} else {
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in-game");
 							return;
 						}
-					}else{
+					} else {
 						return;
 					}
-				}else{
+				} else {
 					return;
 				}
 			}

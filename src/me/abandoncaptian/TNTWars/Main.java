@@ -30,7 +30,7 @@ import me.abandoncaptian.TNTWars.Events.PlayerDeath;
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 import me.abandoncaptian.TNTWars.Events.PlayerLeaveAndJoin;
 
-public class Main extends JavaPlugin implements Listener{
+public class Main extends JavaPlugin implements Listener {
 	Logger Log = Bukkit.getLogger();
 	File configFile;
 	FileConfiguration config;
@@ -60,12 +60,12 @@ public class Main extends JavaPlugin implements Listener{
 	public Map<String, Integer> savedXPL = new HashMap<String, Integer>();
 	public Map<String, Float> savedXP = new HashMap<String, Float>();
 	public Map<String, Location> tpBack = new HashMap<String, Location>();
-	ScoreboardManager manager = Bukkit.getScoreboardManager();
-	Scoreboard queueBoard = manager.getNewScoreboard();
-	Scoreboard remainingBoard = manager.getNewScoreboard();
-	Scoreboard clearBoard = manager.getNewScoreboard();
-	Objective objectiveQueue = queueBoard.registerNewObjective("Queued", "dummy");
-	Objective objectiveRemaining = remainingBoard.registerNewObjective("Remaining", "dummy");
+	ScoreboardManager manager;
+	Scoreboard queueBoard;
+	Scoreboard remainingBoard;
+	Scoreboard clearBoard;
+	Objective objectiveQueue;
+	Objective objectiveRemaining;
 	public int gameMin;
 	int gameStart30Sec;
 	int gameMax;
@@ -77,8 +77,7 @@ public class Main extends JavaPlugin implements Listener{
 	BukkitTask deathCount;
 
 	@Override
-	public void onEnable()
-	{
+	public void onEnable() {
 		Log.info("----------- [ TNT Wars ] -----------");
 		Log.info(" ");
 		Log.info("               Enabled!             ");
@@ -88,25 +87,47 @@ public class Main extends JavaPlugin implements Listener{
 		this.config = YamlConfiguration.loadConfiguration(configFile);
 		this.perksFile = new File("plugins/TNTWars/DonorPerksDatabase.yml");
 		this.perksConfig = YamlConfiguration.loadConfiguration(perksFile);
-		if(!(configFile.exists())){
+		if (!(configFile.exists())) {
 			config.options().copyDefaults(true);
 			this.saveDefaultConfig();
 			this.saveConfig();
 			Log.info("File Didn't Exist ----");
 		}
-		if(!(perksFile.exists())){
+		if (!(perksFile.exists())) {
 			perksConfig.options().copyDefaults(true);
 			this.saveDefaultConfig();
 			this.saveConfig();
 			Log.info("File Didn't Exist ----");
 		}
+		if (!config.contains("SpawnPoint")) {
+			config.set("Spawnpoint.world", "world");
+			config.set("Spawnpoint.x", 0);
+			config.set("Spawnpoint.y", 100);
+			config.set("Spawnpoint.z", 0);
+			this.saveConfig();
+		}
+		if (!config.contains("SpecPoint")) {
+			config.set("SpecPoint.world", "world");
+			config.set("SpecPoint.x", 0);
+			config.set("SpecPoint.y", 100);
+			config.set("SpecPoint.z", 0);
+			this.saveConfig();
+		}
 		LF = new LoadFunctions(this);
 		gameMin = config.getInt("Game-Min");
 		gameStart30Sec = config.getInt("Game-Start-30Sec");
 		gameMax = config.getInt("Game-Max");
-		gameQueueTime = (config.getInt("Game-Queue-Time")*1200);
-		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")), config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
-		this.specpoint = new Location(Bukkit.getWorld((String) config.get("SpecPoint.world")), config.getInt("SpecPoint.x"), config.getInt("SpecPoint.y"), config.getInt("SpecPoint.z"));
+		gameQueueTime = (config.getInt("Game-Queue-Time") * 1200);
+		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")),
+				config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
+		this.specpoint = new Location(Bukkit.getWorld((String) config.get("SpecPoint.world")),
+				config.getInt("SpecPoint.x"), config.getInt("SpecPoint.y"), config.getInt("SpecPoint.z"));
+		manager = Bukkit.getScoreboardManager();
+		queueBoard = manager.getNewScoreboard();
+		remainingBoard = manager.getNewScoreboard();
+		clearBoard = manager.getNewScoreboard();
+		objectiveQueue = queueBoard.registerNewObjective("Queued", "dummy");
+		objectiveRemaining = remainingBoard.registerNewObjective("Remaining", "dummy");
 		cd = new CountDowns(this);
 		kh = new KitHandler(this);
 		kh.initInv();
@@ -140,9 +161,9 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getPluginManager().registerEvents(this, this);
 		getCommand("tw").setExecutor(CH);
 		cd.active = false;
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new HighGiveRate(this), 0, 20*3);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new HighGiveRate(this), 0, 20 * 3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new StickTNTCheck(this), 0, 2);
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new LowGiveRate(this), 0, 20*5);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new LowGiveRate(this), 0, 20 * 5);
 		potions.add(PotionEffectType.BLINDNESS);
 		potions.add(PotionEffectType.CONFUSION);
 		potions.add(PotionEffectType.HUNGER);
@@ -154,8 +175,7 @@ public class Main extends JavaPlugin implements Listener{
 	}
 
 	@Override
-	public void onDisable()
-	{
+	public void onDisable() {
 		Log.info("----------- [ TNT Wars ] -----------");
 		Log.info(" ");
 		Log.info("              Disabled!             ");
@@ -168,23 +188,23 @@ public class Main extends JavaPlugin implements Listener{
 		cd.canKit = true;
 	}
 
-	public void UpdateBoard(Boolean leave, String name){
-		if(!leave){
+	public void UpdateBoard(Boolean leave, String name) {
+		if (!leave) {
 			Score score;
 			score = objectiveQueue.getScore("§a" + name);
 			score.setScore(gameQueue.indexOf(name));
 			Bukkit.getPlayer(name).setScoreboard(queueBoard);
 			score = objectiveRemaining.getScore("§c" + name);
 			score.setScore(gameQueue.indexOf(name));
-		}else{
+		} else {
 			queueBoard.resetScores("§a" + name);
 			remainingBoard.resetScores("§c" + name);
 			Bukkit.getPlayer(name).setScoreboard(clearBoard);
 		}
 	}
-	
-	public void ChangeBoard(){
-		for(String name : inGame){
+
+	public void ChangeBoard() {
+		for (String name : inGame) {
 			Bukkit.getPlayer(name).setScoreboard(remainingBoard);
 		}
 	}

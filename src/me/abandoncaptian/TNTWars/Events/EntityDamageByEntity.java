@@ -12,65 +12,75 @@ import me.abandoncaptian.TNTWars.InvAndExp;
 import me.abandoncaptian.TNTWars.KitHandler;
 import me.abandoncaptian.TNTWars.Main;
 
-public class EntityDamageByEntity implements Listener{
+public class EntityDamageByEntity implements Listener {
 	Main pl;
 	CountDowns cd;
 	InvAndExp IAE;
 	KitHandler kh;
-	public EntityDamageByEntity(Main plugin){
+
+	public EntityDamageByEntity(Main plugin) {
 		pl = plugin;
 		cd = new CountDowns(plugin);
 	}
 
 	@EventHandler
-	public void tntDamage(EntityDamageByEntityEvent e){
-		if(pl.cd.active){
-			if(e.getEntity() instanceof Player){
-				Player p = (Player)e.getEntity();
-				if(e.getDamager() instanceof CraftTNTPrimed){
-					if(pl.inGame.contains(p.getName())){
-						if(pl.selectedKit.get(e.getDamager().getCustomName()) == "Vampire"){
+	public void tntDamage(EntityDamageByEntityEvent e) {
+		if (pl.cd.active) {
+			if (e.getEntity() instanceof Player) {
+				Player p = (Player) e.getEntity();
+				if (e.getDamager() instanceof CraftTNTPrimed) {
+					if (pl.inGame.contains(p.getName())) {
+						if (pl.selectedKit.get(e.getDamager().getCustomName()) == "Vampire") {
 							double dam = p.getLastDamage();
-							if(dam > 4){
+							if (dam > 4) {
 								Player damager = Bukkit.getPlayer(e.getDamager().getCustomName());
-								if(damager.getHealth() <= 18){
+								if (damager.getHealth() <= 18) {
 									damager.setHealth(damager.getHealth() + 2);
 								}
 							}
 						}
-						if(p.getName() == e.getDamager().getCustomName()){
-							if(pl.selectedKit.get(p.getName()) == "Suicide Bomber"){
+						if (p.getName() == e.getDamager().getCustomName()) {
+							if (pl.selectedKit.get(p.getName()) == "Suicide Bomber") {
 								double dam = p.getLastDamage();
-								e.setDamage(dam/2);
+								e.setDamage(dam / 2);
 							}
 						}
-						if(pl.selectedKit.get(p.getName()) == "Tank"){
+						if (pl.selectedKit.get(p.getName()) == "Tank") {
 							double dam = p.getLastDamage();
-							e.setDamage(dam/1.5);
+							e.setDamage(dam / 1.5);
 						}
-						Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+						Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 							@Override
 							public void run() {
-								if(pl.dead.contains(p.getName())){
+								if (pl.dead.contains(p.getName())) {
 									pl.dead.remove(p.getName());
 									int game = pl.inGame.size();
-									if(e.getEntity().getName() == e.getDamager().getCustomName())Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6pulled a SashaLarie and killed themself §7- §b" + game + " remain!");
-									else Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b" + game + " remain!");
+									if (e.getEntity().getName() == e.getDamager().getCustomName())
+										Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName()
+												+ " §6pulled a SashaLarie and killed themself §7- §b" + game
+												+ " remain!");
+									else
+										Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName()
+												+ " §6was killed by §c" + e.getDamager().getCustomName() + " §7- §b"
+												+ game + " remain!");
 								}
 							}
 						}, 1);
-					}else{
+					} else {
 						e.setCancelled(true);
-						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
+						p.sendMessage(
+								"§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
 					}
-				}else{
-					if(!pl.inGame.contains(p.getName()))return;
-					Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+				} else {
+					if (!pl.inGame.contains(p.getName()))
+						return;
+					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 						@Override
 						public void run() {
-							if(pl.dead.contains(p.getName())){
+							if (pl.dead.contains(p.getName())) {
 								int game = pl.inGame.size();
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6was killed §7- §b" + game + " remain!");
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName()
+										+ " §6was killed §7- §b" + game + " remain!");
 								pl.dead.remove(p.getName());
 								pl.inGame.remove(p.getName());
 							}

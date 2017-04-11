@@ -11,51 +11,49 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class CommandHandler implements CommandExecutor{
+public class CommandHandler implements CommandExecutor {
 	Main pl;
-	
+
 	public CommandHandler(Main plugin) {
 		pl = plugin;
 	}
-	
+
 	@Override
-	public boolean onCommand(CommandSender theSender, Command cmd, String commandLabel, String[] args)
-	{
-		if (commandLabel.equalsIgnoreCase("tw"))
-		{
-			if(theSender instanceof Player)
-			{
-				Player p = (Player)theSender;
-				if(args.length == 0){
-					if(p.hasPermission("tntwars.host")){
+	public boolean onCommand(CommandSender theSender, Command cmd, String commandLabel, String[] args) {
+		if (commandLabel.equalsIgnoreCase("tw")) {
+			if (theSender instanceof Player) {
+				Player p = (Player) theSender;
+				if (args.length == 0) {
+					if (p.hasPermission("tntwars.host")) {
 						p.openInventory(pl.mhh.inv);
-					}
-					else{
+					} else {
 						p.openInventory(pl.mh.inv);
 					}
 				}
 
-				else if(args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("j"))
+				else if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("j"))
 
 				{
-					if(!pl.cd.active){
-						if(pl.gameQueue.contains(p.getName())){
+					if (!pl.cd.active) {
+						if (pl.gameQueue.contains(p.getName())) {
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cAlready in the queue!");
-						}else{
+						} else {
 							int queuedPre = pl.gameQueue.size();
-							if(queuedPre < pl.gameMax){
+							if (queuedPre < pl.gameMax) {
 								pl.gameQueue.add(p.getName());
 								pl.UpdateBoard(false, p.getName());
-								if(pl.cd.starting1){
+								if (pl.cd.starting1) {
 									pl.kh.kitsMenu(Bukkit.getPlayer(p.getName()));
 								}
 								int queued = pl.gameQueue.size();
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has joined queue §7- §bQueued: " + queued);
-								
-								if(p.getGameMode() != GameMode.SURVIVAL) p.setGameMode(GameMode.SURVIVAL);
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName()
+										+ " §6has joined queue §7- §bQueued: " + queued);
+
+								if (p.getGameMode() != GameMode.SURVIVAL)
+									p.setGameMode(GameMode.SURVIVAL);
 								pl.IAE.InventorySwitch(p);
 								pl.IAE.ExpSwitch(p.getName());
-								if(p.isInvulnerable()){
+								if (p.isInvulnerable()) {
 									p.performCommand("ungod");
 									p.setInvulnerable(false);
 								}
@@ -67,34 +65,36 @@ public class CommandHandler implements CommandExecutor{
 								p.setCanPickupItems(false);
 								pl.tpBack.put(p.getName(), p.getLocation());
 								p.teleport(pl.spawnpoint);
-								if(queued == pl.gameMin){
+								if (queued == pl.gameMin) {
 									pl.cd.countDownPre();
-								}else if(queued == pl.gameStart30Sec){
-									if(pl.cd.starting2){
+								} else if (queued == pl.gameStart30Sec) {
+									if (pl.cd.starting2) {
 										pl.cd.starting1 = false;
-									}else if(pl.cd.starting1){
+									} else if (pl.cd.starting1) {
 										pl.cd.countQueue.cancel();
 										pl.cd.countDown30();
 										pl.cd.starting1 = false;
 									}
 								}
-							}else{
+							} else {
 								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cTNT Wars Queue is full");
 							}
 						}
-					}else{
+					} else {
 						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Game is currently active!");
 					}
 				}
 
-				else if(args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("quit") || args[0].equalsIgnoreCase("l"))
+				else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("quit")
+						|| args[0].equalsIgnoreCase("l"))
 
 				{
-					if(!pl.cd.active){
-						if(pl.gameQueue.contains(p.getName())){
+					if (!pl.cd.active) {
+						if (pl.gameQueue.contains(p.getName())) {
 							pl.gameQueue.remove(p.getName());
 							int queued = pl.gameQueue.size();
-							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars Queue §7- §bQueued: " + queued);
+							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName()
+									+ " §6has left TNT Wars Queue §7- §bQueued: " + queued);
 							pl.UpdateBoard(true, p.getName());
 							p.teleport(pl.tpBack.get(p.getName()));
 							pl.tpBack.remove(p.getName());
@@ -104,13 +104,15 @@ public class CommandHandler implements CommandExecutor{
 							p.setHealth(20);
 							p.setFoodLevel(20);
 							p.setCanPickupItems(true);
-							if(queued < pl.gameMin){
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §6Not enough players to play §7(§bMinimum: " + pl.gameMin + "§7)");
-								if(pl.cd.starting1){
+							if (queued < pl.gameMin) {
+								Bukkit.broadcastMessage(
+										"§7§l[§c§lTNT Wars§7§l] §6Not enough players to play §7(§bMinimum: "
+												+ pl.gameMin + "§7)");
+								if (pl.cd.starting1) {
 									pl.cd.countQueue.cancel();
 									pl.cd.starting1 = false;
 								}
-								if(pl.cd.starting2){
+								if (pl.cd.starting2) {
 									pl.cd.starting2 = false;
 									pl.cd.count30.cancel();
 									pl.cd.count10.cancel();
@@ -122,24 +124,25 @@ public class CommandHandler implements CommandExecutor{
 									pl.cd.countStart.cancel();
 								}
 							}
-							if(pl.selectedKit.containsKey(p.getName())){
+							if (pl.selectedKit.containsKey(p.getName())) {
 								pl.selectedKit.remove(p.getName());
 							}
-						}else{
+						} else {
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in the TNT Wars Queue");
 						}
-					}else{
-						if(pl.inGame.contains(p.getName())){
+					} else {
+						if (pl.inGame.contains(p.getName())) {
 							pl.inGame.remove(p.getName());
 							pl.UpdateBoard(true, p.getName());
 							int game = pl.inGame.size();
-							if(game == 1){
+							if (game == 1) {
 								String winner = pl.inGame.get(0);
 								pl.UpdateBoard(true, pl.inGame.get(0));
-								Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+								Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 									@Override
 									public void run() {
-										Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars!");
+										Bukkit.broadcastMessage(
+												"§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars!");
 										Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b§l" + winner + " §6has won!");
 									}
 								}, 2);
@@ -157,18 +160,19 @@ public class CommandHandler implements CommandExecutor{
 								pl.IAE.InventorySwitch(Bukkit.getPlayer(winner));
 								pl.IAE.ExpSwitch(winner);
 								Bukkit.getPlayer(winner).setHealthScale(20);
-								for(String name : pl.spec){
-									Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bReturning all players to last location");
+								for (String name : pl.spec) {
+									Bukkit.getPlayer(name).sendMessage(
+											"§7§l[§c§lTNT Wars§7§l] §bReturning all players to last location");
 								}
-								Bukkit.getScheduler().runTaskLater(pl, new Runnable(){
+								Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 									@Override
 									public void run() {
-										for(String name : pl.spec){
+										for (String name : pl.spec) {
 											Bukkit.getPlayer(name).teleport(pl.tpBack.get(name));
 											pl.tpBack.remove(name);
 										}
 									}
-								}, (20*3));
+								}, (20 * 3));
 								pl.inGame.clear();
 								pl.cd.active = false;
 								pl.cd.canKit = true;
@@ -176,25 +180,26 @@ public class CommandHandler implements CommandExecutor{
 								pl.cd.starting2 = false;
 								pl.selectedKit.clear();
 								pl.kh.initInv();
-							}else{
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");
-								if(pl.selectedKit.containsKey(p.getName())){
+							} else {
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName()
+										+ " §6has left TNT Wars §7- §b" + game + " remain!");
+								if (pl.selectedKit.containsKey(p.getName())) {
 									pl.selectedKit.remove(p.getName());
 								}
 							}
-						}else{
+						} else {
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in the TNT Wars game");
 						}
 					}
 				}
 
-				else if(args[0].equalsIgnoreCase("setspawn") && p.hasPermission("tntwars.host"))
+				else if (args[0].equalsIgnoreCase("setspawn") && p.hasPermission("tntwars.host"))
 
 				{
 					pl.spawnpoint = p.getLocation();
 					pl.config.set("SpawnPoint.world", pl.spawnpoint.getWorld().getName());
 					pl.config.set("SpawnPoint.x", (int) pl.spawnpoint.getX());
-					pl.config.set("SpawnPoint.y",(int)  pl.spawnpoint.getY());
+					pl.config.set("SpawnPoint.y", (int) pl.spawnpoint.getY());
 					pl.config.set("SpawnPoint.z", (int) pl.spawnpoint.getZ());
 					p.sendMessage("§6TNT Wars SpawnPoint Set!");
 					try {
@@ -203,14 +208,13 @@ public class CommandHandler implements CommandExecutor{
 						e.printStackTrace();
 					}
 
-				}
-				else if(args[0].equalsIgnoreCase("setspecpoint") && p.hasPermission("tntwars.host"))
+				} else if (args[0].equalsIgnoreCase("setspecpoint") && p.hasPermission("tntwars.host"))
 
 				{
 					pl.specpoint = p.getLocation();
 					pl.config.set("SpecPoint.world", pl.specpoint.getWorld().getName());
 					pl.config.set("SpecPoint.x", (int) pl.specpoint.getX());
-					pl.config.set("SpecPoint.y",(int)  pl.specpoint.getY());
+					pl.config.set("SpecPoint.y", (int) pl.specpoint.getY());
 					pl.config.set("SpecPoint.z", (int) pl.specpoint.getZ());
 					p.sendMessage("§6TNT Wars Spec Point Set!");
 					try {
@@ -219,34 +223,36 @@ public class CommandHandler implements CommandExecutor{
 						e.printStackTrace();
 					}
 
-				}else if(args[0].equalsIgnoreCase("forcestart") && p.hasPermission("tntwars.host")){
-					if(!pl.cd.starting2){
-						if(pl.gameQueue.size() >= pl.gameMin){
+				} else if (args[0].equalsIgnoreCase("forcestart") && p.hasPermission("tntwars.host")) {
+					if (!pl.cd.starting2) {
+						if (pl.gameQueue.size() >= pl.gameMin) {
 							pl.cd.countQueue.cancel();
 							pl.cd.countDown30();
-						}else{
+						} else {
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cNot enough players to start the game.");
 						}
-					}else{
+					} else {
 						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6TNT Wars is already started!");
 					}
 				}
 
-				else if(args[0].equalsIgnoreCase("kit") || args[0].equalsIgnoreCase("kits"))
+				else if (args[0].equalsIgnoreCase("kit") || args[0].equalsIgnoreCase("kits"))
 
 				{
-					if(pl.gameQueue.contains(p.getName())){
-						if(!pl.cd.canKit){
+					if (pl.gameQueue.contains(p.getName())) {
+						if (!pl.cd.canKit) {
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6You cannot change kits mid-game");
-						}else{
+						} else {
 							pl.kh.kitsMenu(p);
 						}
-					}else{
+					} else {
 						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cNeed to be in the queue to select a kit");
 					}
-				}else{
-					if(p.hasPermission("tntwars.host"))pl.mhh.MenuHosts(p);
-					else pl.mh.Menu(p);
+				} else {
+					if (p.hasPermission("tntwars.host"))
+						pl.mhh.MenuHosts(p);
+					else
+						pl.mh.Menu(p);
 				}
 			}
 		}

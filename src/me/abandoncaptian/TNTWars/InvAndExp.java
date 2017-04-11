@@ -7,15 +7,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class InvAndExp {
 	Main pl;
+
 	public InvAndExp(Main plugin) {
 		pl = plugin;
 	}
-	
+
 	public void ExpSwitch(String pName) {
 		boolean found = false;
-		if(pl.savedXPL.size() > 0){
-			for(String name : pl.savedXPL.keySet()){
-				if(name.equals(pName)){
+		if (pl.savedXPL.size() > 0) {
+			for (String name : pl.savedXPL.keySet()) {
+				if (name.equals(pName)) {
 					found = true;
 					Player p = Bukkit.getPlayer(name);
 					p.setLevel(pl.savedXPL.get(name));
@@ -24,9 +25,9 @@ public class InvAndExp {
 				}
 			}
 		}
-		if(pl.savedXP.size() > 0){
-			for(String name : pl.savedXP.keySet()){
-				if(name.equals(pName)){
+		if (pl.savedXP.size() > 0) {
+			for (String name : pl.savedXP.keySet()) {
+				if (name.equals(pName)) {
 					found = true;
 					Player p = Bukkit.getPlayer(name);
 					p.setExp(pl.savedXP.get(name));
@@ -35,14 +36,14 @@ public class InvAndExp {
 				}
 			}
 		}
-		if(!found){
+		if (!found) {
 			Player p = Bukkit.getPlayer(pName);
 			int expL = p.getLevel();
 			Float exp = p.getExp();
-			if(expL > 0){
+			if (expL > 0) {
 				pl.savedXPL.put(pName, expL);
 			}
-			if(exp > 0){
+			if (exp > 0) {
 				pl.savedXP.put(pName, exp);
 			}
 			p.setLevel(0);
@@ -52,7 +53,7 @@ public class InvAndExp {
 
 	public void InventorySwitch(Player player) {
 		boolean found = false;
-		if(pl.extraInv.size() > 0){
+		if (pl.extraInv.size() > 0) {
 			for (String uuid : pl.extraInv.keySet()) {
 				if (uuid.equals(player.getUniqueId().toString())) {
 					found = true;
@@ -66,10 +67,8 @@ public class InvAndExp {
 			}
 		}
 		if (!found) {
-			ItemStack[] curr = (ItemStack[]) ArrayUtils.addAll(
-					player.getInventory().getArmorContents(),
-					player.getInventory().getContents()
-					);
+			ItemStack[] curr = (ItemStack[]) ArrayUtils.addAll(player.getInventory().getArmorContents(),
+					player.getInventory().getContents());
 			pl.extraInv.put(player.getUniqueId().toString(), curr);
 			player.getInventory().clear();
 		}
@@ -80,9 +79,10 @@ public class InvAndExp {
 	}
 
 	public boolean hasSwitchedExp(Player p) {
-		if(pl.savedXP.keySet().contains(p.getName()) || pl.savedXPL.keySet().contains(p.getName())){
+		if (pl.savedXP.keySet().contains(p.getName()) || pl.savedXPL.keySet().contains(p.getName())) {
 			return true;
-		}else return false;
+		} else
+			return false;
 	}
-	
+
 }

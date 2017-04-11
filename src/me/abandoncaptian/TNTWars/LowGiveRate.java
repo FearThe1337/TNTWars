@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class LowGiveRate implements Runnable{
+public class LowGiveRate implements Runnable {
 	Main pl;
 	CountDowns cd;
 	LoadFunctions LF;
@@ -17,7 +17,8 @@ public class LowGiveRate implements Runnable{
 	boolean canGive = true;
 	int max = 1;
 	boolean correctKit = true;
-	public LowGiveRate(Main plugin){
+
+	public LowGiveRate(Main plugin) {
 		this.pl = plugin;
 		cd = new CountDowns(plugin);
 		LF = new LoadFunctions(plugin);
@@ -25,24 +26,32 @@ public class LowGiveRate implements Runnable{
 
 	@Override
 	public void run() {
-		if(pl.cd.active){
-			for(String name : pl.inGame){
+		if (pl.cd.active) {
+			for (String name : pl.inGame) {
 				this.had = false;
-				if(pl.selectedKit.containsKey(name)){
-					for(String kit : LF.kitsListHighRate){
-						if(pl.selectedKit.get(name) == kit){
+				if (pl.selectedKit.containsKey(name)) {
+					for (String kit : LF.kitsListHighRate) {
+						if (pl.selectedKit.get(name) == kit) {
 							correctKit = false;
 							break;
-						}else correctKit = true;
+						} else
+							correctKit = true;
 					}
-					if(correctKit){
-						if(pl.selectedKit.get(name) == "Heavy Loader")this.max = 5;
-						if(pl.selectedKit.get(name) == "Sniper")this.max = 1;
-						if(pl.selectedKit.get(name) == "Potion Worker")this.max = 2;
-						if(pl.selectedKit.get(name) == "Doctor Who")this.max = 2;
-						if(pl.selectedKit.get(name) == "Tank")this.max = 1;
-						if(pl.selectedKit.get(name) == "Hail Mary")this.max = 1;
-						if(pl.selectedKit.get(name) == "Storm")this.max = 2;
+					if (correctKit) {
+						if (pl.selectedKit.get(name) == "Heavy Loader")
+							this.max = 5;
+						if (pl.selectedKit.get(name) == "Sniper")
+							this.max = 1;
+						if (pl.selectedKit.get(name) == "Potion Worker")
+							this.max = 2;
+						if (pl.selectedKit.get(name) == "Doctor Who")
+							this.max = 2;
+						if (pl.selectedKit.get(name) == "Tank")
+							this.max = 1;
+						if (pl.selectedKit.get(name) == "Hail Mary")
+							this.max = 1;
+						if (pl.selectedKit.get(name) == "Storm")
+							this.max = 2;
 						Player p = Bukkit.getPlayer(name);
 						ItemStack tnt = new ItemStack(Material.TNT);
 						ItemMeta meta = tnt.getItemMeta();
@@ -52,19 +61,20 @@ public class LowGiveRate implements Runnable{
 						lore.add("§bMade By: abandoncaptian");
 						meta.setLore(lore);
 						tnt.setItemMeta(meta);
-						for(int index = 0; index < p.getInventory().getSize(); index++){
+						for (int index = 0; index < p.getInventory().getSize(); index++) {
 							ItemStack item = p.getInventory().getItem(index);
-							if(item != null){	
-								if(item.getItemMeta().getDisplayName() == tnt.getItemMeta().getDisplayName()){
+							if (item != null) {
+								if (item.getItemMeta().getDisplayName() == tnt.getItemMeta().getDisplayName()) {
 									this.had = true;
-									if(item.getAmount() < this.max){
+									if (item.getAmount() < this.max) {
 										tnt.setAmount(1);
 										p.getInventory().addItem(tnt);
 										break;
 									}
 								}
 							}
-						}if(!had){
+						}
+						if (!had) {
 							tnt.setAmount(1);
 							p.getInventory().addItem(tnt);
 						}

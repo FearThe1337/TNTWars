@@ -15,8 +15,8 @@ public class LoadFunctions {
 	List<Material> armorChestplate = new ArrayList<Material>();
 	List<Material> armorLegs = new ArrayList<Material>();
 	List<Material> armorBoots = new ArrayList<Material>();
-	
-	public LoadFunctions(Main plugin){
+
+	public LoadFunctions(Main plugin) {
 		pl = plugin;
 		kitsListLowRate.add("Sniper");
 		kitsListLowRate.add("Heavy Loader");
