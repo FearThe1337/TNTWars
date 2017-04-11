@@ -24,11 +24,7 @@ public class CommandHandler implements CommandExecutor {
 			if (theSender instanceof Player) {
 				Player p = (Player) theSender;
 				if (args.length == 0) {
-					if (p.hasPermission("tntwars.host")) {
-						p.openInventory(pl.mhh.inv);
-					} else {
-						p.openInventory(pl.mh.inv);
-					}
+					pl.mh.openMainMenu(p);
 				}
 
 				else if (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("j"))
@@ -43,7 +39,7 @@ public class CommandHandler implements CommandExecutor {
 								pl.gameQueue.add(p.getName());
 								pl.UpdateBoard(false, p.getName());
 								if (pl.cd.starting1) {
-									pl.kh.kitsMenu(Bukkit.getPlayer(p.getName()));
+									pl.mh.openKitMenu(p);
 								}
 								int queued = pl.gameQueue.size();
 								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName()
@@ -53,16 +49,15 @@ public class CommandHandler implements CommandExecutor {
 									p.setGameMode(GameMode.SURVIVAL);
 								pl.IAE.InventorySwitch(p);
 								pl.IAE.ExpSwitch(p.getName());
-								if (p.isInvulnerable()) {
-									p.performCommand("ungod");
-									p.setInvulnerable(false);
-								}
+								p.setInvulnerable(true);
 								p.setHealth(20);
 								p.setFoodLevel(20);
 								p.getInventory().clear();
 								p.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 								p.getActivePotionEffects().clear();
 								p.setCanPickupItems(false);
+								p.setFlying(false);
+								p.setAllowFlight(false);
 								pl.tpBack.put(p.getName(), p.getLocation());
 								p.teleport(pl.spawnpoint);
 								if (queued == pl.gameMin) {
@@ -104,6 +99,7 @@ public class CommandHandler implements CommandExecutor {
 							p.setHealth(20);
 							p.setFoodLevel(20);
 							p.setCanPickupItems(true);
+							p.setInvulnerable(false);
 							if (queued < pl.gameMin) {
 								Bukkit.broadcastMessage(
 										"§7§l[§c§lTNT Wars§7§l] §6Not enough players to play §7(§bMinimum: "
@@ -179,7 +175,6 @@ public class CommandHandler implements CommandExecutor {
 								pl.cd.starting1 = false;
 								pl.cd.starting2 = false;
 								pl.selectedKit.clear();
-								pl.kh.initInv();
 							} else {
 								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + p.getName()
 										+ " §6has left TNT Wars §7- §b" + game + " remain!");
@@ -235,28 +230,8 @@ public class CommandHandler implements CommandExecutor {
 						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6TNT Wars is already started!");
 					}
 				}
-
-				else if (args[0].equalsIgnoreCase("kit") || args[0].equalsIgnoreCase("kits"))
-
-				{
-					if (pl.gameQueue.contains(p.getName())) {
-						if (!pl.cd.canKit) {
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6You cannot change kits mid-game");
-						} else {
-							pl.kh.kitsMenu(p);
-						}
-					} else {
-						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cNeed to be in the queue to select a kit");
-					}
-				} else {
-					if (p.hasPermission("tntwars.host"))
-						pl.mhh.MenuHosts(p);
-					else
-						pl.mh.Menu(p);
-				}
 			}
 		}
 		return true;
 	}
-
 }

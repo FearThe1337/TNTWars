@@ -13,7 +13,6 @@ import org.bukkit.scheduler.BukkitTask;
 public class CountDowns {
 	Main pl;
 	InvAndExp IAE;
-	KitHandler kh;
 	LoadFunctions LF;
 	public BukkitTask count30;
 	public BukkitTask count10;
@@ -57,7 +56,6 @@ public class CountDowns {
 		armorBoots.add(Material.DIAMOND_BOOTS);
 		active = false;
 		IAE = new InvAndExp(plugin);
-		kh = new KitHandler(plugin);
 		LF = new LoadFunctions(plugin);
 	}
 
@@ -76,6 +74,7 @@ public class CountDowns {
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 						Bukkit.getPlayer(name).setHealth(20);
 						Bukkit.getPlayer(name).setFoodLevel(20);
+						Bukkit.getPlayer(name).setInvulnerable(false);
 						if (!pl.selectedKit.containsKey(name)) {
 							int rand = (int) (Math.random() * (LF.kitsListAll.size() - 1));
 							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
@@ -164,7 +163,7 @@ public class CountDowns {
 				public void run() {
 					for (String name : pl.gameQueue) {
 						if (!pl.selectedKit.containsKey(name)) {
-							kh.kitsMenu(Bukkit.getPlayer(name));
+							pl.mh.openKitMenu(Bukkit.getPlayer(name));
 						}
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 10");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 10", 3, 15, 2);
@@ -175,10 +174,9 @@ public class CountDowns {
 				@Override
 				public void run() {
 					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §bStarts in 30 seconds");
-					kh.initInv();
 					for (String name : pl.gameQueue) {
 						if (!pl.selectedKit.containsKey(name)) {
-							pl.kh.kitsMenu(Bukkit.getPlayer(name));
+							pl.mh.openKitMenu(Bukkit.getPlayer(name));
 						}
 						Bukkit.getPlayer(name).sendMessage(
 								"§6§l--------------------------------- §7§l[§c§lTNT Wars§7§l] §6§l----------------------------------");
@@ -194,7 +192,6 @@ public class CountDowns {
 						Bukkit.getPlayer(name).sendMessage(
 								"§6§l--------------------------------------------------------------------------------------");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 30", 0, 60, 0);
-						pl.kh.initInv();
 					}
 				}
 			}, 0);
@@ -205,7 +202,6 @@ public class CountDowns {
 	public void countDownPre() {
 		if (!active && !starting1) {
 			starting1 = true;
-			pl.kh.initInv();
 			Bukkit.broadcastMessage(
 					"§7§l[§c§lTNT Wars§7§l] §bStarts in " + pl.config.getInt("Game-Queue-Time") + " minute(s).");
 			countQueue = Bukkit.getScheduler().runTaskLater(pl, new Runnable() {

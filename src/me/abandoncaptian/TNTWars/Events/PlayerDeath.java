@@ -10,7 +10,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.InvAndExp;
-import me.abandoncaptian.TNTWars.KitHandler;
 import me.abandoncaptian.TNTWars.Main;
 import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand.EnumClientCommand;
@@ -19,13 +18,11 @@ public class PlayerDeath implements Listener {
 	Main pl;
 	CountDowns cd;
 	InvAndExp IAE;
-	KitHandler kh;
 	BukkitTask deathTest;
 	boolean isDead;
 
 	public PlayerDeath(Main plugin) {
 		pl = plugin;
-		kh = new KitHandler(plugin);
 		IAE = new InvAndExp(plugin);
 	}
 
@@ -38,7 +35,6 @@ public class PlayerDeath implements Listener {
 				CraftPlayer craftPlayer = (CraftPlayer) p;
 				craftPlayer.getHandle().playerConnection.a(packet);
 				Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-
 					@Override
 					public void run() {
 						p.sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bYou were eliminated", 0, 60, 0);
@@ -84,7 +80,6 @@ public class PlayerDeath implements Listener {
 					Bukkit.getPlayer(winner).setCanPickupItems(true);
 					Bukkit.getPlayer(winner).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bYou Won", 0, 120, 0);
 					Bukkit.getPlayer(winner).getActivePotionEffects().clear();
-					pl.kh.initInv();
 					pl.inGame.clear();
 					pl.cd.active = false;
 					pl.cd.canKit = true;
@@ -92,7 +87,6 @@ public class PlayerDeath implements Listener {
 					pl.cd.starting2 = false;
 					pl.spec.clear();
 					pl.selectedKit.clear();
-					kh.initInv();
 				}
 			}
 		}

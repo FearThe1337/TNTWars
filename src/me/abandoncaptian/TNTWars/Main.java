@@ -36,9 +36,7 @@ public class Main extends JavaPlugin implements Listener {
 	FileConfiguration config;
 	public File perksFile;
 	public FileConfiguration perksConfig;
-	public KitHandler kh;
 	MenuHandler mh;
-	MenuHandlerHost mhh;
 	public InvAndExp IAE;
 	public CountDowns cd;
 	PlayerInteract PI;
@@ -129,10 +127,7 @@ public class Main extends JavaPlugin implements Listener {
 		objectiveQueue = queueBoard.registerNewObjective("Queued", "dummy");
 		objectiveRemaining = remainingBoard.registerNewObjective("Remaining", "dummy");
 		cd = new CountDowns(this);
-		kh = new KitHandler(this);
-		kh.initInv();
 		mh = new MenuHandler(this);
-		mhh = new MenuHandlerHost(this);
 		IAE = new InvAndExp(this);
 		PI = new PlayerInteract(this);
 		PLAJ = new PlayerLeaveAndJoin(this);
@@ -148,9 +143,7 @@ public class Main extends JavaPlugin implements Listener {
 		objectiveRemaining.setDisplayName("§7§l[§c§lRemaining§7§l]");
 		objectiveRemaining.setDisplaySlot(DisplaySlot.SIDEBAR);
 		extraInv = new HashMap<>();
-		Bukkit.getPluginManager().registerEvents(kh, this);
 		Bukkit.getPluginManager().registerEvents(mh, this);
-		Bukkit.getPluginManager().registerEvents(mhh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
 		Bukkit.getPluginManager().registerEvents(PLAJ, this);
 		Bukkit.getPluginManager().registerEvents(EE, this);

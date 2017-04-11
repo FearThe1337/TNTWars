@@ -115,7 +115,6 @@ public class PlayerLeaveAndJoin implements Listener {
 				cd.starting1 = false;
 				cd.starting2 = false;
 				pl.selectedKit.clear();
-				pl.kh.initInv();
 			} else {
 				Bukkit.broadcastMessage(
 						"§7§l[§c§lTNT Wars§7§l] §b" + p.getName() + " §6has left TNT Wars §7- §b" + game + " remain!");

@@ -9,14 +9,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.InvAndExp;
-import me.abandoncaptian.TNTWars.KitHandler;
 import me.abandoncaptian.TNTWars.Main;
 
 public class EntityDamageByEntity implements Listener {
 	Main pl;
 	CountDowns cd;
 	InvAndExp IAE;
-	KitHandler kh;
 
 	public EntityDamageByEntity(Main plugin) {
 		pl = plugin;
@@ -71,21 +69,9 @@ public class EntityDamageByEntity implements Listener {
 						p.sendMessage(
 								"§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
 					}
-				} else {
-					if (!pl.inGame.contains(p.getName()))
-						return;
-					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-						@Override
-						public void run() {
-							if (pl.dead.contains(p.getName())) {
-								int game = pl.inGame.size();
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName()
-										+ " §6was killed §7- §b" + game + " remain!");
-								pl.dead.remove(p.getName());
-								pl.inGame.remove(p.getName());
-							}
-						}
-					}, 1);
+				}else {
+					if (!pl.inGame.contains(p.getName()))return;
+					else e.setCancelled(true);
 				}
 			}
 		}
