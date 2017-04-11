@@ -63,12 +63,9 @@ public class CommandHandler implements CommandExecutor {
 								if (queued == pl.gameMin) {
 									pl.cd.countDownPre();
 								} else if (queued == pl.gameStart30Sec) {
-									if (pl.cd.starting2) {
-										pl.cd.starting1 = false;
-									} else if (pl.cd.starting1) {
+									if (pl.cd.starting1) {
 										pl.cd.countQueue.cancel();
 										pl.cd.countDown30();
-										pl.cd.starting1 = false;
 									}
 								}
 							} else {

@@ -68,7 +68,6 @@ public class CountDowns {
 					active = true;
 					pl.inGame.addAll(pl.gameQueue);
 					starting2 = false;
-					starting1 = false;
 					pl.ChangeBoard();
 					for (String name : pl.inGame) {
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
@@ -178,24 +177,21 @@ public class CountDowns {
 						if (!pl.selectedKit.containsKey(name)) {
 							pl.mh.openKitMenu(Bukkit.getPlayer(name));
 						}
-						Bukkit.getPlayer(name).sendMessage(
-								"§6§l--------------------------------- §7§l[§c§lTNT Wars§7§l] §6§l----------------------------------");
+						Bukkit.getPlayer(name).sendMessage("§6§l---------- §7§l[§c§lTNT Wars§7§l] §6§l----------");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("                          §6Right click to throw your TNT");
-						Bukkit.getPlayer(name)
-								.sendMessage("               §6Different kits do give an advantage in some way");
+						Bukkit.getPlayer(name).sendMessage("§6Right click to throw your TNT");
+						Bukkit.getPlayer(name).sendMessage("§6Different kits do give an advantage in some way");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name)
-								.sendMessage("                          §6Developed By: §b§labandoncaptian");
-						Bukkit.getPlayer(name).sendMessage("                               §6Idea By: §b§lMrs_Ender88");
+						Bukkit.getPlayer(name).sendMessage("§6Developed By: §b§labandoncaptian");
+						Bukkit.getPlayer(name).sendMessage("§6Idea By: §b§lMrs_Ender88");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage(
-								"§6§l--------------------------------------------------------------------------------------");
+						Bukkit.getPlayer(name).sendMessage("§6§l------------------------------------------");
 						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l]", "§bStarts in 30", 0, 60, 0);
 					}
 				}
 			}, 0);
 			starting2 = true;
+			starting1 = false;
 		}
 	}
 
