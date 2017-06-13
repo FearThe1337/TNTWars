@@ -84,5 +84,4 @@ public class InvAndExp {
 		} else
 			return false;
 	}
-
 }

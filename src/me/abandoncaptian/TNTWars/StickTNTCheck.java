@@ -22,19 +22,21 @@ public class StickTNTCheck implements Runnable {
 
 	@Override
 	public void run() {
-		if (pl.cd.active) {
-			List<Entity> tnts = new ArrayList<Entity>();
-			tnts.addAll(pl.tntActive.keySet());
-			for (Entity ent : tnts) {
-				if (pl.selectedKit.get(pl.tntActive.get(ent)) == "Glue Factory Worker") {
-					Player p = Bukkit.getPlayer(pl.tntActive.get(ent));
-					if (ent.isOnGround()) {
-						Vector vec = p.getEyeLocation().getDirection().normalize().multiply(0);
-						ent.setVelocity(vec);
+		for(String map : pl.arenas.values()){
+			if (pl.cd.active.get(map)) {
+				List<Entity> tnts = new ArrayList<Entity>();
+				tnts.addAll(pl.tntActive.keySet());
+				for (Entity ent : tnts) {
+					if (pl.selectedKit.get(pl.tntActive.get(ent)) == "Glue Factory Worker") {
+						Player p = Bukkit.getPlayer(pl.tntActive.get(ent));
+						if (ent.isOnGround()) {
+							Vector vec = p.getEyeLocation().getDirection().normalize().multiply(0);
+							ent.setVelocity(vec);
+						}
 					}
 				}
+				tnts.clear();
 			}
-			tnts.clear();
 		}
 	}
 }

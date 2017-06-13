@@ -15,7 +15,7 @@ public class BlockPlace implements Listener {
 
 	@EventHandler
 	public void placeBlock(BlockPlaceEvent e) {
-		if (pl.inGame.contains(e.getPlayer().getName())) {
+		if (pl.allInGame.contains(e.getPlayer().getName())) {
 			e.setCancelled(true);
 			e.getPlayer().sendMessage("§7§l[§c§lTNT Wars§7§l] §cCan't place while in-game");
 		}

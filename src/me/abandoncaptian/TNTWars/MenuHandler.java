@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,20 +19,40 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 public class MenuHandler implements Listener {
 	Main pl;
-	DonorPerksMenu DPM;
 
 	public MenuHandler(Main plugin) {
 		pl = plugin;
 	}
 
-	public void openMainMenu(Player p){
-		Inventory inv = Bukkit.createInventory(p, 54, "§7§l[ §c§lTNT Wars Menu §7§l]");
+	public void openMainMenu(Player p, Inventory inv){
+		inv.clear();
 		HashMap<ItemStack, Integer> items = mainMenuInvContents(p);
-		p.openInventory(inv);
 		for(ItemStack item : items.keySet()){
 			inv.setItem(items.get(item), item);
 		}
 		return;
+	}
+
+	public void openMainMenu(Player p){
+		Inventory inv = Bukkit.createInventory(p, 54, "§7§l[ §c§lTNT Wars Menu §7§l]");
+		p.openInventory(inv);
+		openMainMenu(p, inv);
+		return;
+	}
+
+	public void openDonorMenu(Player p, Inventory inv){
+		inv.clear();
+		HashMap<ItemStack, Integer> items = donorMenuInvContents(p);
+		for(ItemStack item : items.keySet()){
+			inv.setItem(items.get(item), item);
+		}
+		return;
+	}
+
+	public void openDonorMenu(Player p){
+		Inventory inv = Bukkit.createInventory(p, 54, "§7§l[ §c§lTNT Wars Menu §7§l]");
+		p.openInventory(inv);
+		openDonorMenu(p, inv);
 	}
 
 	public void openKitMenu(Player p, Inventory inv){
@@ -49,20 +70,419 @@ public class MenuHandler implements Listener {
 		openKitMenu(p, inv);
 	}
 
-	public HashMap<ItemStack, Integer> mainMenuInvContents(Player p){
+	public void openArenaMenu(Player p, Inventory inv){
+		inv.clear();
+		HashMap<String, ItemStack> items = ArenaSettingsMenuContents(p);
+		for(String i : items.keySet()){
+			inv.setItem(Integer.parseInt(i), items.get(i));
+		}
+		return;
+	}
+
+	public void openArenaSettings(Player p, Inventory inv, String arena){
+		inv.clear();
+		HashMap<ItemStack, Integer> items = ArenaSettingsContents(p, arena);
+		for(ItemStack item : items.keySet()){
+			inv.setItem(items.get(item), item);
+		}
+		return;
+	}
+
+	public void openFWEditorMenu(Player p, Inventory inv){
+		inv.clear();
+		HashMap<ItemStack, Integer> items = fwEditorMenuInvContents(p);
+		for(ItemStack item : items.keySet()){
+			inv.setItem(items.get(item), item);
+		}
+		return;
+	}
+
+	public void openFWEditorMenu(Player p){
+		Inventory inv = Bukkit.createInventory(p, 54, "§7§l[ §c§lTNT Wars Menu §7§l]");
+		p.openInventory(inv);
+		openFWEditorMenu(p, inv);
+	}
+
+	public void openCNameMenu(Player p, Inventory inv){
+		inv.clear();
+		HashMap<ItemStack, Integer> items = cNameMenuInvContents(p);
+		for(ItemStack item : items.keySet()){
+			inv.setItem(items.get(item), item);
+		}
+		return;
+	}
+
+	public void openCNameMenu(Player p){
+		Inventory inv = Bukkit.createInventory(p, 54, "§7§l[ §c§lTNT Wars Menu §7§l]");
+		p.openInventory(inv);
+		openCNameMenu(p, inv);
+	}
+
+	public void openCNameChanger(Player p){
+		new AnvilGUI(pl, p, " ", (player, name) -> {
+			Boolean usable = true;
+			if(!pl.cNameColor.containsKey(p.getName()))pl.cNameColor.put(p.getName(), ChatColor.WHITE);
+			if(pl.cName.size() >= 1){
+				for(String current: pl.cName.values()){
+					if(name.equals(current)){
+						usable = false;
+						p.sendMessage("§7§l[§c§lTNT Wars§7§l] " + pl.cNameColor.get(p.getName()) + current + " §cis in use already, §bplease choose another.");
+						break;
+					}
+				}
+			}else{
+				usable = true;
+			}
+			if(usable){
+				pl.cName.put(p.getName(), name);
+				p.closeInventory();
+				p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bCustom name set to: " + pl.cNameColor.get(p.getName()) + pl.cName.get(p.getName()));
+				return name;
+			}
+			return name;
+		});
+	}
+
+	public void arenaSelectorMenu(Player p, Inventory inv){
+		inv.clear();
+		HashMap<String, ItemStack> items = arenaSelectorInvContents(p);
+		for(String i : items.keySet()){
+			inv.setItem(Integer.parseInt(i), items.get(i));
+		}
+		return;
+	}
+
+	public void arenaSelectorMenu(Player p){
+		Inventory inv = Bukkit.createInventory(p, 54, "§7§l[ §c§lTNT Wars Menu §7§l]");
+		p.openInventory(inv);
+		openCNameMenu(p, inv);
+	}
+
+	private HashMap<String, ItemStack> arenaSelectorInvContents(Player p){
+		HashMap<String, ItemStack> items = new HashMap<String, ItemStack>();
+		for(int i = 0 ; i < 54; i++){
+			if(i <= 20){
+				items.put(String.valueOf(i), addItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8), " ", Lists.newArrayList()));
+			}else if(i >= 25 && i <= 28){
+				items.put(String.valueOf(i), addItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8), " ", Lists.newArrayList()));
+			}else if(i >= 34){
+				items.put(String.valueOf(i), addItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8), " ", Lists.newArrayList()));
+			}
+		}
+		int slot = 20;
+		for(int arenaIndex : pl.arenas.keySet()){
+			String mapName = pl.arenas.get(arenaIndex);
+			int adder = 1;
+			if(slot == 25){
+				slot = 29;
+			}
+			if(slot == 34){
+				Bukkit.broadcastMessage("§cToo many arenas ATM");
+				break;
+			}
+			if(pl.cd.active.get(mapName)){
+				if(!pl.inGame.get(mapName).isEmpty())adder=0;
+				if(slot >= 20 && slot <= 24){
+					items.put(String.valueOf(slot), addItem(new ItemStack(pl.arenaIcons.get(mapName), pl.inGame.get(mapName).size() + adder), "§aJoin §7: §b" + mapName, 
+							Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+									"§bClick to join this arena",
+									" ",
+									"§bCurrent§7: §a" + pl.inGame.get(mapName).size() +"§7/§a" + pl.gameMax,
+									"§bActive§7: §a" + pl.cd.active.get(mapName))));
+					slot++;
+				}else if(slot >= 29 && slot <= 33){
+					items.put(String.valueOf(slot), addItem(new ItemStack(pl.arenaIcons.get(mapName), pl.inGame.get(mapName).size() + adder), "§aJoin §7: §b" + mapName, 
+							Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+									"§bClick to join this arena",
+									" ",
+									"§bCurrent§7: §a" + pl.inGame.get(mapName).size() +"§7/§a" + pl.gameMax,
+									"§bActive§7: §a" + pl.cd.active.get(mapName))));
+					slot++;
+				}
+			}else{
+				if(slot >= 20 && slot <= 24){
+					items.put(String.valueOf(slot), addItem(new ItemStack(pl.arenaIcons.get(mapName), pl.inGame.get(mapName).size() + adder), "§aJoin §7: §b" + mapName, 
+							Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+									"§bClick to join this arena",
+									" ",
+									"§bCurrent§7: §a" + pl.gameQueue.get(mapName).size() +"§7/§a" + pl.gameMax,
+									"§bActive§7: §a" + pl.cd.active.get(mapName))));
+					slot++;
+				}else if(slot >= 29 && slot <= 33){
+					items.put(String.valueOf(slot), addItem(new ItemStack(pl.arenaIcons.get(mapName), pl.inGame.get(mapName).size() + adder), "§aJoin §7: §b" + mapName, 
+							Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+									"§bClick to join this arena",
+									" ",
+									"§bCurrent§7: §a" + pl.gameQueue.get(mapName).size() +"§7/§a" + pl.gameMax,
+									"§bActive§7: §a" + pl.cd.active.get(mapName))));
+					slot++;
+				}
+			}
+		}
+		items.put("49", addItem(new ItemStack(Material.BED), "§bReturn to Main Menu",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Return to Main Menu")));
+		return items;
+	}
+
+	private HashMap<ItemStack, Integer> ArenaSettingsContents(Player p, String arena){
+		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();	
+		items.put(addItem(new ItemStack(Material.CHEST), "§aEditing §7: §b" + arena,
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")), 4);
+		items.put(addItem(new ItemStack(Material.BEACON), "§aSet SpawnPoint",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Set the SpawnPoint for this arena")), 20);
+		items.put(addItem(new ItemStack(Material.EYE_OF_ENDER), "§aSet SpecPoint",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Set the SpawnPoint for this arena")), 24);
+		items.put(addItem(new ItemStack(Material.BED), "§aArena Selector",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Return to the settings arena selector")), 49);
+		return items;
+	}
+
+	private HashMap<String, ItemStack> ArenaSettingsMenuContents(Player p){
+		HashMap<String, ItemStack> items = new HashMap<String, ItemStack>();
+		for(int i = 0 ; i < 54; i++){
+			if(i <= 20){
+				items.put(String.valueOf(i), addItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8), " ", Lists.newArrayList()));
+			}else if(i >= 25 && i <= 28){
+				items.put(String.valueOf(i), addItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8), " ", Lists.newArrayList()));
+			}else if(i >= 34){
+				items.put(String.valueOf(i), addItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8), " ", Lists.newArrayList()));
+			}
+		}
+		int slot = 20;
+		for(int arenaIndex : pl.arenas.keySet()){
+			if(slot == 25){
+				slot = 29;
+			}
+			if(slot == 34){
+				Bukkit.broadcastMessage("§cToo many arenas ATM");
+				break;
+			}
+			if(slot >= 20 && slot <= 24){
+				items.put(String.valueOf(slot), addItem(new ItemStack(pl.arenaIcons.get(pl.arenas.get(arenaIndex))), "§aEdit §7: §b" + pl.arenas.get(arenaIndex), Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to edit this arena")));
+				slot++;
+			}else if(slot >= 29 && slot <= 33){
+				items.put(String.valueOf(slot), addItem(new ItemStack(pl.arenaIcons.get(pl.arenas.get(arenaIndex))), "§aEdit §7: §b" + pl.arenas.get(arenaIndex), Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to edit this arena")));
+				slot++;
+			}
+		}
+		items.put("49", addItem(new ItemStack(Material.BED), "§bReturn to Main Menu",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Return to Main Menu")));
+		return items;
+	}
+
+	private HashMap<ItemStack, Integer> cNameMenuInvContents(Player p){
+		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();	
+		items.put(addItem(new ItemStack(Material.CHEST), "§bColor",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select a color below")), 1);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 14), "§bRed Name",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §c§lRed")), 10);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 11), "§bBlue Name",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §1§lBlue")), 19);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 13), "§bGreen Name",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §2§lGreen")), 28);
+		items.put(addItem(new ItemStack(Material.WOOL), "§bWhite Name",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §f§lWhite")), 37);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 10), "§bPurple Name",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §5§lPurple")), 46);
+		items.put(addItem(new ItemStack(Material.BOOK), "§b§lDonor Perks",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Return to donator settings")), 8);
+		if(pl.cName.containsKey(p.getName())){
+			items.put(addItem(new ItemStack(Material.ANVIL), "§bChange Name",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Click to change name",
+							" ",
+							"§6Current: " + pl.cNameColor.get(p.getName()) + pl.cName.get(p.getName()))), 53);
+		}else{
+			items.put(addItem(new ItemStack(Material.ANVIL), "§bChange Name",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Click to set name",
+							" ",
+							"§6Current: §7[§cNot Set Yet§7]")), 53);
+		}
+		return items;
+	}
+
+	private HashMap<ItemStack, Integer> fwEditorMenuInvContents(Player p){
+		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();	
+		pl.ED.encodeFWSettings(p.getName());
+		Boolean opt = pl.ED.decodeFWSettingsFlicker(p.getName());
+		if(opt == true){
+			items.put(addItem(new ItemStack(Material.SLIME_BALL), "§bFlicker",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Toggle the filcker")), 1);
+		}else{
+			items.put(addItem(new ItemStack(Material.MAGMA_CREAM), "§bFlicker",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Toggle the filcker")), 1);
+		}
+		opt = pl.ED.decodeFWSettingsTrail(p.getName());
+		if(opt == true){
+			items.put(addItem(new ItemStack(Material.SLIME_BALL), "§bTrail",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Toggle the trail")), 3);
+		}else{
+			items.put(addItem(new ItemStack(Material.MAGMA_CREAM), "§bTrail",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Toggle the trail")), 3);
+		}
+		items.put(addItem(new ItemStack(Material.CHEST), "§bType",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select a type below")), 5);
+		items.put(addItem(new ItemStack(Material.SNOW_BALL), "§bBall",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the ball type")), 14);
+		items.put(addItem(new ItemStack(Material.SLIME_BALL), "§bLarge Ball",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the large ball type")), 23);
+		items.put(addItem(new ItemStack(Material.TNT), "§bBurst",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the burst type")), 32);
+		items.put(addItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 4), "§bCreeper",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the creeper type")), 41);
+		items.put(addItem(new ItemStack(Material.NETHER_STAR), "§bStar",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the star type")), 50);
+
+		items.put(addItem(new ItemStack(Material.CHEST), "§bColor",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select a color below")), 7);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 14), "§bRed",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §c§lRed")), 16);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 11), "§bBlue",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §1§lBlue")), 25);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 13), "§bGreen",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §2§lGreen")), 34);
+		items.put(addItem(new ItemStack(Material.WOOL), "§bWhite",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §f§lWhite")), 43);
+		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 10), "§bPurple",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§6Select the color §5§lPurple")), 52);
+
+		items.put(addItem(new ItemStack(Material.BOOK), "§b§lDonor Perks",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Return to donator settings")), 45);
+		return items;
+	}
+
+	private HashMap<ItemStack, Integer> donorMenuInvContents(Player p){
+		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();	
+		items.put(addItem(new ItemStack(Material.BED), "§bReturn to Main Menu",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Return to Main Menu")), 49);
+		if(p.hasPermission("tntwars.fireworks")){
+			items.put(addItem(new ItemStack(Material.PAPER), "§bFireworks §7Settings",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Open Firework settings")), 19);
+			boolean toggle = false;
+			if(pl.Perks.containsKey(p.getName())){
+				if(pl.Perks.get(p.getName()).containsKey("Fireworks")){
+					if(pl.Perks.get(p.getName()).get("Fireworks")){
+						toggle = true;
+						items.put(addItem(new ItemStack(Material.SLIME_BALL), "§bTurn Fireworks §7[§cOFF§7]",
+								Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+										"§6When your TNT explodes it",
+										"§6launches a firework into the air",
+										" ",
+										"§bClick to turn §7[§cOFF§7]")), 10);	
+					}
+				}
+			}
+			if(!toggle){
+				items.put(addItem(new ItemStack(Material.MAGMA_CREAM), "§bTurn Fireworks §7[§aON§7]",
+						Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+								"§6When your TNT explodes it",
+								"§6launches a firework into the air", 
+								" ",
+								"§bClick to turn §7[§aON§7]")), 10);
+			}
+		}
+		if(p.hasPermission("tntwars.outline")){
+			boolean toggle = false;
+			if(pl.Perks.containsKey(p.getName())){
+				if(pl.Perks.get(p.getName()).containsKey("Outline")){
+					if(pl.Perks.get(p.getName()).get("Outline")){
+						toggle = true;
+						items.put(addItem(new ItemStack(Material.SLIME_BALL), "§bTurn TNT Outline §7[§cOFF§7]",
+								Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+										"§6Your TNT will be outlined in white",
+										" ",
+										"§bClick to turn §7[§cOFF§7]")), 12);
+					}
+				}
+			}
+			if(!toggle){
+				items.put(addItem(new ItemStack(Material.MAGMA_CREAM), "§bTurn TNT Outline §7[§aON§7]",
+						Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+								"§6Your TNT will be outlined in white", 
+								" ",
+								"§bClick to turn §7[§aON§7]")), 12);
+			}
+		}
+		if(p.hasPermission("tntwars.customname")){
+			boolean toggle = false;
+			items.put(addItem(new ItemStack(Material.PAPER), "§bCustom Name §7Settings",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Change your custom name settings")), 23);
+			if(pl.Perks.containsKey(p.getName())){
+				if(pl.Perks.get(p.getName()).containsKey("CName")){
+					if(pl.Perks.get(p.getName()).get("CName")){
+						toggle = true;
+						items.put(addItem(new ItemStack(Material.SLIME_BALL), "§bCustom Name",
+								Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+										"§6When your TNT explodes it",
+										"§6launches a firework into the air",
+										" ",
+										"§bClick to toggle the custom name")), 14);	
+					}
+				}
+			}
+			if(!toggle){
+				items.put(addItem(new ItemStack(Material.MAGMA_CREAM), "§bCustom Name",
+						Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+								"§6When your TNT explodes it",
+								"§6launches a firework into the air",
+								" ",
+								"§bClick to toggle the custom name")), 14);	
+			}
+		}
+		if(items.size() == 0){
+			items.put(addItem(new ItemStack(Material.BARRIER), "§cNo Avaible Perks",
+					Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+							"§6Purchase the perks on the SFT website")), 13);
+		}
+		return items;
+	}
+
+	private HashMap<ItemStack, Integer> mainMenuInvContents(Player p){
 		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();
-		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 13), "§aJoin TNT Wars", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to join TNT Wars")), 10);
+		items.put(addItem(new ItemStack(Material.BOOK), "§aArena List", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to see all the arenas to join")), 10);
 		items.put(addItem(new ItemStack(Material.CHEST), "§aTNT Wars Kits", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to see TNT Wars kits")), 13);
 		items.put(addItem(new ItemStack(Material.WOOL, 1, (short) 14), "§aLeave TNT Wars", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to leave TNT Wars")), 16);
 		if(p.hasPermission("tntwars.host"))items.put(addItem(new ItemStack(Material.TNT), "§aForce Start TNT Wars", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to force start TNT Wars")), 20);
-		if(p.hasPermission("tntwars.host"))items.put(addItem(new ItemStack(Material.BEACON), "§aSet TNT Wars Spawn", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to set TNT Wars spawn")), 22);
-		if(p.hasPermission("tntwars.host"))items.put(addItem(new ItemStack(Material.GLASS), "§aSet TNT Wars Spec Point", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to set TNT Wars spec point")), 24);
+		if(p.hasPermission("tntwars.host"))items.put(addItem(new ItemStack(Material.PAPER), "§aArenas Settings", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to open arena list")), 24);
 		if(p.hasPermission("tntwars.donor"))items.put(addItem(new ItemStack(Material.BOOK), "§b§lDonor Perks", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§7 - §6Choose your donator settings")), 45);
 		items.put(addItem(new ItemStack(Material.ARROW), "§aClose TNT Wars Menu", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to close TNT Wars Menu")), 40);
 		return items;
 	}
 
-	public HashMap<ItemStack, Integer> kitMenuInvContents(Player p){
+	private HashMap<ItemStack, Integer> kitMenuInvContents(Player p){
 		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();
 		items.put(addItem(new ItemStack(Material.BOW), "§b§lSniper",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
@@ -137,8 +557,6 @@ public class MenuHandler implements Listener {
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT has no gravity")), 25);
 
-
-
 		items.put(addItem(new ItemStack(Material.BLAZE_POWDER), "§b§lStorm",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT rains from the sky",
@@ -169,14 +587,15 @@ public class MenuHandler implements Listener {
 				Lists.newArrayList( "§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Exclusive to: TheVirginian")), 53);
 
-
-
 		items.put(addItem(new ItemStack(Material.ARROW), "§b§lRandom",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§7 - §6Click for a random kit")), 49);
+		items.put(addItem(new ItemStack(Material.BED), "§bReturn to Main Menu",
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
+						"§7 - §6Return to Main Menu")), 45);
 		return items;
 	}
 
-	private ItemStack addItem(ItemStack item, String name, List<String> lore) {
+	public ItemStack addItem(ItemStack item, String name, List<String> lore) {
 		ItemMeta meta;
 		meta = item.getItemMeta();
 		meta.setDisplayName(name);
@@ -193,172 +612,5 @@ public class MenuHandler implements Listener {
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		return item;
-	}
-
-	@EventHandler
-	public void invClick(InventoryClickEvent e) {
-		Player p = (Player) e.getWhoClicked();
-		Inventory clickedInv = e.getClickedInventory();
-		if (clickedInv != null) {
-			if (clickedInv.getTitle().equals("§7§l[ §c§lTNT Wars Menu §7§l]")) {
-				e.setCancelled(true);
-				if (pl.inGame.contains(e.getWhoClicked().getName())) {
-					p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou can't change kits while in-game.");
-					e.setCancelled(true);
-					p.closeInventory();
-					return;
-				}
-				ItemStack clicked = e.getCurrentItem();
-				if (clicked == null)return;
-				if (clicked.hasItemMeta()) {
-					String itemName = clicked.getItemMeta().getDisplayName();
-					switch (itemName) {
-					case "§aJoin TNT Wars":
-						p.performCommand("tw j");
-						p.closeInventory();
-						break;
-					case "§aLeave TNT Wars":
-						p.performCommand("tw l");
-						p.closeInventory();
-						break;
-					case "§aTNT Wars Kits":
-						if(pl.gameQueue.contains(p.getName()))openKitMenu(p, clickedInv);
-						else p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou need to be queued to select a kit");
-						break;
-					case "§aForce Start TNT Wars":
-						p.performCommand("tw forcestart");
-						p.closeInventory();
-						break;
-					case "§aSet TNT Wars Spawn":
-						p.performCommand("tw setspawn");
-						p.closeInventory();
-						break;
-					case "§aSet TNT Wars Spec Point":
-						p.performCommand("tw setspecpoint");
-						p.closeInventory();
-						break;
-					case "§aClose TNT Wars Menu":
-						p.closeInventory();
-						break;
-					case "§b§lDonor Perks":
-						p.closeInventory();
-						Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-							@Override
-							public void run() {
-								pl.DPM.openInv(p);
-							}
-						}, 1);
-						break;
-					//KITS
-					case "§b§lSniper":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Sniper");
-						p.closeInventory();
-						break;
-					case "§b§lShort Fuse":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Short Fuse");
-						p.closeInventory();
-						break;
-					case "§b§lHeavy Loader":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Heavy Loader");
-						p.closeInventory();
-						break;
-					case "§b§lMiner":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Miner");
-						p.closeInventory();
-						break;
-					case "§b§lSuicide Bomber":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Suicide Bomber");
-						p.closeInventory();
-						break;
-					case "§b§lGlue Factory Worker":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Glue Factory Worker");
-						p.closeInventory();
-						break;
-					case "§b§lEnder":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Ender");
-						p.closeInventory();
-						break;
-					case "§b§lBoomerang":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Boomerang");
-						p.closeInventory();
-						break;
-					case "§b§lPotion Worker":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Potion Worker");
-						p.closeInventory();
-						break;
-					case "§b§lDoctor Who":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Doctor Who");
-						p.closeInventory();
-						break;
-					case "§b§lTank":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Tank");
-						p.closeInventory();
-						break;
-					case "§b§lRandom":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Random");
-						p.closeInventory();
-						break;
-					case "§b§lBribed":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Bribed");
-						p.closeInventory();
-						break;
-					case "§b§lHail Mary":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Hail Mary");
-						p.closeInventory();
-						break;
-					case "§b§lSpace Man":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Space Man");
-						p.closeInventory();
-						break;
-					case "§b§lStorm":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Storm");
-						p.closeInventory();
-						break;
-					case "§b§lVampire":
-						p.sendMessage("§6You selected: " + itemName);
-						pl.selectedKit.put(p.getName(), "Vampire");
-						p.closeInventory();
-						break;
-					case "§b§lVirg Special":
-						if (p.getName().equals("abandoncaptian") || p.getName().equals("TheVirginian")) {
-							p.sendMessage("§6You selected: " + itemName);
-							pl.selectedKit.put(p.getName(), "Virg Special");
-							p.closeInventory();
-						} else {
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis kit is exclusive to TheVirgian");
-						}
-						break;
-					case "§b§lTBA 1":
-					case "§b§lTBA 2":
-					case "§b§lTBA 3":
-					case "§b§lTBA 4":
-					case "§b§lTBA 5":
-						p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis is not a usable Kit");
-						break;
-					default:
-						p.sendMessage("§cERROR");
-						p.closeInventory();
-						break;
-					}
-					return;
-				}
-			}
-		}
 	}
 }

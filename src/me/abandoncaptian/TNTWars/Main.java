@@ -1,6 +1,7 @@
 package me.abandoncaptian.TNTWars;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -19,21 +22,21 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
 import me.abandoncaptian.TNTWars.Events.BlockPlace;
 import me.abandoncaptian.TNTWars.Events.EntityDamageByEntity;
 import me.abandoncaptian.TNTWars.Events.EntityExplode;
+import me.abandoncaptian.TNTWars.Events.MenuClickHandler;
 import me.abandoncaptian.TNTWars.Events.PlayerDeath;
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 import me.abandoncaptian.TNTWars.Events.PlayerLeaveAndJoin;
 
 public class Main extends JavaPlugin implements Listener {
 	Logger Log = Bukkit.getLogger();
-	File configFile;
-	FileConfiguration config;
+	public File configFile;
+	public FileConfiguration config;
 	public File perksFile;
 	public FileConfiguration perksConfig;
 	MenuHandler mh;
@@ -47,29 +50,40 @@ public class Main extends JavaPlugin implements Listener {
 	EntityDamageByEntity EDBE;
 	BlockPlace BP;
 	CommandHandler CH;
-	DonorPerksMenu DPM;
-	public List<String> gameQueue = new ArrayList<String>();
-	public List<String> inGame = new ArrayList<String>();
-	public List<String> dead = new ArrayList<String>();
-	public List<String> spec = new ArrayList<String>();
+	MenuClickHandler MCH;
+	GameFunc GF;
+	public EncoderAndDecoder ED;
+	public Map<String, List<String>> gameQueue = new HashMap<String, List<String>>();
+	public List<String> allQueue = new ArrayList<String>();
+	public Map<String, List<String>> inGame = new HashMap<String, List<String>>();
+	public List<String> allInGame = new ArrayList<String>();
+	public Map<String, List<String>> dead = new HashMap<String, List<String>>();
+	public Map<String, List<String>> spec = new HashMap<String, List<String>>();
+	public Map<String, String> playerInArena = new HashMap<String, String>();
 	public List<PotionEffectType> potions = new ArrayList<PotionEffectType>();
+	public Map<Integer, String> arenas = new HashMap<Integer, String>();
+	public Map<String, Material> arenaIcons = new HashMap<String, Material>();
 	public Map<String, ItemStack[]> extraInv;
 	public Map<String, HashMap<String, Boolean>> Perks = new HashMap<String, HashMap<String, Boolean>>();
+	public Map<String, String> fwSettings = new HashMap<String, String>();
 	public Map<String, Integer> savedXPL = new HashMap<String, Integer>();
 	public Map<String, Float> savedXP = new HashMap<String, Float>();
 	public Map<String, Location> tpBack = new HashMap<String, Location>();
+	public Map<String, String> cName = new HashMap<String, String>();
+	public Map<String, ChatColor> cNameColor = new HashMap<String, ChatColor>();
+	public Map<String, Location> spawnpoint = new HashMap<String, Location>();
+	public Map<String, Location> specpoint = new HashMap<String, Location>();
 	ScoreboardManager manager;
-	Scoreboard queueBoard;
-	Scoreboard remainingBoard;
+	Map<String, Scoreboard> queueBoard = new HashMap<String, Scoreboard>();
+	Map<String, Scoreboard> remainingBoard = new HashMap<String, Scoreboard>();
 	Scoreboard clearBoard;
-	Objective objectiveQueue;
-	Objective objectiveRemaining;
+	Map<String, Objective> objectiveQueue = new HashMap<String, Objective>();
+	Map<String, Objective> objectiveRemaining = new HashMap<String, Objective>();
 	public int gameMin;
 	int gameStart30Sec;
 	int gameMax;
 	int gameQueueTime;
-	public Location spawnpoint;
-	public Location specpoint;
+	public Main instance;
 	public HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
 	public HashMap<String, String> selectedKit = new HashMap<String, String>();
 	BukkitTask deathCount;
@@ -89,43 +103,58 @@ public class Main extends JavaPlugin implements Listener {
 			config.options().copyDefaults(true);
 			this.saveDefaultConfig();
 			this.saveConfig();
-			Log.info("File Didn't Exist ----");
+			Log.info("Config File Didn't Exist ----");
 		}
 		if (!(perksFile.exists())) {
 			perksConfig.options().copyDefaults(true);
-			this.saveDefaultConfig();
-			this.saveConfig();
-			Log.info("File Didn't Exist ----");
+			try {
+				perksConfig.save(perksFile);
+			} catch (IOException e) {
+			}
+			Log.info("Perks File Didn't Exist ----");
 		}
-		if (!config.contains("SpawnPoint")) {
-			config.set("Spawnpoint.world", "world");
-			config.set("Spawnpoint.x", 0);
-			config.set("Spawnpoint.y", 100);
-			config.set("Spawnpoint.z", 0);
+		if (!config.contains("Arenas")) {
+			config.set("Arenas.1.Spawnpoint.world", "world");
+			config.set("Arenas.1.Spawnpoint.x", 0);
+			config.set("Arenas.1.Spawnpoint.y", 100);
+			config.set("Arenas.1.Spawnpoint.z", 0);
+			config.set("Arenas.1.SpecPoint.world", "world");
+			config.set("Arenas.1.SpecPoint.x", 0);
+			config.set("Arenas.1.SpecPoint.y", 100);
+			config.set("Arenas.1.SpecPoint.z", 0);
 			this.saveConfig();
 		}
-		if (!config.contains("SpecPoint")) {
-			config.set("SpecPoint.world", "world");
-			config.set("SpecPoint.x", 0);
-			config.set("SpecPoint.y", 100);
-			config.set("SpecPoint.z", 0);
-			this.saveConfig();
+		Boolean check = true;
+		int checkNum = 1;
+		while(check){
+			if(config.contains("Arenas." + checkNum)){
+				String mapName = config.getString("Arenas." + checkNum + ".Name");
+				arenas.put(checkNum, mapName);
+				arenaIcons.put(mapName, Material.valueOf(config.getString("Arenas." + checkNum + ".Icon")));
+				checkNum++;
+			}else{
+				check = false;
+			}
+		}
+		for(Integer aName : arenas.keySet()){
+			spawnpoint.put(arenas.get(aName), new Location(Bukkit.getWorld((String)
+					config.get("Arenas."+ aName +".SpawnPoint.world")),
+					config.getInt("Arenas."+ aName +".SpawnPoint.x"),
+					config.getInt("Arenas."+ aName +".SpawnPoint.y"),
+					config.getInt("Arenas."+ aName +".SpawnPoint.z")));
+			specpoint.put(arenas.get(aName), new Location(Bukkit.getWorld((String)
+					config.get("Arenas."+ aName +".SpecPoint.world")),
+					config.getInt("Arenas."+ aName +".SpecPoint.x"),
+					config.getInt("Arenas."+ aName +".SpecPoint.y"),
+					config.getInt("Arenas."+ aName +".SpecPoint.z")));
 		}
 		LF = new LoadFunctions(this);
 		gameMin = config.getInt("Game-Min");
 		gameStart30Sec = config.getInt("Game-Start-30Sec");
 		gameMax = config.getInt("Game-Max");
 		gameQueueTime = (config.getInt("Game-Queue-Time") * 1200);
-		this.spawnpoint = new Location(Bukkit.getWorld((String) config.get("SpawnPoint.world")),
-				config.getInt("SpawnPoint.x"), config.getInt("SpawnPoint.y"), config.getInt("SpawnPoint.z"));
-		this.specpoint = new Location(Bukkit.getWorld((String) config.get("SpecPoint.world")),
-				config.getInt("SpecPoint.x"), config.getInt("SpecPoint.y"), config.getInt("SpecPoint.z"));
 		manager = Bukkit.getScoreboardManager();
-		queueBoard = manager.getNewScoreboard();
-		remainingBoard = manager.getNewScoreboard();
 		clearBoard = manager.getNewScoreboard();
-		objectiveQueue = queueBoard.registerNewObjective("Queued", "dummy");
-		objectiveRemaining = remainingBoard.registerNewObjective("Remaining", "dummy");
 		cd = new CountDowns(this);
 		mh = new MenuHandler(this);
 		IAE = new InvAndExp(this);
@@ -135,13 +164,10 @@ public class Main extends JavaPlugin implements Listener {
 		EE = new EntityExplode(this);
 		PD = new PlayerDeath(this);
 		BP = new BlockPlace(this);
-		DPM = new DonorPerksMenu(this);
-		DPM.initInv();
 		CH = new CommandHandler(this);
-		objectiveQueue.setDisplayName("§7§l[§c§lQueued§7§l]");
-		objectiveQueue.setDisplaySlot(DisplaySlot.SIDEBAR);
-		objectiveRemaining.setDisplayName("§7§l[§c§lRemaining§7§l]");
-		objectiveRemaining.setDisplaySlot(DisplaySlot.SIDEBAR);
+		ED = new EncoderAndDecoder(this);
+		MCH = new MenuClickHandler(this);
+		GF = new GameFunc(this);
 		extraInv = new HashMap<>();
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
@@ -150,10 +176,32 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(EDBE, this);
 		Bukkit.getPluginManager().registerEvents(BP, this);
 		Bukkit.getPluginManager().registerEvents(PD, this);
-		Bukkit.getPluginManager().registerEvents(DPM, this);
+		Bukkit.getPluginManager().registerEvents(MCH, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		getCommand("tw").setExecutor(CH);
-		cd.active = false;
+		for(String map : arenas.values()){
+			queueBoard.put(map, manager.getNewScoreboard());
+			remainingBoard.put(map, manager.getNewScoreboard());
+			objectiveQueue.put(map, queueBoard.get(map).registerNewObjective("Queued", "dummy"));
+			objectiveRemaining.put(map, remainingBoard.get(map).registerNewObjective("Remaining", "dummy"));
+			objectiveQueue.get(map).setDisplayName("§7§l[§c§lQueued§7§l]");
+			objectiveQueue.get(map).setDisplaySlot(DisplaySlot.SIDEBAR);
+			objectiveRemaining.get(map).setDisplayName("§7§l[§c§lRemaining§7§l]");
+			objectiveRemaining.get(map).setDisplaySlot(DisplaySlot.SIDEBAR);
+			cd.active.put(map, false);
+			gameQueue.put(map, new ArrayList<String>());
+			gameQueue.get(map).clear();
+			inGame.put(map, new ArrayList<String>());
+			inGame.get(map).clear();
+			dead.put(map, new ArrayList<String>());
+			dead.get(map).clear();
+			spec.put(map, new ArrayList<String>());
+			spec.get(map).clear();
+			cd.starting1.put(map, false);
+			cd.starting2.put(map, false);
+			cd.active.put(map, false);
+			cd.canKit.put(map, true);
+		}
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new HighGiveRate(this), 0, 20 * 3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new StickTNTCheck(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new LowGiveRate(this), 0, 20 * 5);
@@ -174,32 +222,15 @@ public class Main extends JavaPlugin implements Listener {
 		Log.info("              Disabled!             ");
 		Log.info(" ");
 		Log.info("------------------------------------");
+		for(String map : arenas.values()){
+			cd.active.put(map, false);
+			cd.canKit.put(map, true);
+		}
 		inGame.clear();
 		gameQueue.clear();
+		allInGame.clear();
+		allQueue.clear();
+		arenas.clear();
 		selectedKit.clear();
-		cd.active = false;
-		cd.canKit = true;
 	}
-
-	public void UpdateBoard(Boolean leave, String name) {
-		if (!leave) {
-			Score score;
-			score = objectiveQueue.getScore("§a" + name);
-			score.setScore(gameQueue.indexOf(name));
-			Bukkit.getPlayer(name).setScoreboard(queueBoard);
-			score = objectiveRemaining.getScore("§c" + name);
-			score.setScore(gameQueue.indexOf(name));
-		} else {
-			queueBoard.resetScores("§a" + name);
-			remainingBoard.resetScores("§c" + name);
-			Bukkit.getPlayer(name).setScoreboard(clearBoard);
-		}
-	}
-
-	public void ChangeBoard() {
-		for (String name : inGame) {
-			Bukkit.getPlayer(name).setScoreboard(remainingBoard);
-		}
-	}
-
 }
