@@ -38,8 +38,8 @@ public class EntityExplode implements Listener {
 	public void tntExplode(EntityExplodeEvent e) {
 		for(String map : pl.arenas.values()){
 			if (pl.cd.active.get(map)) {
+				e.blockList().clear();
 				if (e.getEntity() instanceof TNTPrimed) {
-					e.blockList().clear();
 					if (pl.selectedKit.get(e.getEntity().getCustomName()) == "Potion Worker") {
 						List<Entity> ents = new ArrayList<Entity>();
 						List<Player> players = new ArrayList<Player>();

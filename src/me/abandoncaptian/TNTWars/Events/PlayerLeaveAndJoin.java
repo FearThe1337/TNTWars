@@ -31,6 +31,23 @@ public class PlayerLeaveAndJoin implements Listener {
 	public void playerLeaveGame(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
 
+		if(pl.points.containsKey(p.getName())){
+			pl.playerConfig.set(p.getName() + ".Points", pl.points.get(p.getName()));
+			pl.points.remove(p.getName());
+		}
+		if(pl.wins.containsKey(p.getName())){
+			pl.playerConfig.set(p.getName() + ".Wins", pl.wins.get(p.getName()));
+			pl.wins.remove(p.getName());
+		}
+		if(pl.loses.containsKey(p.getName())){
+			pl.playerConfig.set(p.getName() + ".Loses", pl.loses.get(p.getName()));
+			pl.loses.remove(p.getName());
+		}
+		try {
+			pl.playerConfig.save(pl.playerFile);
+		} catch (IOException e2) {
+		}
+		
 		if (pl.Perks.containsKey(p.getName())) {
 			if (pl.Perks.get(p.getName()).containsKey("Fireworks")) {
 				pl.perksConfig.set(p.getName() + ".Fireworks", pl.Perks.get(p.getName()).get("Fireworks"));
@@ -81,6 +98,20 @@ public class PlayerLeaveAndJoin implements Listener {
 	@EventHandler
 	public void gameConnect(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
+		
+		if(pl.playerConfig.contains(p.getName())){
+			if(pl.playerConfig.contains(p.getName() + ".Points")){
+				pl.points.put(p.getName(), pl.playerConfig.getInt(p.getName() + ".Points"));
+			}
+			if(pl.playerConfig.contains(p.getName() + ".Wins")){
+				pl.wins.put(p.getName(), pl.playerConfig.getInt(p.getName() + ".Wins"));
+				
+			}
+			if(pl.playerConfig.contains(p.getName() + ".Loses")){
+				pl.loses.put(p.getName(), pl.playerConfig.getInt(p.getName() + ".Loses"));
+			}
+		}
+		
 		if (pl.perksConfig.contains(p.getName())) {
 			pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 			pl.Perks.get(p.getName()).put("Fireworks", pl.perksConfig.getBoolean(p.getName() + ".Fireworks"));

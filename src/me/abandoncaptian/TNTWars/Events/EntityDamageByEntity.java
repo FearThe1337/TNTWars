@@ -70,13 +70,11 @@ public class EntityDamageByEntity implements Listener {
 											killer = e.getDamager().getCustomName();
 										}
 										if (e.getEntity().getName() == killer){
-											Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6pulled a SashaLarie and killed themself §7- §b" + game + " remain!");	
+											Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6 killed themself §7- §b" + game + " remain!");	
 										}else{
 											if(killer == e.getDamager().getCustomName()){
-												Bukkit.broadcastMessage("§6§l------ §7§l[§c§lTNT Wars§7§l] §6§l------");
 												Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + killer + " §7- §b" + game + " remain!");
 											}else{
-												Bukkit.broadcastMessage("§6§l------ §7§l[§c§lTNT Wars§7§l] §6§l------");
 												Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + killer);
 												Bukkit.broadcastMessage("§bUsing §7[" + e.getDamager().getCustomName() + "§7] §cTNT §7- §b" + game + " remain!");
 											}
@@ -90,8 +88,7 @@ public class EntityDamageByEntity implements Listener {
 									"§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
 						}
 					}else {
-						if (!pl.allInGame.contains(p.getName()))return;
-						else e.setCancelled(true);
+						e.setCancelled(true);
 					}
 				}
 			}

@@ -25,13 +25,16 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import me.abandoncaptian.TNTWars.Events.BlockExplode;
 import me.abandoncaptian.TNTWars.Events.BlockPlace;
+import me.abandoncaptian.TNTWars.Events.EntityDamage;
 import me.abandoncaptian.TNTWars.Events.EntityDamageByEntity;
 import me.abandoncaptian.TNTWars.Events.EntityExplode;
 import me.abandoncaptian.TNTWars.Events.MenuClickHandler;
 import me.abandoncaptian.TNTWars.Events.PlayerDeath;
 import me.abandoncaptian.TNTWars.Events.PlayerInteract;
 import me.abandoncaptian.TNTWars.Events.PlayerLeaveAndJoin;
+import me.abandoncaptian.TNTWars.Events.SignChange;
 
 public class Main extends JavaPlugin implements Listener {
 	Logger Log = Bukkit.getLogger();
@@ -39,6 +42,10 @@ public class Main extends JavaPlugin implements Listener {
 	public FileConfiguration config;
 	public File perksFile;
 	public FileConfiguration perksConfig;
+	public File signsFile;
+	public FileConfiguration signsConfig;
+	public File playerFile;
+	public FileConfiguration playerConfig;
 	MenuHandler mh;
 	public InvAndExp IAE;
 	public CountDowns cd;
@@ -52,9 +59,13 @@ public class Main extends JavaPlugin implements Listener {
 	CommandHandler CH;
 	MenuClickHandler MCH;
 	GameFunc GF;
+	SignChange SC;
+	BlockExplode BE;
+	EntityDamage EDE;
 	public EncoderAndDecoder ED;
 	public Map<String, List<String>> gameQueue = new HashMap<String, List<String>>();
 	public List<String> allQueue = new ArrayList<String>();
+	public List<String> signs = new ArrayList<String>();
 	public Map<String, List<String>> inGame = new HashMap<String, List<String>>();
 	public List<String> allInGame = new ArrayList<String>();
 	public Map<String, List<String>> dead = new HashMap<String, List<String>>();
@@ -73,6 +84,9 @@ public class Main extends JavaPlugin implements Listener {
 	public Map<String, ChatColor> cNameColor = new HashMap<String, ChatColor>();
 	public Map<String, Location> spawnpoint = new HashMap<String, Location>();
 	public Map<String, Location> specpoint = new HashMap<String, Location>();
+	public Map<String, Integer> points = new HashMap<String, Integer>();
+	public Map<String, Integer> wins = new HashMap<String, Integer>();
+	public Map<String, Integer> loses = new HashMap<String, Integer>();
 	ScoreboardManager manager;
 	Map<String, Scoreboard> queueBoard = new HashMap<String, Scoreboard>();
 	Map<String, Scoreboard> remainingBoard = new HashMap<String, Scoreboard>();
@@ -81,7 +95,7 @@ public class Main extends JavaPlugin implements Listener {
 	Map<String, Objective> objectiveRemaining = new HashMap<String, Objective>();
 	public int gameMin;
 	int gameStart30Sec;
-	int gameMax;
+	public int gameMax;
 	int gameQueueTime;
 	public Main instance;
 	public HashMap<Entity, String> tntActive = new HashMap<Entity, String>();
@@ -99,6 +113,10 @@ public class Main extends JavaPlugin implements Listener {
 		this.config = YamlConfiguration.loadConfiguration(configFile);
 		this.perksFile = new File("plugins/TNTWars/DonorPerksDatabase.yml");
 		this.perksConfig = YamlConfiguration.loadConfiguration(perksFile);
+		this.signsFile = new File("plugins/TNTWars/Signs.yml");
+		this.signsConfig = YamlConfiguration.loadConfiguration(signsFile);
+		this.playerFile = new File("plugins/TNTWars/PlayerData.yml");
+		this.playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		if (!(configFile.exists())) {
 			config.options().copyDefaults(true);
 			this.saveDefaultConfig();
@@ -112,6 +130,22 @@ public class Main extends JavaPlugin implements Listener {
 			} catch (IOException e) {
 			}
 			Log.info("Perks File Didn't Exist ----");
+		}
+		if (!(signsFile.exists())) {
+			signsConfig.options().copyDefaults(true);
+			try {
+				signsConfig.save(signsFile);
+			} catch (IOException e) {
+			}
+			Log.info("Signs File Didn't Exist ----");
+		}
+		if (!(playerFile.exists())) {
+			playerConfig.options().copyDefaults(true);
+			try {
+				playerConfig.save(playerFile);
+			} catch (IOException e) {
+			}
+			Log.info("Player File Didn't Exist ----");
 		}
 		if (!config.contains("Arenas")) {
 			config.set("Arenas.1.Spawnpoint.world", "world");
@@ -131,6 +165,16 @@ public class Main extends JavaPlugin implements Listener {
 				String mapName = config.getString("Arenas." + checkNum + ".Name");
 				arenas.put(checkNum, mapName);
 				arenaIcons.put(mapName, Material.valueOf(config.getString("Arenas." + checkNum + ".Icon")));
+				checkNum++;
+			}else{
+				check = false;
+			}
+		}
+		checkNum = 1;
+		check = true;
+		while(check){
+			if(signsConfig.contains(String.valueOf(checkNum))){
+				signs.add(signsConfig.getString(String.valueOf(checkNum)));
 				checkNum++;
 			}else{
 				check = false;
@@ -168,6 +212,9 @@ public class Main extends JavaPlugin implements Listener {
 		ED = new EncoderAndDecoder(this);
 		MCH = new MenuClickHandler(this);
 		GF = new GameFunc(this);
+		SC = new SignChange(this);
+		BE = new BlockExplode(this);
+		EDE = new EntityDamage(this);
 		extraInv = new HashMap<>();
 		Bukkit.getPluginManager().registerEvents(mh, this);
 		Bukkit.getPluginManager().registerEvents(PI, this);
@@ -177,6 +224,9 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(BP, this);
 		Bukkit.getPluginManager().registerEvents(PD, this);
 		Bukkit.getPluginManager().registerEvents(MCH, this);
+		Bukkit.getPluginManager().registerEvents(SC, this);
+		Bukkit.getPluginManager().registerEvents(BE, this);
+		Bukkit.getPluginManager().registerEvents(EDE, this);
 		Bukkit.getPluginManager().registerEvents(this, this);
 		getCommand("tw").setExecutor(CH);
 		for(String map : arenas.values()){
@@ -205,6 +255,7 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new HighGiveRate(this), 0, 20 * 3);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new StickTNTCheck(this), 0, 2);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new LowGiveRate(this), 0, 20 * 5);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new SignUpdater(this), 0, 20 * 2);
 		potions.add(PotionEffectType.BLINDNESS);
 		potions.add(PotionEffectType.CONFUSION);
 		potions.add(PotionEffectType.HUNGER);
@@ -225,6 +276,25 @@ public class Main extends JavaPlugin implements Listener {
 		for(String map : arenas.values()){
 			cd.active.put(map, false);
 			cd.canKit.put(map, true);
+		}
+		int checkNum = 1;
+		boolean check = true;
+		while(check){
+			if(signsConfig.contains(String.valueOf(checkNum))){
+				signsConfig.set(String.valueOf(checkNum), null);
+				checkNum++;
+			}else{
+				check = false;
+			}
+		}
+		int i = 0;
+		for(String loc: signs){
+			i+=1;
+			signsConfig.set(String.valueOf(i), loc);
+			try {
+				signsConfig.save(signsFile);
+			} catch (IOException e) {
+			}
 		}
 		inGame.clear();
 		gameQueue.clear();

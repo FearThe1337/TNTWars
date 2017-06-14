@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -479,46 +478,60 @@ public class MenuHandler implements Listener {
 		if(p.hasPermission("tntwars.host"))items.put(addItem(new ItemStack(Material.PAPER), "§aArenas Settings", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to open arena list")), 24);
 		if(p.hasPermission("tntwars.donor"))items.put(addItem(new ItemStack(Material.BOOK), "§b§lDonor Perks", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§7 - §6Choose your donator settings")), 45);
 		items.put(addItem(new ItemStack(Material.ARROW), "§aClose TNT Wars Menu", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", "§bClick to close TNT Wars Menu")), 40);
+		if(!pl.points.containsKey(p.getName())){
+			pl.points.put(p.getName(), 0);
+		}
+		if(!pl.wins.containsKey(p.getName())){
+			pl.wins.put(p.getName(), 0);
+		}
+		if(!pl.loses.containsKey(p.getName())){
+			pl.loses.put(p.getName(), 0);
+		}
+		items.put(addItem(new ItemStack(Material.BOOK), "§aTNT Wars Stats", 
+				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----", 
+						"§bPoints§7: " + pl.points.get(p.getName()),
+						"§bWins§7: " + pl.wins.get(p.getName()),
+						"§bLoses§7: " + pl.loses.get(p.getName()))), 53);
 		return items;
 	}
 
 	private HashMap<ItemStack, Integer> kitMenuInvContents(Player p){
 		HashMap<ItemStack, Integer> items = new HashMap<ItemStack, Integer>();
-		items.put(addItem(new ItemStack(Material.BOW), "§b§lSniper",
+		if(p.hasPermission("tntwars.sniper"))items.put(addItem(new ItemStack(Material.BOW), "§b§lSniper",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Get a more accurate toss from tnt",
 						"§7 - §6Longer TNT respawn rate",
 						"§7 - §6Holds 1 TNT at a time",
 						" ",
 						"§fRequested By: §7nixcluster")), 10);
-		items.put(addItem(new ItemStack(Material.BLAZE_ROD), "§b§lDoctor Who",
+		if(p.hasPermission("tntwars.doctorwho"))items.put(addItem(new ItemStack(Material.BLAZE_ROD), "§b§lDoctor Who",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6You have x2 health at the start",
 						" ",
 						"§fRequested By: §7Mrs_Ender88")), 11);
-		items.put(addItem(new ItemStack(Material.RED_SHULKER_BOX), "§b§lHeavy Loader",
+		if(p.hasPermission("tntwars.heavyloader"))items.put(addItem(new ItemStack(Material.RED_SHULKER_BOX), "§b§lHeavy Loader",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Hold up to 5 TNT at a time",
 						"§7 - §6Longer TNT respawn rate")), 12);
-		items.put(addItem(new ItemStack(Material.DIAMOND_PICKAXE), "§b§lMiner",
+		if(p.hasPermission("tntwars.miner"))items.put(addItem(new ItemStack(Material.DIAMOND_PICKAXE), "§b§lMiner",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Place your TNT instead of throwing it",
 						"§7 - §6Recieve a 10 Minute speed boost",
 						"§7 - §6Right Click : 2 Sec Fuse",
 						"§7 - §6Left Click : 5 Sec Fuse")), 13);
-		items.put(addItem(new ItemStack(Material.TNT), "§b§lSuicide Bomber",
+		if(p.hasPermission("tntwars.suicidebomber"))items.put(addItem(new ItemStack(Material.TNT), "§b§lSuicide Bomber",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Activate your TNT for a instant explosion",
 						"§7 - §6Receive 1/2 the damage from the TNT explosion",
 						"§7 - §6Holds 1 TNT at a time", 
 						" ",
 						"§fRequested By: §7SashaLarie")), 14);
-		items.put(addItem(new ItemStack(Material.SLIME_BALL), "§b§lGlue Factory Worker",
+		if(p.hasPermission("tntwars.gluefactoryworker"))items.put(addItem(new ItemStack(Material.SLIME_BALL), "§b§lGlue Factory Worker",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Once your TNT hits the ground, it sticks",
 						" ", 
 						"§fRequested By: §7Mr_Ender86")), 15);
-		items.put(addItem(new ItemStack(Material.ENDER_PEARL), "§b§lEnder",
+		if(p.hasPermission("tntwars.ender"))items.put(addItem(new ItemStack(Material.ENDER_PEARL), "§b§lEnder",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Teleport the TNT to look location(30 Block Range)",
 						" ",
@@ -526,63 +539,51 @@ public class MenuHandler implements Listener {
 
 
 
-		items.put(addItem(new ItemStack(Material.STICK), "§b§lBoomerang",
+		if(p.hasPermission("tntwars.boomerang"))items.put(addItem(new ItemStack(Material.STICK), "§b§lBoomerang",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Throw tnt far but it comes back half the distance",
 						" ",
 						"§fRequested By: §7A past bug in the plugin")), 19);
-		items.put(addItem(new ItemStack(Material.POTION), "§b§lPotion Worker",
+		if(p.hasPermission("tntwars.potionworker"))items.put(addItem(new ItemStack(Material.POTION), "§b§lPotion Worker",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Cause a potion effect to players near the explosion",
 						" ",
 						"§fRequested By: §7Mr_Ender86")), 20);
-		items.put(addItem(new ItemStack(Material.REDSTONE_BLOCK), "§b§lShort Fuse",
+		if(p.hasPermission("tntwars.shortfuse"))items.put(addItem(new ItemStack(Material.REDSTONE_BLOCK), "§b§lShort Fuse",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT has a shorter fuse",
 						" ",
 						"§fRequested By: §7Mr_Ender86")), 21);
-		items.put(addItem(new ItemStack(Material.DIAMOND_CHESTPLATE), "§b§lTank",
+		if(p.hasPermission("tntwars.tank"))items.put(addItem(new ItemStack(Material.DIAMOND_CHESTPLATE), "§b§lTank",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6take 1/2 damage from TNT")), 22);
-		items.put(addSpecialItem(new ItemStack(Material.LEATHER_CHESTPLATE), "§b§lBribed",
+		if(p.hasPermission("tntwars.bribed"))items.put(addSpecialItem(new ItemStack(Material.LEATHER_CHESTPLATE), "§b§lBribed",
 				Color.fromRGB(170, 0, 0),
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Spawn with random armor",
 						" ",
 						"§7In Honor Of timelord_emma's manager promotion")), 23);
-		items.put(addItem(new ItemStack(Material.NETHER_STAR), "§b§lHail Mary",
+		if(p.hasPermission("tntwars.hailmary"))items.put(addItem(new ItemStack(Material.NETHER_STAR), "§b§lHail Mary",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT causes a larger explosion")), 24);
-		items.put(addItem(new ItemStack(Material.GLASS), "§b§lSpace Man",
+		if(p.hasPermission("tntwars.spaceman"))items.put(addItem(new ItemStack(Material.GLASS), "§b§lSpace Man",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT has no gravity")), 25);
 
-		items.put(addItem(new ItemStack(Material.BLAZE_POWDER), "§b§lStorm",
+		if(p.hasPermission("tntwars.storm"))items.put(addItem(new ItemStack(Material.BLAZE_POWDER), "§b§lStorm",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Your TNT rains from the sky",
 						" ",
 						"§fRequested By: §7TeraStorm")), 28);
-		items.put(addItem(new ItemStack(Material.REDSTONE), "§b§lVampire",
+		if(p.hasPermission("tntwars.vampirw"))items.put(addItem(new ItemStack(Material.REDSTONE), "§b§lVampire",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6If your TNT Strikes an enemy,",
 						"§7 - §6gain 1 heart",
 						" ",
 						"§fRequested By: §7TeraStorm")), 29);
-		items.put(addItem(new ItemStack(Material.BARRIER), "§b§lTBA 1",
+		items.put(addItem(new ItemStack(Material.COOKED_BEEF), "§b§lDefault",
 				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Coming Soon")), 30);
-		items.put(addItem(new ItemStack(Material.BARRIER), "§b§lTBA 2",
-				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Coming Soon")), 31);
-		items.put(addItem(new ItemStack(Material.BARRIER), "§b§lTBA 3",
-				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Coming Soon")), 32);
-		items.put(addItem(new ItemStack(Material.BARRIER), "§b§lTBA 4",
-				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Coming Soon")), 33);
-		items.put(addItem(new ItemStack(Material.BARRIER), "§b§lTBA 5",
-				Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-						"§7 - §6Coming Soon")), 34);
+						"§7 - §6Nothing Special")), 30);
 		if(p.getName().equalsIgnoreCase("thevirginian") || p.getName().equalsIgnoreCase("abandoncaptian"))items.put(addItem(new ItemStack(Material.INK_SACK), "§b§lVirg Special",
 				Lists.newArrayList( "§6§l---- §c[ TNT Wars ] §6§l----",
 						"§7 - §6Exclusive to: TheVirginian")), 53);

@@ -69,7 +69,6 @@ public class CountDowns {
 	}
 
 	public void countDown30(String map) {
-		Bukkit.broadcastMessage("§7[Debug] §6 Called countDown30");
 		if (!active.get(map)){
 			starting2.put(map, true);
 			countStart.put(map, Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
@@ -82,6 +81,15 @@ public class CountDowns {
 					for (String name : pl.inGame.get(map)) {
 						pl.allInGame.add(name);
 						pl.allQueue.remove(name);
+						if(!pl.points.containsKey(name)){
+							pl.points.put(name, 0);
+						}
+						if(!pl.wins.containsKey(name)){
+							pl.wins.put(name, 0);
+						}
+						if(!pl.loses.containsKey(name)){
+							pl.loses.put(name, 0);
+						}
 						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
 						Bukkit.getPlayer(name).setHealth(20);
 						Bukkit.getPlayer(name).setFoodLevel(20);

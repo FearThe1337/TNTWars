@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,11 +23,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import me.abandoncaptian.TNTWars.CountDowns;
+import me.abandoncaptian.TNTWars.GameFunc;
 import me.abandoncaptian.TNTWars.Main;
 
 public class PlayerInteract implements Listener {
 	Main pl;
 	CountDowns cd;
+	GameFunc GF;
 	ItemStack tnt = new ItemStack(Material.TNT);
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
@@ -35,11 +38,26 @@ public class PlayerInteract implements Listener {
 	public PlayerInteract(Main plugin) {
 		pl = plugin;
 		cd = new CountDowns(plugin);
+		GF = new GameFunc(plugin);
 		meta.setDisplayName("§6§lThrowable §c§lTNT");
 		lore.add("§bLeft click to throw");
 		lore.add("§bMade By: abandoncaptian");
 		meta.setLore(lore);
 		tnt.setItemMeta(meta);
+	}
+
+
+	@EventHandler
+	public void signClick(PlayerInteractEvent e) {
+		if ((e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			if(e.getClickedBlock().getState() instanceof Sign){
+				Sign s = (Sign) e.getClickedBlock().getState();
+				Player p = e.getPlayer();
+				if(s.getLine(0).equals("§7§l[§c§lTNT Wars§7§l]"));
+				String map = ChatColor.stripColor(s.getLine(1));
+				GF.gameJoin(p.getName(), map);
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")

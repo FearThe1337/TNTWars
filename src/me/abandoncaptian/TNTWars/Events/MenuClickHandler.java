@@ -117,6 +117,8 @@ public class MenuClickHandler implements Listener{
 							if(pl.allQueue.contains(p.getName()))MH.openKitMenu(p, clickedInv);
 							else p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou need to be queued to select a kit");
 							break;
+						case "§aTNT Wars Stats":
+							break;
 						case "§aForce Start TNT Wars":
 							p.closeInventory();
 							GF.gameForceStart(pl.playerInArena.get(p.getName()), p);
@@ -263,6 +265,11 @@ public class MenuClickHandler implements Listener{
 							pl.selectedKit.put(p.getName(), "Vampire");
 							p.closeInventory();
 							break;
+						case "§b§lDefault":
+							p.sendMessage("§6You selected: " + itemName);
+							pl.selectedKit.put(p.getName(), "Default");
+							p.closeInventory();
+							break;
 						case "§b§lVirg Special":
 							if (p.getName().equals("abandoncaptian") || p.getName().equals("TheVirginian")) {
 								p.sendMessage("§6You selected: " + itemName);
@@ -271,13 +278,6 @@ public class MenuClickHandler implements Listener{
 							} else {
 								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis kit is exclusive to TheVirgian");
 							}
-							break;
-						case "§b§lTBA 1":
-						case "§b§lTBA 2":
-						case "§b§lTBA 3":
-						case "§b§lTBA 4":
-						case "§b§lTBA 5":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis is not a usable Kit");
 							break;
 						case "§bFireworks §7Settings":
 							MH.openFWEditorMenu(p, clickedInv);

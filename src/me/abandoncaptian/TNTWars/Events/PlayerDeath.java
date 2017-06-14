@@ -42,7 +42,13 @@ public class PlayerDeath implements Listener {
 					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 						@Override
 						public void run() {
+							if(pl.loses.containsKey(p.getName())){
+								pl.loses.put(p.getName(), pl.loses.get(pl.getName())+1);
+							}else{
+								pl.loses.put(p.getName(), 1);
+							}
 							p.sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bYou were eliminated", 0, 60, 0);
+							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bAdded 1 to your lose stats §7(§aCurrent§7: §6" + pl.loses.get(p.getName()) + "§7)");
 							p.getInventory().clear();
 							pl.IAE.InventorySwitch(p);
 							pl.IAE.ExpSwitch(name);
@@ -77,6 +83,10 @@ public class PlayerDeath implements Listener {
 						Bukkit.getPlayer(winner).setFoodLevel(20);
 						Bukkit.getPlayer(winner).getInventory().clear();
 						Bukkit.getPlayer(winner).closeInventory();
+						pl.points.put(winner, (pl.points.get(winner)+10));
+						Bukkit.getPlayer(winner).sendMessage("§7§l[§c§lTNT Wars§7§l] §bAdded 10 Points for winning! §7(§aCurrent§7: §6" + pl.points.get(p.getName()) + "§7)");
+						pl.wins.put(winner, (pl.wins.get(winner)+1));
+						Bukkit.getPlayer(winner).sendMessage("§7§l[§c§lTNT Wars§7§l] §bAdded 1 to your win stats! §7(§aCurrent§7: §6" + pl.wins.get(p.getName()) + "§7)");
 						GF.UpdateBoard(true, winner, map);
 						pl.IAE.InventorySwitch(Bukkit.getPlayer(winner));
 						pl.IAE.ExpSwitch(winner);

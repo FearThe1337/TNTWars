@@ -34,6 +34,7 @@ public class LoadFunctions {
 		kitsListHighRate.add("Bribed");
 		kitsListHighRate.add("Space Man");
 		kitsListHighRate.add("Vampire");
+		kitsListHighRate.add("Default");
 		kitsListAll.add("Sniper");
 		kitsListAll.add("Short Fuse");
 		kitsListAll.add("Heavy Loader");
@@ -50,5 +51,6 @@ public class LoadFunctions {
 		kitsListAll.add("Space Man");
 		kitsListAll.add("Storm");
 		kitsListAll.add("Vampire");
+		kitsListAll.add("Default");
 	}
 }
