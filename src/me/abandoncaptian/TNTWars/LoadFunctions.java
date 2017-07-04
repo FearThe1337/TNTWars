@@ -10,7 +10,7 @@ public class LoadFunctions {
 	CountDowns cd;
 	List<String> kitsListLowRate = new ArrayList<String>();
 	List<String> kitsListHighRate = new ArrayList<String>();
-	List<String> kitsListAll = new ArrayList<String>();
+	public List<String> kitsListAll = new ArrayList<String>();
 	List<Material> armorHelmet = new ArrayList<Material>();
 	List<Material> armorChestplate = new ArrayList<Material>();
 	List<Material> armorLegs = new ArrayList<Material>();
@@ -51,6 +51,5 @@ public class LoadFunctions {
 		kitsListAll.add("Space Man");
 		kitsListAll.add("Storm");
 		kitsListAll.add("Vampire");
-		kitsListAll.add("Default");
 	}
 }

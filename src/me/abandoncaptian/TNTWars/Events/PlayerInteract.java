@@ -17,7 +17,9 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
@@ -25,11 +27,13 @@ import org.bukkit.util.Vector;
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.GameFunc;
 import me.abandoncaptian.TNTWars.Main;
+import me.abandoncaptian.TNTWars.MenuHandler;
 
 public class PlayerInteract implements Listener {
 	Main pl;
 	CountDowns cd;
 	GameFunc GF;
+	MenuHandler MH;
 	ItemStack tnt = new ItemStack(Material.TNT);
 	ItemMeta meta = tnt.getItemMeta();
 	List<String> lore = new ArrayList<String>();
@@ -39,6 +43,7 @@ public class PlayerInteract implements Listener {
 		pl = plugin;
 		cd = new CountDowns(plugin);
 		GF = new GameFunc(plugin);
+		MH = new MenuHandler(plugin);
 		meta.setDisplayName("§6§lThrowable §c§lTNT");
 		lore.add("§bLeft click to throw");
 		lore.add("§bMade By: abandoncaptian");
@@ -46,6 +51,40 @@ public class PlayerInteract implements Listener {
 		tnt.setItemMeta(meta);
 	}
 
+	@EventHandler
+	public void playerMove(PlayerMoveEvent e) {
+		if(e.getTo().getY()<=0)e.getPlayer().teleport(pl.hub);
+		return;
+	}
+	
+	@EventHandler
+	public void playerNoHunger(FoodLevelChangeEvent e) {
+		if(!pl.allInGame.contains(e.getEntity().getName()))e.setFoodLevel(20);
+		return;
+	}
+	
+	@EventHandler
+	public void clickWithInvItem(PlayerInteractEvent e) {
+		if ((e.getAction() == Action.RIGHT_CLICK_BLOCK) || (e.getAction() == Action.RIGHT_CLICK_AIR)) {
+			Player p = e.getPlayer();
+			ItemStack hand = e.getItem();
+			if(hand == null)return;
+			if(!hand.hasItemMeta())return;
+			if(!hand.getItemMeta().hasDisplayName())return;
+			if(hand.getItemMeta().getDisplayName().contains("§cLeave TNT Wars")){
+				GF.gameLeave(p.getName());
+			}
+			if(hand.getItemMeta().getDisplayName().contains("§aKit Shop")){
+				MH.openKitShop(p);
+			}
+			if(hand.getItemMeta().getDisplayName().contains("§aTNT Wars Kits")){
+				MH.openKitMenu(p);
+			}
+			if(hand.getItemMeta().getDisplayName().contains("§cTNT Wars Menu")){
+				MH.openMainMenu(p);
+			}
+		}
+	}
 
 	@EventHandler
 	public void signClick(PlayerInteractEvent e) {
@@ -55,7 +94,7 @@ public class PlayerInteract implements Listener {
 				Player p = e.getPlayer();
 				if(s.getLine(0).equals("§7§l[§c§lTNT Wars§7§l]"));
 				String map = ChatColor.stripColor(s.getLine(1));
-				GF.gameJoin(p.getName(), map);
+				MH.openArenaTeams(p, map);
 			}
 		}
 	}

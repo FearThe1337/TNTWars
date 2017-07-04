@@ -12,13 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachment;
 
 import com.google.common.collect.Lists;
 
 import me.abandoncaptian.TNTWars.GameFunc;
 import me.abandoncaptian.TNTWars.Main;
 import me.abandoncaptian.TNTWars.MenuHandler;
-
 public class MenuClickHandler implements Listener{
 	Main pl;
 	MenuHandler MH;
@@ -47,8 +47,23 @@ public class MenuClickHandler implements Listener{
 						if(itemName.startsWith("§aJoin §7: §b")){
 							String[] splits = itemName.split("§b");
 							String map = splits[1];
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Attempting to join");
-							GF.gameJoin(p.getName(), map);
+							Boolean temp = false;
+							if(pl.perTeam.get(map) == 1){
+								p.closeInventory();
+								for(int i = 1; i <= pl.teamAmount.get(map); i++){
+									if(pl.teams.get(map).get(i).size()==0){
+										GF.gameJoin(p.getName(), map, i);
+										temp = true;
+										break;
+									}else continue;
+								}
+								if(!temp){
+									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cTNT Wars Queue is full");
+								}
+							}else{
+								p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Select a team");
+								MH.openArenaTeams(p, clickedInv, map);
+							}
 							com = true;
 						}
 						if(itemName.startsWith("§aEdit §7: §b")){
@@ -57,10 +72,104 @@ public class MenuClickHandler implements Listener{
 							MH.openArenaSettings(p, clickedInv, map);
 							com = true;
 						}
+						if(itemName.startsWith("§aSpectate §7: §b")){
+							String[] splits = itemName.split("§b");
+							String map = splits[1];
+							p.closeInventory();
+							p.teleport(pl.spectate.get(map));
+							com = true;
+						}
+						if(itemName.startsWith("§aSet Spectate §7: §b")){
+							String[] splits = itemName.split("§b");
+							String map = splits[1];
+							Location loc = p.getLocation();
+							pl.spectate.put(map, new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()));
+							for(int index: pl.arenas.keySet()){
+								String temp = pl.arenas.get(index);
+								if(map.contains(temp)){
+									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set Spectate Point for map: " + map + " §6to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
+									pl.config.set("Arenas."+ index + ".spectate.world", loc.getWorld().getName());
+									pl.config.set("Arenas."+ index + ".spectate.x", loc.getX());
+									pl.config.set("Arenas."+ index + ".spectate.y", loc.getY());
+									pl.config.set("Arenas."+ index + ".spectate.z", loc.getZ());
+									try {
+										pl.config.save(pl.configFile);
+									} catch (IOException e1) {
+									}
+								}
+							}
+							com = true;
+						}
 						if(itemName.startsWith("§aEditing §7: §b")){
 							String[] splits = itemName.split("§b");
 							String map = splits[1];
 							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Yes, you are editing the settings for " + map);
+							com = true;
+						}
+						if(itemName.startsWith("§aJoin Team§7: §b")){
+							String[] splits = itemName.split("§b");
+							int team = Integer.valueOf(splits[1]);
+							String map = clickedInv.getItem(4).getItemMeta().getDisplayName();
+							map = map.split("§aJoining §7: §b")[1];
+							p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Joining team §b" + team);
+							GF.gameJoin(p.getName(), map, team);
+							com = true;
+						}
+						if(itemName.startsWith("§aSet SpawnPoint§7:")){
+							mapItem = clickedInv.getItem(4);
+							String mapNameSpawn = mapItem.getItemMeta().getDisplayName();
+							String[] splitsSpawn = mapNameSpawn.split("§b");
+							String mapSpawn = splitsSpawn[1];
+							int i = 0;
+							for(String lore : clicked.getItemMeta().getLore()){
+								if(lore.contains("team §b")){
+									i = Integer.valueOf(lore.split("team §b")[1]);
+								}else continue;
+							}
+							loc = new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
+							pl.spawnpoint.get(mapSpawn).put(i, loc);
+							for(int index: pl.arenas.keySet()){
+								String map = pl.arenas.get(index);
+								if(map.contains(mapSpawn)){
+									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set SpawnPoint for team §b" + i + " §6to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
+									pl.config.set("Arenas."+index+"."+i+".world", loc.getWorld().getName());
+									pl.config.set("Arenas."+index+"."+i+".x", loc.getX());
+									pl.config.set("Arenas."+index+"."+i+".y", loc.getY());
+									pl.config.set("Arenas."+index+"."+i+".z", loc.getZ());
+									try {
+										pl.config.save(pl.configFile);
+									} catch (IOException e1) {
+									}
+								}
+							}
+							com = true;
+						}
+						if(itemName.startsWith("§a§lBUY§7§l:")){
+							String[] splits = itemName.split("§b§l");
+							String kit = splits[1];
+							for(String lore : clicked.getItemMeta().getLore()){
+								if(lore.contains("§bCost§7:")){
+									String[] strings = lore.split("Cost");
+									String price = strings[1];
+									price = ChatColor.stripColor(price);
+									price = price.replaceAll(":", "");
+									price = price.replaceAll(" ", "");
+									int cost = Integer.valueOf(price);
+									if(pl.econ.hasBalance(p, cost)){
+										pl.econ.withdrawBalance(p, cost);
+										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Purchased the kit§7: §b" + kit + " §6for §a" + cost + " points");
+										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Points Balance§7: §a" + pl.econ.getBalance(p));
+										kit = kit.toLowerCase();
+										kit = kit.replace(" ", "-");
+										PermissionAttachment pPerms = pl.perms.get(p.getUniqueId());
+										pPerms.setPermission("tntwars." + kit, true);
+										pl.perms.put(p.getUniqueId(), pPerms);
+										MH.openKitShop(p, clickedInv);
+									}else{
+										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou don't have §a" + cost + " points §cto purchase kit§7: §b" + kit);
+									}
+								}else continue;
+							}
 							com = true;
 						}
 					}
@@ -106,8 +215,30 @@ public class MenuClickHandler implements Listener{
 					if (clicked.hasItemMeta()) {
 						String itemName = clicked.getItemMeta().getDisplayName();
 						switch (itemName) {
+						case "§aSet Hub":
+							pl.hub = new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), (int)p.getLocation().getYaw(), 0);
+							pl.config.set("Hub.world", pl.hub.getWorld().getName());
+							pl.config.set("Hub.x", pl.hub.getX());
+							pl.config.set("Hub.y", pl.hub.getY());
+							pl.config.set("Hub.z", pl.hub.getZ());
+							pl.config.set("Hub.yaw", (int)pl.hub.getYaw());
+							try {
+								pl.config.save(pl.configFile);
+							} catch (IOException e2) {
+							}
+							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set Hub to §7(§b" + pl.hub.getX() + "§7, §b" + pl.hub.getY() + "§7, §b" + pl.hub.getZ() + "§7)");
+							break;
 						case "§aArena List":
 							MH.arenaSelectorMenu(p, clickedInv);
+							break;
+						case "§aSpectate":
+							MH.arenaSpectatorSelectorMenu(p, clickedInv);
+							break;
+						case "§aEdit Spectating Points":
+							MH.arenaSpectatorEditorSelectorMenu(p, clickedInv);
+							break;
+						case "§bBalance":
+							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Points Balance§7: §a" + pl.econ.getBalance(p));
 							break;
 						case "§aLeave TNT Wars":
 							p.closeInventory();
@@ -117,7 +248,10 @@ public class MenuClickHandler implements Listener{
 							if(pl.allQueue.contains(p.getName()))MH.openKitMenu(p, clickedInv);
 							else p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou need to be queued to select a kit");
 							break;
-						case "§aTNT Wars Stats":
+						case "§aKit Shop":
+							MH.openKitShop(p, clickedInv);
+							break;
+						case "§bYou Own ALL Kits!":
 							break;
 						case "§aForce Start TNT Wars":
 							p.closeInventory();
@@ -126,43 +260,21 @@ public class MenuClickHandler implements Listener{
 						case "§aArenas Settings":
 							MH.openArenaMenu(p, clickedInv);
 							break;
-						case "§aSet SpawnPoint":
+						case "§aSet Lobby Point":
 							mapItem = clickedInv.getItem(4);
 							String mapNameSpawn = mapItem.getItemMeta().getDisplayName();
 							String[] splitsSpawn = mapNameSpawn.split("§b");
 							String mapSpawn = splitsSpawn[1];
-							loc = new Location(p.getLocation().getWorld(), (int)p.getLocation().getX(), (int)p.getLocation().getY(), (int)p.getLocation().getZ());
-							pl.spawnpoint.put(mapSpawn, loc);
+							loc = new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
+							pl.lobby.put(mapSpawn, loc);
 							for(int index: pl.arenas.keySet()){
 								String map = pl.arenas.get(index);
 								if(map.contains(mapSpawn)){
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set SpawnPoint to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
-									pl.config.set("Arenas."+index+".SpawnPoint.world", loc.getWorld().getName());
-									pl.config.set("Arenas."+index+".SpawnPoint.x", loc.getX());
-									pl.config.set("Arenas."+index+".SpawnPoint.y", loc.getY());
-									pl.config.set("Arenas."+index+".SpawnPoint.z", loc.getZ());
-									try {
-										pl.config.save(pl.configFile);
-									} catch (IOException e1) {
-									}
-								}
-							}
-							break;
-						case "§aSet SpecPoint":
-							mapItem = clickedInv.getItem(4);
-							String mapNameSpec = mapItem.getItemMeta().getDisplayName();
-							String[] splitsSpec = mapNameSpec.split("§b");
-							String mapSpec = splitsSpec[1];
-							loc = new Location(p.getLocation().getWorld(), (int)p.getLocation().getX(), (int)p.getLocation().getY(), (int)p.getLocation().getZ());
-							pl.specpoint.put(mapSpec, loc);
-							for(int index: pl.arenas.keySet()){
-								String map = pl.arenas.get(index);
-								if(map.contains(mapSpec)){
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set SpecPoint to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
-									pl.config.set("Arenas."+index+".SpecPoint.world", loc.getWorld().getName());
-									pl.config.set("Arenas."+index+".SpecPoint.x", loc.getX());
-									pl.config.set("Arenas."+index+".SpecPoint.y", loc.getY());
-									pl.config.set("Arenas."+index+".SpecPoint.z", loc.getZ());
+									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set Lobby Point to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
+									pl.config.set("Arenas."+index+".lobby.world", loc.getWorld().getName());
+									pl.config.set("Arenas."+index+".lobby.x", loc.getX());
+									pl.config.set("Arenas."+index+".lobby.y", loc.getY());
+									pl.config.set("Arenas."+index+".lobby.z", loc.getZ());
 									try {
 										pl.config.save(pl.configFile);
 									} catch (IOException e1) {
@@ -569,8 +681,6 @@ public class MenuClickHandler implements Listener{
 							}
 							break;
 						default:
-							p.sendMessage("§cERROR");
-							p.closeInventory();
 							break;
 						}
 						return;

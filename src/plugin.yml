@@ -4,4 +4,13 @@ main: me.abandoncaptian.TNTWars.Main
 description: TNT Wars made by abandoncaptian
 commands:
   tw:
-    description: Alias command for TNTWars
+    description: Command for TNTWars
+  mod:
+  mods:
+    description: Command for Mod Chat
+  admin:
+  admins:
+    description: Command for Admin Chat
+  owner:
+  owners:
+    description: Command for Owner, RightHand Chat

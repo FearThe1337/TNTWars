@@ -9,45 +9,46 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.permissions.PermissionAttachment;
 
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.GameFunc;
-import me.abandoncaptian.TNTWars.InvAndExp;
+import me.abandoncaptian.TNTWars.LoadFunctions;
 import me.abandoncaptian.TNTWars.Main;
 
 public class PlayerLeaveAndJoin implements Listener {
 	Main pl;
-	InvAndExp IAE;
 	CountDowns cd;
 	GameFunc GF;
+	LoadFunctions LF;
 
 	public PlayerLeaveAndJoin(Main plugin) {
 		pl = plugin;
-		IAE = new InvAndExp(plugin);
 		GF = new GameFunc(plugin);
 	}
 
 	@EventHandler
 	public void playerLeaveGame(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
-
-		if(pl.points.containsKey(p.getName())){
-			pl.playerConfig.set(p.getName() + ".Points", pl.points.get(p.getName()));
-			pl.points.remove(p.getName());
+		e.setQuitMessage("§c- §7" + p.getName() + " §c-");
+		PermissionAttachment pPerms = pl.perms.get(p.getUniqueId());
+		for(String kit: pl.LF.kitsListAll){
+			kit = kit.toLowerCase();
+			kit = kit.replace(" ", "-");
+			if(pPerms.getPermissions().containsKey("tntwars." + kit))pl.playerConfig.set(p.getUniqueId().toString() + ".Kits." + kit, true);
+			else pl.playerConfig.set(p.getUniqueId().toString() + ".Kits." + kit, false);
 		}
-		if(pl.wins.containsKey(p.getName())){
-			pl.playerConfig.set(p.getName() + ".Wins", pl.wins.get(p.getName()));
-			pl.wins.remove(p.getName());
-		}
-		if(pl.loses.containsKey(p.getName())){
-			pl.playerConfig.set(p.getName() + ".Loses", pl.loses.get(p.getName()));
-			pl.loses.remove(p.getName());
-		}
+		pl.econ.saveBalance(p);
+		if(pl.allInGame.contains(p.getName()) || pl.allQueue.contains(p.getName()))GF.gameLeave(p.getName());
+		pl.playerConfig.set(p.getUniqueId().toString() + ".Name", p.getName());
+		pl.perms.remove(p.getUniqueId());
+		GF.resetPlayer(p);
+		p.teleport(pl.hub);
 		try {
 			pl.playerConfig.save(pl.playerFile);
 		} catch (IOException e2) {
 		}
-		
+
 		if (pl.Perks.containsKey(p.getName())) {
 			if (pl.Perks.get(p.getName()).containsKey("Fireworks")) {
 				pl.perksConfig.set(p.getName() + ".Fireworks", pl.Perks.get(p.getName()).get("Fireworks"));
@@ -92,26 +93,42 @@ public class PlayerLeaveAndJoin implements Listener {
 			} catch (IOException e1) {
 			}
 		}
-		GF.gameLeave(p.getName());
 	}
 
 	@EventHandler
 	public void gameConnect(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		
-		if(pl.playerConfig.contains(p.getName())){
-			if(pl.playerConfig.contains(p.getName() + ".Points")){
-				pl.points.put(p.getName(), pl.playerConfig.getInt(p.getName() + ".Points"));
+		e.setJoinMessage("§a+ §7" + p.getName() + " §a+");
+		GF.resetPlayer(p);
+		GF.setPlayerInv(p);
+		pl.econ.pullBalance(p);
+		p.teleport(pl.hub);
+		PermissionAttachment attach = p.addAttachment(pl);
+		pl.perms.put(p.getUniqueId(), attach);
+
+		if(!pl.playerConfig.contains(p.getUniqueId().toString() + ".Kits")){
+			for(String kit: pl.LF.kitsListAll){
+				kit = kit.toLowerCase();
+				kit = kit.replace(" ", "-");
+				if(p.isOp())pl.playerConfig.set(p.getUniqueId().toString() + ".Kits." + kit, true);
+				else pl.playerConfig.set(p.getUniqueId().toString() + ".Kits." + kit, false);
 			}
-			if(pl.playerConfig.contains(p.getName() + ".Wins")){
-				pl.wins.put(p.getName(), pl.playerConfig.getInt(p.getName() + ".Wins"));
-				
-			}
-			if(pl.playerConfig.contains(p.getName() + ".Loses")){
-				pl.loses.put(p.getName(), pl.playerConfig.getInt(p.getName() + ".Loses"));
+			pl.playerConfig.set(p.getUniqueId().toString() + ".Name", p.getName());
+			try {
+				pl.playerConfig.save(pl.playerFile);
+			} catch (IOException e1) {
 			}
 		}
-		
+		PermissionAttachment pPerms = pl.perms.get(p.getUniqueId());
+		for(String kit: pl.LF.kitsListAll){
+			kit = kit.toLowerCase();
+			kit = kit.replace(" ", "-");
+			if(p.isOp())pPerms.setPermission("tntwars." + kit, true);
+			if(pl.playerConfig.getBoolean(p.getUniqueId().toString() + ".Kits." + kit))pPerms.setPermission("tntwars." + kit, true);
+			else continue;
+		}
+		pl.perms.put(p.getUniqueId(), pPerms);
+
 		if (pl.perksConfig.contains(p.getName())) {
 			pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 			pl.Perks.get(p.getName()).put("Fireworks", pl.perksConfig.getBoolean(p.getName() + ".Fireworks"));
@@ -125,14 +142,5 @@ public class PlayerLeaveAndJoin implements Listener {
 				pl.cNameColor.put(p.getName(), ChatColor.valueOf(pl.perksConfig.getString(p.getName() + ".Custom-Name-Color")));
 			}
 		}
-		if (pl.tpBack.containsKey(p.getName())) {
-			p.teleport(pl.tpBack.get(p.getName()));
-			pl.tpBack.remove(p.getName());
-		}
-
-		if (IAE.hasSwitchedInv(e.getPlayer()))
-			IAE.InventorySwitch(e.getPlayer());
-		if (IAE.hasSwitchedExp(e.getPlayer()))
-			IAE.ExpSwitch(e.getPlayer().getName());
 	}
 }

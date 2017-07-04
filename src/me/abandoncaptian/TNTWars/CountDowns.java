@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 public class CountDowns {
 	Main pl;
-	InvAndExp IAE;
 	LoadFunctions LF;
 	GameFunc GF;
 	public Map<String, BukkitTask> count30 = new HashMap<String, BukkitTask>();
@@ -34,6 +37,7 @@ public class CountDowns {
 	List<Material> armorChestplate = new ArrayList<Material>();
 	List<Material> armorLegs = new ArrayList<Material>();
 	List<Material> armorBoots = new ArrayList<Material>();
+	Map<String, Boolean> tenSec = new HashMap<String, Boolean>();
 
 	public CountDowns(Main plugin) {
 		pl = plugin;
@@ -57,15 +61,8 @@ public class CountDowns {
 		armorBoots.add(Material.GOLD_BOOTS);
 		armorBoots.add(Material.CHAINMAIL_BOOTS);
 		armorBoots.add(Material.DIAMOND_BOOTS);
-		IAE = new InvAndExp(plugin);
 		LF = new LoadFunctions(plugin);
 		GF = new GameFunc(plugin);
-		for(String map : pl.arenas.values()){
-			starting1.put(map, false);
-			starting2.put(map, false);
-			active.put(map, false);
-			canKit.put(map, true);
-		}
 	}
 
 	public void countDown30(String map) {
@@ -77,36 +74,67 @@ public class CountDowns {
 					active.put(map, true);
 					pl.inGame.get(map).addAll(pl.gameQueue.get(map));
 					starting2.put(map, false);
+					tenSec.put(map, false);
 					GF.ChangeBoard(map);
+					for(int i : pl.teams.get(map).keySet()){
+						List<String> players = pl.teams.get(map).get(i);
+						if(players.isEmpty())continue;
+						Location temp = pl.spawnpoint.get(map).get(i);
+						Location loc = new Location(temp.getWorld(), temp.getX(), temp.getY(), temp.getZ());
+						loc.setY(loc.getY()-1);
+						Block block = loc.getBlock();
+						block.setType(Material.AIR);
+					}
 					for (String name : pl.inGame.get(map)) {
 						pl.allInGame.add(name);
 						pl.allQueue.remove(name);
-						if(!pl.points.containsKey(name)){
-							pl.points.put(name, 0);
-						}
-						if(!pl.wins.containsKey(name)){
-							pl.wins.put(name, 0);
-						}
-						if(!pl.loses.containsKey(name)){
-							pl.loses.put(name, 0);
-						}
-						Bukkit.getPlayer(name).getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 5));
+						GF.setPlayerInv(Bukkit.getPlayer(name));
 						Bukkit.getPlayer(name).setHealth(20);
 						Bukkit.getPlayer(name).setFoodLevel(20);
 						Bukkit.getPlayer(name).setInvulnerable(false);
+						UUID uuid = Bukkit.getPlayer(name).getUniqueId();
 						if (!pl.selectedKit.containsKey(name)) {
-							int rand = (int) (Math.random() * (LF.kitsListAll.size() - 1));
-							pl.selectedKit.put(name, LF.kitsListAll.get(rand));
-							Bukkit.getPlayer(name)
-							.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cYou didn't choose a kit! §6We selected §b"
-									+ LF.kitsListAll.get(rand) + " §6for you");
+							PermissionAttachment pPerms = pl.perms.get(uuid);
+							ArrayList<String> avKits = new ArrayList<String>();
+							for(String kit: pl.LF.kitsListAll){
+								String tempKit = kit;
+								kit = kit.toLowerCase();
+								kit = kit.replace(" ", "-");
+								if(pPerms.getPermissions().containsKey("tntwars." + kit)){
+									avKits.add(tempKit);
+								}else continue;
+							}
+							if(avKits.isEmpty()){
+								pl.selectedKit.put(name, "Default");
+								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cYou didn't choose a kit! §6We selected §bDefault §6for you");
+							}else{
+								int rand = (int) (Math.random() * (avKits.size() - 1));
+								pl.selectedKit.put(name, avKits.get(rand));
+								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cYou didn't choose a kit! §6We selected §b" + avKits.get(rand) + " §6for you");
+							}
 						} else if (pl.selectedKit.get(name) == "Random") {
-							int rand = (int) (Math.random() * (LF.kitsListAll.size() - 1));
-							pl.selectedKit.put(name, pl.LF.kitsListAll.get(rand));
-							Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6We selected §b"
-									+ LF.kitsListAll.get(rand) + " §6for you");
+							PermissionAttachment pPerms = pl.perms.get(uuid);
+							ArrayList<String> avKits = new ArrayList<String>();
+							for(String kit: pl.LF.kitsListAll){
+								String tempKit = kit;
+								kit = kit.toLowerCase();
+								kit = kit.replace(" ", "-");
+								if(pPerms.getPermissions().containsKey("tntwars." + kit)){
+									avKits.add(tempKit);
+								}else continue;
+							}
+							if(avKits.isEmpty()){
+								pl.selectedKit.put(name, "Default");
+								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6We selected §bDefault §6for you");
+							}else{
+								int rand = (int) (Math.random() * (avKits.size() - 1));
+								pl.selectedKit.put(name, avKits.get(rand));
+								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6We selected §b" + avKits.get(rand) + " §6for you");
+							}
 						}
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]",
+
+
+						Bukkit.getPlayer(name).sendTitle("",
 								"§bKit : " + pl.selectedKit.get(name), 10, 60, 10);
 						if (pl.selectedKit.get(name) == "Doctor Who") {
 							Bukkit.getPlayer(name).setHealthScale(40);
@@ -137,7 +165,6 @@ public class CountDowns {
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 1");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 1", 0, 20, 0);
 					}
 				}
 			}, 20 * 29));
@@ -146,7 +173,6 @@ public class CountDowns {
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 2");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 2", 0, 20, 0);
 					}
 				}
 			}, 20 * 28));
@@ -155,7 +181,6 @@ public class CountDowns {
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 3");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 3", 0, 20, 0);
 					}
 				}
 			}, 20 * 27));
@@ -164,7 +189,6 @@ public class CountDowns {
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 4");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 4", 0, 20, 0);
 					}
 				}
 			}, 20 * 26));
@@ -173,19 +197,40 @@ public class CountDowns {
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 5");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 5", 0, 20, 0);
 					}
 				}
 			}, 20 * 25));
 			count10.put(map, Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+				@SuppressWarnings("deprecation")
 				@Override
 				public void run() {
+					for(int i : pl.teams.get(map).keySet()){
+						List<String> players = pl.teams.get(map).get(i);
+						if(players.isEmpty())continue;
+						Location temp = pl.spawnpoint.get(map).get(i);
+						Location loc = new Location(temp.getWorld(), temp.getX(), temp.getY(), temp.getZ());
+						loc.setY(loc.getY()-1);
+						Block block = loc.getBlock();
+						block.setType(Material.STAINED_GLASS);
+						block.setData((byte)14);
+						for(String player : players){
+							Bukkit.getPlayer(player).teleport(pl.spawnpoint.get(map).get(i));
+							Bukkit.getPlayer(player).getLocation().getBlock().setType(Material.WATER);
+							Bukkit.getPlayer(player).setDisplayName("§f ");
+							Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+								@Override
+								public void run() {
+									Bukkit.getPlayer(player).getLocation().getBlock().setType(Material.AIR);
+								}
+							}, 20);
+						}
+					}
 					for (String name : pl.gameQueue.get(map)) {
 						if (!pl.selectedKit.containsKey(name)) {
 							pl.mh.openKitMenu(Bukkit.getPlayer(name));
 						}
 						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 10");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 10", 3, 15, 2);
+						tenSec.put(map, true);
 					}
 				}
 			}, 20 * 20));
@@ -202,11 +247,9 @@ public class CountDowns {
 						Bukkit.getPlayer(name).sendMessage("§6Right click to throw your TNT");
 						Bukkit.getPlayer(name).sendMessage("§6Different kits do give an advantage in some way");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("§6Developed By: §b§labandoncaptian");
-						Bukkit.getPlayer(name).sendMessage("§6Idea By: §b§lMrs_Ender88");
+						Bukkit.getPlayer(name).sendMessage("§6Created By: §b§labandoncaptian §6and §b§lMrs_Ender88");
 						Bukkit.getPlayer(name).sendMessage(" ");
 						Bukkit.getPlayer(name).sendMessage("§6§l--------------------------------------");
-						Bukkit.getPlayer(name).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bStarts in 30", 0, 60, 0);
 					}
 				}
 			}, 0));

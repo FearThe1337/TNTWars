@@ -1,5 +1,8 @@
 package me.abandoncaptian.TNTWars.Events;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -10,7 +13,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import me.abandoncaptian.TNTWars.CountDowns;
 import me.abandoncaptian.TNTWars.GameFunc;
-import me.abandoncaptian.TNTWars.InvAndExp;
 import me.abandoncaptian.TNTWars.Main;
 import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand.EnumClientCommand;
@@ -18,93 +20,128 @@ import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand.EnumClientCommand
 public class PlayerDeath implements Listener {
 	Main pl;
 	CountDowns cd;
-	InvAndExp IAE;
 	GameFunc GF;
 	BukkitTask deathTest;
 	boolean isDead;
+	HashMap<String, String> winnerNames = new HashMap<String, String>();
 
 	public PlayerDeath(Main plugin) {
 		pl = plugin;
-		IAE = new InvAndExp(plugin);
 		GF = new GameFunc(plugin);
 	}
 
 	@EventHandler
 	public void gameDeath(PlayerDeathEvent e) {
-		for(String map : pl.arenas.values()){
+		Player p = (Player) e.getEntity();
+		e.getEntity().teleport(pl.hub);
+		e.setDeathMessage("");
+		e.getDrops().clear();
+		Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+			@Override
+			public void run() {
+				GF.setPlayerInv(p);
+			}
+		}, 10);
+		if(pl.playerInArena.containsKey(p.getName())){
+			String map = pl.playerInArena.get(p.getName());
 			if (pl.cd.active.get(map)) {
-				if (pl.inGame.get(map).contains(e.getEntity().getName())) {
-					Player p = (Player) e.getEntity();
-					String name = p.getName();
-					PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
-					CraftPlayer craftPlayer = (CraftPlayer) p;
-					craftPlayer.getHandle().playerConnection.a(packet);
-					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-						@Override
-						public void run() {
-							if(pl.loses.containsKey(p.getName())){
-								pl.loses.put(p.getName(), pl.loses.get(pl.getName())+1);
-							}else{
-								pl.loses.put(p.getName(), 1);
-							}
-							p.sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bYou were eliminated", 0, 60, 0);
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bAdded 1 to your lose stats §7(§aCurrent§7: §6" + pl.loses.get(p.getName()) + "§7)");
-							p.getInventory().clear();
-							pl.IAE.InventorySwitch(p);
-							pl.IAE.ExpSwitch(name);
+				String name = p.getName();
+				PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
+				CraftPlayer craftPlayer = (CraftPlayer) p;
+				craftPlayer.getHandle().playerConnection.a(packet);
+				e.getDrops().clear();
+				if(pl.perTeam.get(map)==1){
+					for(int i: pl.teams.get(map).keySet()){
+						if(pl.teams.get(map).get(i).contains(name)){
+							pl.teams.get(map).get(i).clear();
+							break;
 						}
-					}, 5);
-					e.getDrops().clear();
-					pl.dead.get(map).add(name);
-					pl.spec.get(map).add(name);
-					e.setDeathMessage(null);
-					p.setHealthScale(20);
-					p.setCanPickupItems(true);
-					pl.inGame.get(map).remove(name);
-					pl.allInGame.remove(name);
-					GF.UpdateBoard(true, name, map);
-					int game = pl.inGame.get(map).size();
-					e.getEntity().teleport(pl.spawnpoint.get(map));
-					if (game == 1) {
-						String winner = pl.inGame.get(map).get(0);
+					}
+				}
+				pl.dead.get(map).add(name);
+				GF.resetPlayerfromGame(p, map);
+				GF.UpdateBoard(true, name, map);
+				GF.resetPlayer(p);
+				GF.setPlayerInv(p);
+				int game = pl.inGame.get(map).size();
+				if(game > 1){
+					String  tempP = pl.inGame.get(map).get(0);
+					int team = 1;
+					for(int i: pl.teams.get(map).keySet()){
+						if(pl.teams.get(map).get(i).contains(tempP))team = i;
+					}
+					if(pl.teams.get(map).get(team).containsAll(pl.inGame.get(map))){
+						List<String> winners = pl.teams.get(map).get(team);
+						winnerNames.put(map, "");
+						int size = winners.size();
+						for(String tempPlayer: winners){
+							winnerNames.put(map, winnerNames.get(map) + tempPlayer);
+							if(winners.indexOf(tempPlayer) < (size-1))winnerNames.put(map, winnerNames.get(map) + ", ");
+						}
 						Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 							@Override
 							public void run() {
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b§l" + winner + " §6has won!");
+								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b§l" + winnerNames + " §6has won as a team!");
+								winnerNames.remove(map);
 							}
 						}, 2);
-						for (String tname : pl.spec.get(map)) {
-							Bukkit.getPlayer(tname).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]",
-									"§b" + pl.inGame.get(map).get(0) + " has won!", 0, 120, 0);
-							Bukkit.getPlayer(tname).teleport(pl.tpBack.get(tname));
-							pl.tpBack.remove(tname);
+						for(String tempPlayer: winners){
+							Player winnerP = Bukkit.getPlayer(tempPlayer);
+							GF.UpdateBoard(true, tempPlayer, map);
+							GF.resetPlayer(winnerP);
+							Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+								@Override
+								public void run() {
+									pl.econ.depositBalance(winnerP, 10);
+									winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §a+§710 Points");
+									winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §6New Points Balance§7: §a" + pl.econ.getBalance(winnerP));
+									GF.resetPlayerfromGame(winnerP, map);
+									GF.setPlayerInv(winnerP);
+								}
+							}, 5);
+							Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+								@Override
+								public void run() {
+									GF.setPlayerInv(winnerP);
+								}
+							}, 10);
 						}
-						Bukkit.getPlayer(winner).setHealth(20);
-						Bukkit.getPlayer(winner).setFoodLevel(20);
-						Bukkit.getPlayer(winner).getInventory().clear();
-						Bukkit.getPlayer(winner).closeInventory();
-						pl.points.put(winner, (pl.points.get(winner)+10));
-						Bukkit.getPlayer(winner).sendMessage("§7§l[§c§lTNT Wars§7§l] §bAdded 10 Points for winning! §7(§aCurrent§7: §6" + pl.points.get(p.getName()) + "§7)");
-						pl.wins.put(winner, (pl.wins.get(winner)+1));
-						Bukkit.getPlayer(winner).sendMessage("§7§l[§c§lTNT Wars§7§l] §bAdded 1 to your win stats! §7(§aCurrent§7: §6" + pl.wins.get(p.getName()) + "§7)");
-						GF.UpdateBoard(true, winner, map);
-						pl.IAE.InventorySwitch(Bukkit.getPlayer(winner));
-						pl.IAE.ExpSwitch(winner);
-						Bukkit.getPlayer(winner).teleport(pl.tpBack.get(Bukkit.getPlayer(winner).getName()));
-						pl.tpBack.remove(Bukkit.getPlayer(winner).getName());
-						Bukkit.getPlayer(winner).setHealthScale(20);
-						Bukkit.getPlayer(winner).setCanPickupItems(true);
-						Bukkit.getPlayer(winner).sendTitle("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l]", "§bYou Won", 0, 120, 0);
-						Bukkit.getPlayer(winner).getActivePotionEffects().clear();
-						pl.inGame.get(map).clear();
-						pl.allInGame.remove(winner);
-						pl.cd.active.put(map, false);
-						pl.cd.canKit.put(map, true);
-						pl.cd.starting1.put(map, false);
-						pl.cd.starting2.put(map, false);
-						pl.spec.get(map).clear();
-						pl.selectedKit.clear();
+						Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+							@Override
+							public void run() {
+								GF.resetMap(map);
+							}
+						}, 5);
 					}
+				}
+				if (game == 1) {
+					String winner = pl.inGame.get(map).get(0);
+					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+						@Override
+						public void run() {
+							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b§l" + winner + " §6has won!");
+						}
+					}, 2);
+					Player winnerP = Bukkit.getPlayer(winner);
+					GF.resetPlayer(winnerP);
+					GF.UpdateBoard(true, winner, map);
+					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+						@Override
+						public void run() {
+							pl.econ.depositBalance(winnerP, 10);
+							winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §a+§710 Points");
+							winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §6New Points Balance§7: §a" + pl.econ.getBalance(winnerP));
+							GF.resetPlayerfromGame(winnerP, map);
+							GF.resetMap(map);
+							GF.setPlayerInv(winnerP);
+						}
+					}, 5);
+					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+						@Override
+						public void run() {
+							GF.setPlayerInv(winnerP);
+						}
+					}, 10);
 				}
 			}
 		}

@@ -28,7 +28,7 @@ public class LowGiveRate implements Runnable {
 	public void run() {
 		for(String map : pl.arenas.values()){
 			if (pl.cd.active.get(map)) {
-				for (String name : pl.allInGame) {
+				for (String name : pl.inGame.get(map)) {
 					max = 2;
 					had = false;
 					if (pl.selectedKit.containsKey(name)) {

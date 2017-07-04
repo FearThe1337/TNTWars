@@ -1,5 +1,7 @@
 package me.abandoncaptian.TNTWars.Events;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -9,13 +11,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import me.abandoncaptian.TNTWars.CountDowns;
-import me.abandoncaptian.TNTWars.InvAndExp;
 import me.abandoncaptian.TNTWars.Main;
 
 public class EntityDamageByEntity implements Listener {
 	Main pl;
 	CountDowns cd;
-	InvAndExp IAE;
 
 	public EntityDamageByEntity(Main plugin) {
 		pl = plugin;
@@ -29,6 +29,31 @@ public class EntityDamageByEntity implements Listener {
 				if (e.getEntity() instanceof Player) {
 					Player p = (Player) e.getEntity();
 					if (e.getDamager() instanceof TNTPrimed) {
+						for(int i: pl.teams.get(map).keySet()){
+							List<String> players = pl.teams.get(map).get(i);
+							if(players.contains(p.getName())){
+								String cName = e.getDamager().getCustomName();
+								cName = ChatColor.stripColor(cName);
+								String killer = null;
+								if(pl.cName.size()>=1){
+									for(String play : pl.cName.keySet()){
+										if(pl.cName.get(play).contains(cName)){
+											killer = play;
+											break;
+										}
+									}
+									if(killer == null)killer = e.getDamager().getCustomName();
+								}else{
+									killer = e.getDamager().getCustomName();
+								}
+								if(p.getName() != killer){
+									if(players.contains(killer)){
+										e.setCancelled(true);
+										return;
+									}
+								}
+							}
+						}
 						if (pl.allInGame.contains(p.getName())) {
 							if (pl.selectedKit.get(e.getDamager().getCustomName()) == "Vampire") {
 								double dam = p.getLastDamage();
@@ -78,14 +103,14 @@ public class EntityDamageByEntity implements Listener {
 												Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + killer);
 												Bukkit.broadcastMessage("§bUsing §7[" + e.getDamager().getCustomName() + "§7] §cTNT §7- §b" + game + " remain!");
 											}
+											pl.econ.depositBalance(Bukkit.getPlayer(killer), 5);
+											Bukkit.getPlayer(killer).sendMessage("§7§l[§c§lTNT Wars§7§l] §a+§75 Points");
 										}
 									}
 								}
 							}, 1);
 						} else {
 							e.setCancelled(true);
-							p.sendMessage(
-									"§7§l[§c§lTNT Wars§7§l] §7You got lucky this time, the next TNT won't be so kind!");
 						}
 					}else {
 						e.setCancelled(true);

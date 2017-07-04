@@ -36,9 +36,9 @@ public class EntityExplode implements Listener {
 
 	@EventHandler
 	public void tntExplode(EntityExplodeEvent e) {
+		e.blockList().clear();
 		for(String map : pl.arenas.values()){
 			if (pl.cd.active.get(map)) {
-				e.blockList().clear();
 				if (e.getEntity() instanceof TNTPrimed) {
 					if (pl.selectedKit.get(e.getEntity().getCustomName()) == "Potion Worker") {
 						List<Entity> ents = new ArrayList<Entity>();
@@ -78,14 +78,22 @@ public class EntityExplode implements Listener {
 						e.setCancelled(true);
 					}
 					if (pl.Perks.containsKey(e.getEntity().getCustomName())) {
-						if (pl.Perks.get(e.getEntity().getCustomName()).get("Fireworks")) {
+						String p = "";
+						if(pl.cName.values().contains(e.getEntity().getCustomName())){
+							for(String player : pl.cName.keySet()){
+								if(e.getEntity().getCustomName().contains(pl.cName.get(player)))p = player;
+							}
+						}else{
+							p = e.getEntity().getCustomName();
+						}
+						if (pl.Perks.get(p).get("Fireworks")) {
 							Location loc = e.getEntity().getLocation();
 							Firework fw = (Firework) loc.getWorld().spawn(loc, Firework.class);
 							FireworkMeta fm = fw.getFireworkMeta();
-							Boolean flick = ED.decodeFWSettingsFlicker(e.getEntity().getCustomName());
-							Boolean trail = ED.decodeFWSettingsTrail(e.getEntity().getCustomName());
-							Type type = ED.decodeFWSettingsType(e.getEntity().getCustomName());
-							Color color = ED.decodeFWSettingsColor(e.getEntity().getCustomName());
+							Boolean flick = ED.decodeFWSettingsFlicker(p);
+							Boolean trail = ED.decodeFWSettingsTrail(p);
+							Type type = ED.decodeFWSettingsType(p);
+							Color color = ED.decodeFWSettingsColor(p);
 							fm.addEffect(FireworkEffect.builder()
 									.flicker(flick)
 									.trail(trail)

@@ -6,31 +6,39 @@
 
 Game-Min: 2
 Game-Start-30Sec: 4
-Game-Max: 12
 Game-Queue-Time: 2
+Hub:
+  world: world
+  x: 0
+  y: 100
+  z: 0
+  yaw: 0
 Arenas:
   1:
     Name: Main
     Icon: PAPER
-    SpawnPoint:
+    Game-Max: 12
+    Players-Per-Team: 6
+    lobby:
       world: world
       x: 0
       y: 100
       z: 0
-    SpecPoint:
+    spectate:
       world: world
       x: 0
       y: 100
       z: 0
-  2:
-    Name: Other
-    Icon: PAPER
-    SpawnPoint:
+    1:
+      Icon: PAPER
+      Damage: 0
       world: world
       x: 0
       y: 100
       z: 0
-    SpecPoint:
+    2:
+      Icon: PAPER
+      Damage: 0
       world: world
       x: 0
       y: 100
