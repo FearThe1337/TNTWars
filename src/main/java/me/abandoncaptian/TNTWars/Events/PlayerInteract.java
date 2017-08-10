@@ -44,9 +44,9 @@ public class PlayerInteract implements Listener {
 		cd = new CountDowns(plugin);
 		GF = new GameFunc(plugin);
 		MH = new MenuHandler(plugin);
-		meta.setDisplayName("§6§lThrowable §c§lTNT");
-		lore.add("§bLeft click to throw");
-		lore.add("§bMade By: abandoncaptian");
+		meta.setDisplayName("Â§6Â§lThrowable Â§cÂ§lTNT");
+		lore.add("Â§bLeft click to throw");
+		lore.add("Â§bMade By: abandoncaptian");
 		meta.setLore(lore);
 		tnt.setItemMeta(meta);
 	}
@@ -71,16 +71,16 @@ public class PlayerInteract implements Listener {
 			if(hand == null)return;
 			if(!hand.hasItemMeta())return;
 			if(!hand.getItemMeta().hasDisplayName())return;
-			if(hand.getItemMeta().getDisplayName().contains("§cLeave TNT Wars")){
+			if(hand.getItemMeta().getDisplayName().contains("Â§cLeave TNT Wars")){
 				GF.gameLeave(p.getName());
 			}
-			if(hand.getItemMeta().getDisplayName().contains("§aKit Shop")){
+			if(hand.getItemMeta().getDisplayName().contains("Â§aKit Shop")){
 				MH.openKitShop(p);
 			}
-			if(hand.getItemMeta().getDisplayName().contains("§aTNT Wars Kits")){
+			if(hand.getItemMeta().getDisplayName().contains("Â§aTNT Wars Kits")){
 				MH.openKitMenu(p);
 			}
-			if(hand.getItemMeta().getDisplayName().contains("§cTNT Wars Menu")){
+			if(hand.getItemMeta().getDisplayName().contains("Â§cTNT Wars Menu")){
 				MH.openMainMenu(p);
 			}
 		}
@@ -92,7 +92,7 @@ public class PlayerInteract implements Listener {
 			if(e.getClickedBlock().getState() instanceof Sign){
 				Sign s = (Sign) e.getClickedBlock().getState();
 				Player p = e.getPlayer();
-				if(s.getLine(0).equals("§7§l[§c§lTNT Wars§7§l]"));
+				if(s.getLine(0).equals("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l]"));
 				String map = ChatColor.stripColor(s.getLine(1));
 				MH.openArenaTeams(p, map);
 			}
@@ -109,7 +109,7 @@ public class PlayerInteract implements Listener {
 					if (pl.selectedKit.get(p.getName()) == "Miner") {
 						ItemStack item = p.getItemInHand();
 						if (item.getType() == Material.TNT) {
-							if (item.getItemMeta().getDisplayName().contains("§c§lTNT")) {
+							if (item.getItemMeta().getDisplayName().contains("Â§cÂ§lTNT")) {
 								if (pl.inGame.get(map).contains(p.getName())) {
 									primeTnt = (TNTPrimed) p.getWorld().spawn(p.getLocation(), TNTPrimed.class);
 									pl.tntActive.put(this.primeTnt, p.getName());
@@ -137,7 +137,7 @@ public class PlayerInteract implements Listener {
 					Player p = e.getPlayer();
 					ItemStack item = p.getItemInHand();
 					if (item.getType() == Material.TNT) {
-						if (item.getItemMeta().getDisplayName().equals("§c§lThrowable TNT")) {
+						if (item.getItemMeta().getDisplayName().equals("Â§cÂ§lThrowable TNT")) {
 							if (pl.inGame.get(map).contains(p.getName())) {
 								double power = 0;
 								int fuse;
@@ -272,7 +272,7 @@ public class PlayerInteract implements Listener {
 									p.getItemInHand().setAmount(0);
 								}
 							} else {
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in-game");
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cYou are not in-game");
 								return;
 							}
 						} else {

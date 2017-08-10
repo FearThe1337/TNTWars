@@ -23,14 +23,14 @@ public class GameFunc {
 	public void UpdateBoard(Boolean leave, String name, String map) {
 		if (!leave) {
 			Score score;
-			score = pl.objectiveQueue.get(map).getScore("§a" + name);
+			score = pl.objectiveQueue.get(map).getScore("Â§a" + name);
 			score.setScore(pl.gameQueue.get(map).indexOf(name));
 			Bukkit.getPlayer(name).setScoreboard(pl.queueBoard.get(map));
-			score = pl.objectiveRemaining.get(map).getScore("§c" + name);
+			score = pl.objectiveRemaining.get(map).getScore("Â§c" + name);
 			score.setScore(pl.gameQueue.get(map).indexOf(name));
 		} else {
-			pl.queueBoard.get(map).resetScores("§a" + name);
-			pl.remainingBoard.get(map).resetScores("§c" + name);
+			pl.queueBoard.get(map).resetScores("Â§a" + name);
+			pl.remainingBoard.get(map).resetScores("Â§c" + name);
 			Bukkit.getPlayer(name).setScoreboard(pl.clearBoard);
 		}
 	}
@@ -45,7 +45,7 @@ public class GameFunc {
 		Player p = Bukkit.getPlayer(name);
 		if (!pl.cd.active.get(map)) {
 			if (pl.allQueue.contains(name) || pl.allInGame.contains(name)) {
-				p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cAlready in a queue/game!");
+				p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cAlready in a queue/game!");
 			} else {
 				int queuedPre;
 				if(pl.gameQueue.get(map).isEmpty()){
@@ -65,7 +65,7 @@ public class GameFunc {
 						}
 						int queued = pl.gameQueue.get(map).size();
 						for(String player : pl.gameQueue.get(map)){
-							Bukkit.getPlayer(player).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b" + name + " §6has joined queue §7- §bQueued: " + queued);
+							Bukkit.getPlayer(player).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§b" + name + " Â§6has joined queue Â§7- Â§bQueued: " + queued);
 						}
 						if (p.getGameMode() != GameMode.SURVIVAL)
 							p.setGameMode(GameMode.SURVIVAL);
@@ -90,14 +90,14 @@ public class GameFunc {
 							}
 						}
 					}else{
-						p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cThat Team is full");
+						p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§cThat Team is full");
 					}
 				} else {
-					p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cTNT Wars Queue is full");
+					p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§cTNT Wars Queue is full");
 				}
 			}
 		} else {
-			p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Game is currently active!");
+			p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6Game is currently active!");
 		}
 	}
 
@@ -110,8 +110,8 @@ public class GameFunc {
 				pl.allQueue.remove(p.getName());
 				int queued = pl.gameQueue.get(map).size();
 				for(String player : pl.gameQueue.get(map)){
-					Bukkit.getPlayer(player).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b" + p.getName()
-					+ " §6has left TNT Wars Queue §7- §bQueued: " + queued);
+					Bukkit.getPlayer(player).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§b" + p.getName()
+					+ " Â§6has left TNT Wars Queue Â§7- Â§bQueued: " + queued);
 				}
 				UpdateBoard(true, p.getName(), map);
 				resetPlayer(p);
@@ -146,7 +146,7 @@ public class GameFunc {
 					pl.selectedKit.remove(p.getName());
 				}
 			} else {
-				p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in the TNT Wars Queue");
+				p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cYou are not in the TNT Wars Queue");
 			}
 		} else {
 			if (pl.inGame.get(map).contains(p.getName())) {
@@ -160,18 +160,18 @@ public class GameFunc {
 					String winner = pl.inGame.get(map).get(0);
 					UpdateBoard(true, pl.inGame.get(map).get(0), map);
 					for(String player : pl.inGame.get(map)){
-						Bukkit.getPlayer(player).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b" + p.getName() + " §6has left TNT Wars!");
+						Bukkit.getPlayer(player).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§b" + p.getName() + " Â§6has left TNT Wars!");
 					}
-					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b§l" + winner + " §6has won!");
+					Bukkit.broadcastMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bÂ§l" + winner + " Â§6has won!");
 					resetPlayer(Bukkit.getPlayer(winner));
 					resetPlayerfromGame(Bukkit.getPlayer(winner), map);
 				} else {
 					for(String player : pl.inGame.get(map)){
-						Bukkit.getPlayer(player).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b" + p.getName() + " §6has left TNT Wars!");
+						Bukkit.getPlayer(player).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§b" + p.getName() + " Â§6has left TNT Wars!");
 					}
 				}
 			} else {
-				p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou are not in a TNT Wars game");
+				p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cYou are not in a TNT Wars game");
 			}
 		}
 	}
@@ -209,11 +209,11 @@ public class GameFunc {
 	
 	public void setPlayerInv(Player p){
 		p.getInventory().clear();
-		if(pl.allQueue.contains(p.getName()))p.getInventory().setItem(8, addItem(new ItemStack(Material.WOOL, 1, (byte)14), "§cLeave TNT Wars", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
-		if(!pl.allInGame.contains(p.getName()))p.getInventory().setItem(6, addItem(new ItemStack(Material.EMERALD), "§aKit Shop", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
-		if(pl.allQueue.contains(p.getName()))p.getInventory().setItem(4, addItem(new ItemStack(Material.CHEST), "§aTNT Wars Kits", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
-		if(pl.allInGame.contains(p.getName()))p.getInventory().setItem(1, addItem(new ItemStack(Material.COOKED_BEEF, 5), "FOOD", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
-		if(!pl.allInGame.contains(p.getName()))p.getInventory().setItem(0, addItem(new ItemStack(Material.TNT), "§cTNT Wars Menu", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
+		if(pl.allQueue.contains(p.getName()))p.getInventory().setItem(8, addItem(new ItemStack(Material.WOOL, 1, (byte)14), "Â§cLeave TNT Wars", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
+		if(!pl.allInGame.contains(p.getName()))p.getInventory().setItem(6, addItem(new ItemStack(Material.EMERALD), "Â§aKit Shop", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
+		if(pl.allQueue.contains(p.getName()))p.getInventory().setItem(4, addItem(new ItemStack(Material.CHEST), "Â§aTNT Wars Kits", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
+		if(pl.allInGame.contains(p.getName()))p.getInventory().setItem(1, addItem(new ItemStack(Material.COOKED_BEEF, 5), "FOOD", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
+		if(!pl.allInGame.contains(p.getName()))p.getInventory().setItem(0, addItem(new ItemStack(Material.TNT), "Â§cTNT Wars Menu", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
 	}
 
 	public ItemStack addItem(ItemStack item, String name, List<String> lore) {
@@ -231,10 +231,10 @@ public class GameFunc {
 				pl.cd.countQueue.get(map).cancel();
 				pl.cd.countDown30(map);
 			} else {
-				p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cNot enough players to start the game.");
+				p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§cNot enough players to start the game.");
 			}
 		} else {
-			p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6TNT Wars is already started!");
+			p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6TNT Wars is already started!");
 		}
 	}
 }

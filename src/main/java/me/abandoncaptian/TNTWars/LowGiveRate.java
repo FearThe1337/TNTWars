@@ -58,9 +58,9 @@ public class LowGiveRate implements Runnable {
 							ItemStack tnt = new ItemStack(Material.TNT, 1);
 							ItemMeta meta = tnt.getItemMeta();
 							List<String> lore = new ArrayList<String>();
-							meta.setDisplayName("§c§lThrowable TNT");
-							lore.add("§bLeft click to throw");
-							lore.add("§bMade By: abandoncaptian");
+							meta.setDisplayName("Â§cÂ§lThrowable TNT");
+							lore.add("Â§bLeft click to throw");
+							lore.add("Â§bMade By: abandoncaptian");
 							meta.setLore(lore);
 							tnt.setItemMeta(meta);
 							for (int index = 0; index < p.getInventory().getSize(); index++) {

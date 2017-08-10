@@ -30,7 +30,7 @@ public class PlayerLeaveAndJoin implements Listener {
 	@EventHandler
 	public void playerLeaveGame(PlayerQuitEvent e) {
 		Player p = e.getPlayer();
-		e.setQuitMessage("งc- ง7" + p.getName() + " งc-");
+		e.setQuitMessage("ยงc- ยง7" + p.getName() + " ยงc-");
 		PermissionAttachment pPerms = pl.perms.get(p.getUniqueId());
 		for(String kit: pl.LF.kitsListAll){
 			kit = kit.toLowerCase();
@@ -98,7 +98,7 @@ public class PlayerLeaveAndJoin implements Listener {
 	@EventHandler
 	public void gameConnect(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		e.setJoinMessage("งa+ ง7" + p.getName() + " งa+");
+		e.setJoinMessage("ยงa+ ยง7" + p.getName() + " ยงa+");
 		GF.resetPlayer(p);
 		GF.setPlayerInv(p);
 		pl.econ.pullBalance(p);

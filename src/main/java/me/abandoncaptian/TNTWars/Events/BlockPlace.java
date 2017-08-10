@@ -36,25 +36,25 @@ public class BlockPlace implements Listener {
 		ItemStack hand = e.getItemInHand();
 		if(hand == null)return;
 		if(!hand.hasItemMeta())return;
-		if(hand.getItemMeta().getDisplayName().contains("§cLeave TNT Wars")){
+		if(hand.getItemMeta().getDisplayName().contains("Â§cLeave TNT Wars")){
 			GF.gameLeave(p.getName());
 			e.setCancelled(true);
 			e.setBuild(false);
 		}
-		if(hand.getItemMeta().getDisplayName().contains("§aKit Shop")){
+		if(hand.getItemMeta().getDisplayName().contains("Â§aKit Shop")){
 			MH.openKitShop(p);
 			e.setCancelled(true);
 			e.setBuild(false);
 		}
-		if(hand.getItemMeta().getDisplayName().contains("§aTNT Wars Kits")){
+		if(hand.getItemMeta().getDisplayName().contains("Â§aTNT Wars Kits")){
 			MH.openKitMenu(p);
-			if(pl.allQueue.contains(p.getName()))p.getInventory().setItem(4, GF.addItem(new ItemStack(Material.CHEST), "§aTNT Wars Kits", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
+			if(pl.allQueue.contains(p.getName()))p.getInventory().setItem(4, GF.addItem(new ItemStack(Material.CHEST), "Â§aTNT Wars Kits", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
 			e.setCancelled(true);
 			e.setBuild(false);
 		}
-		if(hand.getItemMeta().getDisplayName().contains("§cTNT Wars Menu")){
+		if(hand.getItemMeta().getDisplayName().contains("Â§cTNT Wars Menu")){
 			MH.openMainMenu(p);
-			p.getInventory().setItem(0, GF.addItem(new ItemStack(Material.TNT), "§cTNT Wars Menu", Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----")));
+			p.getInventory().setItem(0, GF.addItem(new ItemStack(Material.TNT), "Â§cTNT Wars Menu", Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----")));
 			e.setCancelled(true);
 			e.setBuild(false);
 		}

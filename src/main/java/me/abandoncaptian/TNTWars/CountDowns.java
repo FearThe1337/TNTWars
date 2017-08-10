@@ -106,11 +106,11 @@ public class CountDowns {
 							}
 							if(avKits.isEmpty()){
 								pl.selectedKit.put(name, "Default");
-								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cYou didn't choose a kit! §6We selected §bDefault §6for you");
+								Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§cYou didn't choose a kit! Â§6We selected Â§bDefault Â§6for you");
 							}else{
 								int rand = (int) (Math.random() * (avKits.size() - 1));
 								pl.selectedKit.put(name, avKits.get(rand));
-								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cYou didn't choose a kit! §6We selected §b" + avKits.get(rand) + " §6for you");
+								Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§cYou didn't choose a kit! Â§6We selected Â§b" + avKits.get(rand) + " Â§6for you");
 							}
 						} else if (pl.selectedKit.get(name) == "Random") {
 							PermissionAttachment pPerms = pl.perms.get(uuid);
@@ -125,17 +125,17 @@ public class CountDowns {
 							}
 							if(avKits.isEmpty()){
 								pl.selectedKit.put(name, "Default");
-								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6We selected §bDefault §6for you");
+								Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6We selected Â§bDefault Â§6for you");
 							}else{
 								int rand = (int) (Math.random() * (avKits.size() - 1));
 								pl.selectedKit.put(name, avKits.get(rand));
-								Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6We selected §b" + avKits.get(rand) + " §6for you");
+								Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6We selected Â§b" + avKits.get(rand) + " Â§6for you");
 							}
 						}
 
 
 						Bukkit.getPlayer(name).sendTitle("",
-								"§bKit : " + pl.selectedKit.get(name), 10, 60, 10);
+								"Â§bKit : " + pl.selectedKit.get(name), 10, 60, 10);
 						if (pl.selectedKit.get(name) == "Doctor Who") {
 							Bukkit.getPlayer(name).setHealthScale(40);
 						}
@@ -157,14 +157,14 @@ public class CountDowns {
 					}
 					pl.gameQueue.get(map).clear();
 					canKit.put(map, false);
-					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6TNT Wars has started!");
+					Bukkit.broadcastMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6TNT Wars has started!");
 				}
 			}, 20 * 30));
 			count1.put(map, Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 1");
+						Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 1");
 					}
 				}
 			}, 20 * 29));
@@ -172,7 +172,7 @@ public class CountDowns {
 				@Override
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 2");
+						Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 2");
 					}
 				}
 			}, 20 * 28));
@@ -180,7 +180,7 @@ public class CountDowns {
 				@Override
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 3");
+						Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 3");
 					}
 				}
 			}, 20 * 27));
@@ -188,7 +188,7 @@ public class CountDowns {
 				@Override
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 4");
+						Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 4");
 					}
 				}
 			}, 20 * 26));
@@ -196,7 +196,7 @@ public class CountDowns {
 				@Override
 				public void run() {
 					for (String name : pl.gameQueue.get(map)) {
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 5");
+						Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 5");
 					}
 				}
 			}, 20 * 25));
@@ -216,7 +216,7 @@ public class CountDowns {
 						for(String player : players){
 							Bukkit.getPlayer(player).teleport(pl.spawnpoint.get(map).get(i));
 							Bukkit.getPlayer(player).getLocation().getBlock().setType(Material.WATER);
-							Bukkit.getPlayer(player).setDisplayName("§f ");
+							Bukkit.getPlayer(player).setDisplayName("Â§f ");
 							Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 								@Override
 								public void run() {
@@ -229,7 +229,7 @@ public class CountDowns {
 						if (!pl.selectedKit.containsKey(name)) {
 							pl.mh.openKitMenu(Bukkit.getPlayer(name));
 						}
-						Bukkit.getPlayer(name).sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 10");
+						Bukkit.getPlayer(name).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 10");
 						tenSec.put(map, true);
 					}
 				}
@@ -237,19 +237,19 @@ public class CountDowns {
 			count30.put(map, Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {
-					Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in 30 seconds");
+					Bukkit.broadcastMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in 30 seconds");
 					for (String name : pl.gameQueue.get(map)) {
 						if (!pl.selectedKit.containsKey(name)) {
 							pl.mh.openKitMenu(Bukkit.getPlayer(name));
 						}
-						Bukkit.getPlayer(name).sendMessage("§6§l---------- §7§l[§c§lTNT Wars§7§l] §6§l----------");
+						Bukkit.getPlayer(name).sendMessage("Â§6Â§l---------- Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Â§l----------");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("§6Right click to throw your TNT");
-						Bukkit.getPlayer(name).sendMessage("§6Different kits do give an advantage in some way");
+						Bukkit.getPlayer(name).sendMessage("Â§6Right click to throw your TNT");
+						Bukkit.getPlayer(name).sendMessage("Â§6Different kits do give an advantage in some way");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("§6Created By: §b§labandoncaptian §6and §b§lMrs_Ender88");
+						Bukkit.getPlayer(name).sendMessage("Â§6Created By: Â§bÂ§labandoncaptian Â§6and Â§bÂ§lMrs_Ender88");
 						Bukkit.getPlayer(name).sendMessage(" ");
-						Bukkit.getPlayer(name).sendMessage("§6§l--------------------------------------");
+						Bukkit.getPlayer(name).sendMessage("Â§6Â§l--------------------------------------");
 					}
 				}
 			}, 0));
@@ -262,7 +262,7 @@ public class CountDowns {
 		if (!active.get(map) && !starting1.get(map)) {
 			starting1.put(map, true);
 			Bukkit.broadcastMessage(
-					"§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §bStarts in " + pl.config.getInt("Game-Queue-Time") + " minute(s).");
+					"Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bStarts in " + pl.config.getInt("Game-Queue-Time") + " minute(s).");
 			countQueue.put(map, Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 				@Override
 				public void run() {

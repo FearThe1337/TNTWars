@@ -95,16 +95,16 @@ public class EntityDamageByEntity implements Listener {
 											killer = e.getDamager().getCustomName();
 										}
 										if (e.getEntity().getName() == killer){
-											Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] §b" + e.getEntity().getName() + " §6 killed themself §7- §b" + game + " remain!");	
+											Bukkit.broadcastMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§b" + e.getEntity().getName() + " Â§6 killed themself Â§7- Â§b" + game + " remain!");	
 										}else{
 											if(killer == e.getDamager().getCustomName()){
-												Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + killer + " §7- §b" + game + " remain!");
+												Bukkit.broadcastMessage("Â§b" + e.getEntity().getName() + " Â§6was killed by Â§c" + killer + " Â§7- Â§b" + game + " remain!");
 											}else{
-												Bukkit.broadcastMessage("§b" + e.getEntity().getName() + " §6was killed by §c" + killer);
-												Bukkit.broadcastMessage("§bUsing §7[" + e.getDamager().getCustomName() + "§7] §cTNT §7- §b" + game + " remain!");
+												Bukkit.broadcastMessage("Â§b" + e.getEntity().getName() + " Â§6was killed by Â§c" + killer);
+												Bukkit.broadcastMessage("Â§bUsing Â§7[" + e.getDamager().getCustomName() + "Â§7] Â§cTNT Â§7- Â§b" + game + " remain!");
 											}
 											pl.econ.depositBalance(Bukkit.getPlayer(killer), 5);
-											Bukkit.getPlayer(killer).sendMessage("§7§l[§c§lTNT Wars§7§l] §a+§75 Points");
+											Bukkit.getPlayer(killer).sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§a+Â§75 Points");
 										}
 									}
 								}

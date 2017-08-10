@@ -26,7 +26,7 @@ public class CommandHandler implements CommandExecutor {
 						pl.reloadTwo();
 					}
 				}else{
-					p.sendMessage("§cInvalid Arguments, Usage: §b/tw");
+					p.sendMessage("Â§cInvalid Arguments, Usage: Â§b/tw");
 				}
 			}
 		}
@@ -35,22 +35,22 @@ public class CommandHandler implements CommandExecutor {
 				Player p = (Player) theSender;
 				if(p.hasPermission("tntwars.mod") || p.hasPermission("tntwars.admin") || p.hasPermission("tntwars.owner")){
 					if(args.length == 0){
-						p.sendMessage("§cYou cannot send a blank message to the Mod's staff chat");
+						p.sendMessage("Â§cYou cannot send a blank message to the Mod's staff chat");
 						return true;
 					}else{
-						String message = "§c";
+						String message = "Â§c";
 						for(String text: args){
 							message += (text + " ");
 						}
 						for(Player player: Bukkit.getOnlinePlayers()){
 							if(player.hasPermission("tntwars.mod")){
-								player.sendMessage("§7[§6Mods§7] " + p.getName() + "§7: " + message);
+								player.sendMessage("Â§7[Â§6ModsÂ§7] " + p.getName() + "Â§7: " + message);
 							}else continue;
 						}
 						return true;
 					}
 				}else{
-					p.sendMessage("§fUnkown command");
+					p.sendMessage("Â§fUnkown command");
 				}
 			}
 		}
@@ -59,22 +59,22 @@ public class CommandHandler implements CommandExecutor {
 				Player p = (Player) theSender;
 				if(p.hasPermission("tntwars.admin") || p.hasPermission("tntwars.owner")){
 					if(args.length == 0){
-						p.sendMessage("§cYou cannot send a blank message to the Admin's staff chat");
+						p.sendMessage("Â§cYou cannot send a blank message to the Admin's staff chat");
 						return true;
 					}else{
-						String message = "§c";
+						String message = "Â§c";
 						for(String text: args){
 							message += (text + " ");
 						}
 						for(Player player: Bukkit.getOnlinePlayers()){
 							if(player.hasPermission("tntwars.admin")){
-								player.sendMessage("§7[§6Admins§7] " + p.getName() + "§7: " + message);
+								player.sendMessage("Â§7[Â§6AdminsÂ§7] " + p.getName() + "Â§7: " + message);
 							}else continue;
 						}
 						return true;
 					}
 				}else{
-					p.sendMessage("§fUnkown command");
+					p.sendMessage("Â§fUnkown command");
 				}
 			}
 		}
@@ -83,22 +83,22 @@ public class CommandHandler implements CommandExecutor {
 				Player p = (Player) theSender;
 				if(p.hasPermission("tntwars.owner")){
 					if(args.length == 0){
-						p.sendMessage("§cYou cannot send a blank message to the Owner's staff chat");
+						p.sendMessage("Â§cYou cannot send a blank message to the Owner's staff chat");
 						return true;
 					}else{
-						String message = "§c";
+						String message = "Â§c";
 						for(String text: args){
 							message += (text + " ");
 						}
 						for(Player player: Bukkit.getOnlinePlayers()){
 							if(player.hasPermission("tntwars.owner") || player.hasPermission("tntwars.RightHand")){
-								player.sendMessage("§7[§6Owners§7] " + p.getName() + "§7: " + message);
+								player.sendMessage("Â§7[Â§6OwnersÂ§7] " + p.getName() + "Â§7: " + message);
 							}else continue;
 						}
 						return true;
 					}
 				}else{
-					p.sendMessage("§fUnkown command");
+					p.sendMessage("Â§fUnkown command");
 				}
 			}
 		}

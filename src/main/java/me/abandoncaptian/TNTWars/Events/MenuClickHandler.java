@@ -36,7 +36,7 @@ public class MenuClickHandler implements Listener{
 		Player p = (Player) e.getWhoClicked();
 		Inventory clickedInv = e.getInventory();
 		if (clickedInv != null) {
-			if (clickedInv.getTitle().equals("§7§l[ §c§lTNT Wars Menu §7§l]")) {
+			if (clickedInv.getTitle().equals("Â§7Â§l[ Â§cÂ§lTNT Wars Menu Â§7Â§l]")) {
 				e.setCancelled(true);
 				boolean com = false;
 				if(!com){
@@ -44,8 +44,8 @@ public class MenuClickHandler implements Listener{
 					if (clicked == null)return;
 					if (clicked.hasItemMeta()) {
 						String itemName = clicked.getItemMeta().getDisplayName();
-						if(itemName.startsWith("§aJoin §7: §b")){
-							String[] splits = itemName.split("§b");
+						if(itemName.startsWith("Â§aJoin Â§7: Â§b")){
+							String[] splits = itemName.split("Â§b");
 							String map = splits[1];
 							Boolean temp = false;
 							if(pl.perTeam.get(map) == 1){
@@ -58,36 +58,36 @@ public class MenuClickHandler implements Listener{
 									}else continue;
 								}
 								if(!temp){
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §cTNT Wars Queue is full");
+									p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§cTNT Wars Queue is full");
 								}
 							}else{
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Select a team");
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6Select a team");
 								MH.openArenaTeams(p, clickedInv, map);
 							}
 							com = true;
 						}
-						if(itemName.startsWith("§aEdit §7: §b")){
-							String[] splits = itemName.split("§b");
+						if(itemName.startsWith("Â§aEdit Â§7: Â§b")){
+							String[] splits = itemName.split("Â§b");
 							String map = splits[1];
 							MH.openArenaSettings(p, clickedInv, map);
 							com = true;
 						}
-						if(itemName.startsWith("§aSpectate §7: §b")){
-							String[] splits = itemName.split("§b");
+						if(itemName.startsWith("Â§aSpectate Â§7: Â§b")){
+							String[] splits = itemName.split("Â§b");
 							String map = splits[1];
 							p.closeInventory();
 							p.teleport(pl.spectate.get(map));
 							com = true;
 						}
-						if(itemName.startsWith("§aSet Spectate §7: §b")){
-							String[] splits = itemName.split("§b");
+						if(itemName.startsWith("Â§aSet Spectate Â§7: Â§b")){
+							String[] splits = itemName.split("Â§b");
 							String map = splits[1];
 							Location loc = p.getLocation();
 							pl.spectate.put(map, new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()));
 							for(int index: pl.arenas.keySet()){
 								String temp = pl.arenas.get(index);
 								if(map.contains(temp)){
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set Spectate Point for map: " + map + " §6to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
+									p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6Set Spectate Point for map: " + map + " Â§6to Â§7(Â§b" + loc.getX() + "Â§7, Â§b" + loc.getY() + "Â§7, Â§b" + loc.getZ() + "Â§7)");
 									pl.config.set("Arenas."+ index + ".spectate.world", loc.getWorld().getName());
 									pl.config.set("Arenas."+ index + ".spectate.x", loc.getX());
 									pl.config.set("Arenas."+ index + ".spectate.y", loc.getY());
@@ -100,30 +100,30 @@ public class MenuClickHandler implements Listener{
 							}
 							com = true;
 						}
-						if(itemName.startsWith("§aEditing §7: §b")){
-							String[] splits = itemName.split("§b");
+						if(itemName.startsWith("Â§aEditing Â§7: Â§b")){
+							String[] splits = itemName.split("Â§b");
 							String map = splits[1];
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Yes, you are editing the settings for " + map);
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Yes, you are editing the settings for " + map);
 							com = true;
 						}
-						if(itemName.startsWith("§aJoin Team§7: §b")){
-							String[] splits = itemName.split("§b");
+						if(itemName.startsWith("Â§aJoin TeamÂ§7: Â§b")){
+							String[] splits = itemName.split("Â§b");
 							int team = Integer.valueOf(splits[1]);
 							String map = clickedInv.getItem(4).getItemMeta().getDisplayName();
-							map = map.split("§aJoining §7: §b")[1];
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Joining team §b" + team);
+							map = map.split("Â§aJoining Â§7: Â§b")[1];
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6Joining team Â§b" + team);
 							GF.gameJoin(p.getName(), map, team);
 							com = true;
 						}
-						if(itemName.startsWith("§aSet SpawnPoint§7:")){
+						if(itemName.startsWith("Â§aSet SpawnPointÂ§7:")){
 							mapItem = clickedInv.getItem(4);
 							String mapNameSpawn = mapItem.getItemMeta().getDisplayName();
-							String[] splitsSpawn = mapNameSpawn.split("§b");
+							String[] splitsSpawn = mapNameSpawn.split("Â§b");
 							String mapSpawn = splitsSpawn[1];
 							int i = 0;
 							for(String lore : clicked.getItemMeta().getLore()){
-								if(lore.contains("team §b")){
-									i = Integer.valueOf(lore.split("team §b")[1]);
+								if(lore.contains("team Â§b")){
+									i = Integer.valueOf(lore.split("team Â§b")[1]);
 								}else continue;
 							}
 							loc = new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
@@ -131,7 +131,7 @@ public class MenuClickHandler implements Listener{
 							for(int index: pl.arenas.keySet()){
 								String map = pl.arenas.get(index);
 								if(map.contains(mapSpawn)){
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set SpawnPoint for team §b" + i + " §6to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
+									p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6Set SpawnPoint for team Â§b" + i + " Â§6to Â§7(Â§b" + loc.getX() + "Â§7, Â§b" + loc.getY() + "Â§7, Â§b" + loc.getZ() + "Â§7)");
 									pl.config.set("Arenas."+index+"."+i+".world", loc.getWorld().getName());
 									pl.config.set("Arenas."+index+"."+i+".x", loc.getX());
 									pl.config.set("Arenas."+index+"."+i+".y", loc.getY());
@@ -144,11 +144,11 @@ public class MenuClickHandler implements Listener{
 							}
 							com = true;
 						}
-						if(itemName.startsWith("§a§lBUY§7§l:")){
-							String[] splits = itemName.split("§b§l");
+						if(itemName.startsWith("Â§aÂ§lBUYÂ§7Â§l:")){
+							String[] splits = itemName.split("Â§bÂ§l");
 							String kit = splits[1];
 							for(String lore : clicked.getItemMeta().getLore()){
-								if(lore.contains("§bCost§7:")){
+								if(lore.contains("Â§bCostÂ§7:")){
 									String[] strings = lore.split("Cost");
 									String price = strings[1];
 									price = ChatColor.stripColor(price);
@@ -157,8 +157,8 @@ public class MenuClickHandler implements Listener{
 									int cost = Integer.valueOf(price);
 									if(pl.econ.hasBalance(p, cost)){
 										pl.econ.withdrawBalance(p, cost);
-										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Purchased the kit§7: §b" + kit + " §6for §a" + cost + " points");
-										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Points Balance§7: §a" + pl.econ.getBalance(p));
+										p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Purchased the kitÂ§7: Â§b" + kit + " Â§6for Â§a" + cost + " points");
+										p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Points BalanceÂ§7: Â§a" + pl.econ.getBalance(p));
 										kit = kit.toLowerCase();
 										kit = kit.replace(" ", "-");
 										PermissionAttachment pPerms = pl.perms.get(p.getUniqueId());
@@ -166,7 +166,7 @@ public class MenuClickHandler implements Listener{
 										pl.perms.put(p.getUniqueId(), pPerms);
 										MH.openKitShop(p, clickedInv);
 									}else{
-										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou don't have §a" + cost + " points §cto purchase kit§7: §b" + kit);
+										p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cYou don't have Â§a" + cost + " points Â§cto purchase kitÂ§7: Â§b" + kit);
 									}
 								}else continue;
 							}
@@ -181,25 +181,25 @@ public class MenuClickHandler implements Listener{
 						if (clicked.hasItemMeta()) {
 							String itemName = clicked.getItemMeta().getDisplayName();
 							switch (itemName) {
-							case "§b§lSniper":
-							case "§b§lShort Fuse":
-							case "§b§lHeavy Loader":
-							case "§b§lMiner":
-							case "§b§lSuicide Bomber":
-							case "§b§lGlue Factory Worker":
-							case "§b§lEnder":
-							case "§b§lBoomerang":
-							case "§b§lPotion Worker":
-							case "§b§lDoctor Who":
-							case "§b§lTank":
-							case "§b§lRandom":
-							case "§b§lBribed":
-							case "§b§lHail Mary":
-							case "§b§lSpace Man":
-							case "§b§lStorm":
-							case "§b§lVampire":
-							case "§b§lVirg Special":
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cCan't change kits while in-game");
+							case "Â§bÂ§lSniper":
+							case "Â§bÂ§lShort Fuse":
+							case "Â§bÂ§lHeavy Loader":
+							case "Â§bÂ§lMiner":
+							case "Â§bÂ§lSuicide Bomber":
+							case "Â§bÂ§lGlue Factory Worker":
+							case "Â§bÂ§lEnder":
+							case "Â§bÂ§lBoomerang":
+							case "Â§bÂ§lPotion Worker":
+							case "Â§bÂ§lDoctor Who":
+							case "Â§bÂ§lTank":
+							case "Â§bÂ§lRandom":
+							case "Â§bÂ§lBribed":
+							case "Â§bÂ§lHail Mary":
+							case "Â§bÂ§lSpace Man":
+							case "Â§bÂ§lStorm":
+							case "Â§bÂ§lVampire":
+							case "Â§bÂ§lVirg Special":
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cCan't change kits while in-game");
 								p.closeInventory();
 								return;
 							}
@@ -215,7 +215,7 @@ public class MenuClickHandler implements Listener{
 					if (clicked.hasItemMeta()) {
 						String itemName = clicked.getItemMeta().getDisplayName();
 						switch (itemName) {
-						case "§aSet Hub":
+						case "Â§aSet Hub":
 							pl.hub = new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), (int)p.getLocation().getYaw(), 0);
 							pl.config.set("Hub.world", pl.hub.getWorld().getName());
 							pl.config.set("Hub.x", pl.hub.getX());
@@ -226,51 +226,51 @@ public class MenuClickHandler implements Listener{
 								pl.config.save(pl.configFile);
 							} catch (IOException e2) {
 							}
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set Hub to §7(§b" + pl.hub.getX() + "§7, §b" + pl.hub.getY() + "§7, §b" + pl.hub.getZ() + "§7)");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Set Hub to Â§7(Â§b" + pl.hub.getX() + "Â§7, Â§b" + pl.hub.getY() + "Â§7, Â§b" + pl.hub.getZ() + "Â§7)");
 							break;
-						case "§aArena List":
+						case "Â§aArena List":
 							MH.arenaSelectorMenu(p, clickedInv);
 							break;
-						case "§aSpectate":
+						case "Â§aSpectate":
 							MH.arenaSpectatorSelectorMenu(p, clickedInv);
 							break;
-						case "§aEdit Spectating Points":
+						case "Â§aEdit Spectating Points":
 							MH.arenaSpectatorEditorSelectorMenu(p, clickedInv);
 							break;
-						case "§bBalance":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Points Balance§7: §a" + pl.econ.getBalance(p));
+						case "Â§bBalance":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Points BalanceÂ§7: Â§a" + pl.econ.getBalance(p));
 							break;
-						case "§aLeave TNT Wars":
+						case "Â§aLeave TNT Wars":
 							p.closeInventory();
 							GF.gameLeave(p.getName());
 							break;
-						case "§aTNT Wars Kits":
+						case "Â§aTNT Wars Kits":
 							if(pl.allQueue.contains(p.getName()))MH.openKitMenu(p, clickedInv);
-							else p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cYou need to be queued to select a kit");
+							else p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cYou need to be queued to select a kit");
 							break;
-						case "§aKit Shop":
+						case "Â§aKit Shop":
 							MH.openKitShop(p, clickedInv);
 							break;
-						case "§bYou Own ALL Kits!":
+						case "Â§bYou Own ALL Kits!":
 							break;
-						case "§aForce Start TNT Wars":
+						case "Â§aForce Start TNT Wars":
 							p.closeInventory();
 							GF.gameForceStart(pl.playerInArena.get(p.getName()), p);
 							break;
-						case "§aArenas Settings":
+						case "Â§aArenas Settings":
 							MH.openArenaMenu(p, clickedInv);
 							break;
-						case "§aSet Lobby Point":
+						case "Â§aSet Lobby Point":
 							mapItem = clickedInv.getItem(4);
 							String mapNameSpawn = mapItem.getItemMeta().getDisplayName();
-							String[] splitsSpawn = mapNameSpawn.split("§b");
+							String[] splitsSpawn = mapNameSpawn.split("Â§b");
 							String mapSpawn = splitsSpawn[1];
 							loc = new Location(p.getLocation().getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
 							pl.lobby.put(mapSpawn, loc);
 							for(int index: pl.arenas.keySet()){
 								String map = pl.arenas.get(index);
 								if(map.contains(mapSpawn)){
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §6Set Lobby Point to §7(§b" + loc.getX() + "§7, §b" + loc.getY() + "§7, §b" + loc.getZ() + "§7)");
+									p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§6Set Lobby Point to Â§7(Â§b" + loc.getX() + "Â§7, Â§b" + loc.getY() + "Â§7, Â§b" + loc.getZ() + "Â§7)");
 									pl.config.set("Arenas."+index+".lobby.world", loc.getWorld().getName());
 									pl.config.set("Arenas."+index+".lobby.x", loc.getX());
 									pl.config.set("Arenas."+index+".lobby.y", loc.getY());
@@ -282,190 +282,190 @@ public class MenuClickHandler implements Listener{
 								}
 							}
 							break;
-						case "§aArena Selector":
+						case "Â§aArena Selector":
 							MH.openArenaMenu(p, clickedInv);
 							break;
-						case "§aClose TNT Wars Menu":
+						case "Â§aClose TNT Wars Menu":
 							p.closeInventory();
 							break;
-						case "§b§lDonor Perks":
+						case "Â§bÂ§lDonor Perks":
 							MH.openDonorMenu(p, clickedInv);
 							break;
 							//KITS
-						case "§b§lSniper":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lSniper":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Sniper");
 							p.closeInventory();
 							break;
-						case "§b§lShort Fuse":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lShort Fuse":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Short Fuse");
 							p.closeInventory();
 							break;
-						case "§b§lHeavy Loader":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lHeavy Loader":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Heavy Loader");
 							p.closeInventory();
 							break;
-						case "§b§lMiner":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lMiner":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Miner");
 							p.closeInventory();
 							break;
-						case "§b§lSuicide Bomber":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lSuicide Bomber":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Suicide Bomber");
 							p.closeInventory();
 							break;
-						case "§b§lGlue Factory Worker":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lGlue Factory Worker":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Glue Factory Worker");
 							p.closeInventory();
 							break;
-						case "§b§lEnder":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lEnder":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Ender");
 							p.closeInventory();
 							break;
-						case "§b§lBoomerang":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lBoomerang":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Boomerang");
 							p.closeInventory();
 							break;
-						case "§b§lPotion Worker":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lPotion Worker":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Potion Worker");
 							p.closeInventory();
 							break;
-						case "§b§lDoctor Who":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lDoctor Who":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Doctor Who");
 							p.closeInventory();
 							break;
-						case "§b§lTank":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lTank":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Tank");
 							p.closeInventory();
 							break;
-						case "§b§lRandom":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lRandom":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Random");
 							p.closeInventory();
 							break;
-						case "§b§lBribed":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lBribed":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Bribed");
 							p.closeInventory();
 							break;
-						case "§b§lHail Mary":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lHail Mary":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Hail Mary");
 							p.closeInventory();
 							break;
-						case "§b§lSpace Man":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lSpace Man":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Space Man");
 							p.closeInventory();
 							break;
-						case "§b§lStorm":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lStorm":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Storm");
 							p.closeInventory();
 							break;
-						case "§b§lVampire":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lVampire":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Vampire");
 							p.closeInventory();
 							break;
-						case "§b§lDefault":
-							p.sendMessage("§6You selected: " + itemName);
+						case "Â§bÂ§lDefault":
+							p.sendMessage("Â§6You selected: " + itemName);
 							pl.selectedKit.put(p.getName(), "Default");
 							p.closeInventory();
 							break;
-						case "§b§lVirg Special":
+						case "Â§bÂ§lVirg Special":
 							if (p.getName().equals("abandoncaptian") || p.getName().equals("TheVirginian")) {
-								p.sendMessage("§6You selected: " + itemName);
+								p.sendMessage("Â§6You selected: " + itemName);
 								pl.selectedKit.put(p.getName(), "Virg Special");
 								p.closeInventory();
 							} else {
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §cThis kit is exclusive to TheVirgian");
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§cThis kit is exclusive to TheVirgian");
 							}
 							break;
-						case "§bFireworks §7Settings":
+						case "Â§bFireworks Â§7Settings":
 							MH.openFWEditorMenu(p, clickedInv);
 							break;
-						case "§bReturn to Main Menu":
+						case "Â§bReturn to Main Menu":
 							MH.openMainMenu(p, clickedInv);
 							break;
-						case "§bChange Name":
+						case "Â§bChange Name":
 							p.closeInventory();
 							MH.openCNameChanger(p);
 							break;
-						case "§bCustom Name §7Settings":
+						case "Â§bCustom Name Â§7Settings":
 							MH.openCNameMenu(p, clickedInv);
 							break;
-						case "§bRed Name":
+						case "Â§bRed Name":
 							pl.cNameColor.put(p.getName(), ChatColor.RED);
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set custom name color: " + pl.cNameColor.get(p.getName()) + "RED");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Set custom name color: " + pl.cNameColor.get(p.getName()) + "RED");
 							break;
-						case "§bBlue Name":
+						case "Â§bBlue Name":
 							pl.cNameColor.put(p.getName(), ChatColor.BLUE);
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set custom name color: " + pl.cNameColor.get(p.getName()) + "BLUE");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Set custom name color: " + pl.cNameColor.get(p.getName()) + "BLUE");
 							break;
-						case "§bGreen Name":
+						case "Â§bGreen Name":
 							pl.cNameColor.put(p.getName(), ChatColor.GREEN);
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set custom name color: " + pl.cNameColor.get(p.getName()) + "GREEN");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Set custom name color: " + pl.cNameColor.get(p.getName()) + "GREEN");
 							break;
-						case "§bWhite Name":
+						case "Â§bWhite Name":
 							pl.cNameColor.put(p.getName(), ChatColor.WHITE);
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set custom name color: " + pl.cNameColor.get(p.getName()) + "WHITE");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Set custom name color: " + pl.cNameColor.get(p.getName()) + "WHITE");
 							break;
-						case "§bPurple Name":
+						case "Â§bPurple Name":
 							pl.cNameColor.put(p.getName(), ChatColor.DARK_PURPLE);
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Set custom name color: " + pl.cNameColor.get(p.getName()) + "PURPLE");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Set custom name color: " + pl.cNameColor.get(p.getName()) + "PURPLE");
 							break;
-						case "§bCustom Name":
+						case "Â§bCustom Name":
 							boolean toggle = false;
 							if(!pl.Perks.containsKey(p.getName())){
 								pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 								pl.Perks.get(p.getName()).put("Fireworks", false);
 								pl.Perks.get(p.getName()).put("Outline", false);
 								pl.Perks.get(p.getName()).put("CName", true);
-								clickedInv.setItem(14, MH.addItem(new ItemStack(Material.SLIME_BALL), "§bCustom Name",
-										Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-												"§6When your TNT explodes it",
-												"§6launches a firework into the air",
+								clickedInv.setItem(14, MH.addItem(new ItemStack(Material.SLIME_BALL), "Â§bCustom Name",
+										Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+												"Â§6When your TNT explodes it",
+												"Â§6launches a firework into the air",
 												" ",
-												"§bClick to toggle the custom name")));	
+												"Â§bClick to toggle the custom name")));	
 								pl.Perks.get(p.getName()).put("CName", true);
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bCustom Name: §7[§aON§7]");
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bCustom Name: Â§7[Â§aONÂ§7]");
 							}else{
 								if(pl.Perks.get(p.getName()).containsKey("CName")){
 									if(pl.Perks.get(p.getName()).get("CName")){
 										toggle = true;
-										clickedInv.setItem(14, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "§bCustom Name",
-												Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-														"§6When your TNT explodes it",
-														"§6launches a firework into the air",
+										clickedInv.setItem(14, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "Â§bCustom Name",
+												Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+														"Â§6When your TNT explodes it",
+														"Â§6launches a firework into the air",
 														" ",
-														"§bClick to toggle the custom name")));	
+														"Â§bClick to toggle the custom name")));	
 										pl.Perks.get(p.getName()).put("CName", false);
-										p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bCustom Name: §7[§cOFF§7]");
+										p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bCustom Name: Â§7[Â§cOFFÂ§7]");
 									}
 								}
 								if(!toggle){
-									clickedInv.setItem(14, MH.addItem(new ItemStack(Material.SLIME_BALL), "§bCustom Name",
-											Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-													"§6When your TNT explodes it",
-													"§6launches a firework into the air",
+									clickedInv.setItem(14, MH.addItem(new ItemStack(Material.SLIME_BALL), "Â§bCustom Name",
+											Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+													"Â§6When your TNT explodes it",
+													"Â§6launches a firework into the air",
 													" ",
-													"§bClick to toggle the custom name")));	
+													"Â§bClick to toggle the custom name")));	
 									pl.Perks.get(p.getName()).put("CName", true);
-									p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bCustom Name: §7[§aON§7]");
+									p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bCustom Name: Â§7[Â§aONÂ§7]");
 								}
 							}
 							break;
-						case "§bFlicker":
+						case "Â§bFlicker":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id2 = id.charAt(1);
@@ -474,19 +474,19 @@ public class MenuClickHandler implements Listener{
 							Boolean flicker = pl.ED.decodeFWSettingsFlicker(p.getName());
 							if(flicker == true){
 								pl.fwSettings.put(p.getName(), "0" + Character.toString(id2) + Character.toString(id3) + Character.toString(id4));
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §cOFF");
-								clickedInv.setItem(1, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "§bFlicker",
-										Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-												"§6Toggle the filcker")));
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§cOFF");
+								clickedInv.setItem(1, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "Â§bFlicker",
+										Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+												"Â§6Toggle the filcker")));
 							}else{
 								pl.fwSettings.put(p.getName(), "1" + Character.toString(id2) + Character.toString(id3) + Character.toString(id4));
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §aON");
-								clickedInv.setItem(1, MH.addItem(new ItemStack(Material.SLIME_BALL), "§bFlicker",
-										Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-												"§6Toggle the filcker")));
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§aON");
+								clickedInv.setItem(1, MH.addItem(new ItemStack(Material.SLIME_BALL), "Â§bFlicker",
+										Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+												"Â§6Toggle the filcker")));
 							}
 							break;
-						case "§bTrail":
+						case "Â§bTrail":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
@@ -495,125 +495,125 @@ public class MenuClickHandler implements Listener{
 							Boolean trail = pl.ED.decodeFWSettingsTrail(p.getName());
 							if(trail == true){
 								pl.fwSettings.put(p.getName(), Character.toString(id1) + "0" + Character.toString(id3) + Character.toString(id4));
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §cOFF");
-								clickedInv.setItem(3, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "§bTrail",
-										Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-												"§6Toggle the trail")));
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§cOFF");
+								clickedInv.setItem(3, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "Â§bTrail",
+										Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+												"Â§6Toggle the trail")));
 							}else{
 								pl.fwSettings.put(p.getName(), Character.toString(id1) + "1" + Character.toString(id3) + Character.toString(id4));
-								p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §aON");
-								clickedInv.setItem(3, MH.addItem(new ItemStack(Material.SLIME_BALL), "§bTrail",
-										Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-												"§6Toggle the trail")));
+								p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§aON");
+								clickedInv.setItem(3, MH.addItem(new ItemStack(Material.SLIME_BALL), "Â§bTrail",
+										Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+												"Â§6Toggle the trail")));
 							}
 							break;
-						case "§bType":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Choose a type from below");
+						case "Â§bType":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Choose a type from below");
 							break;
-						case "§bBall":
+						case "Â§bBall":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id4 = id.charAt(3);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + "0" + Character.toString(id4));
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §bBALL");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§bBALL");
 							break;
-						case "§bLarge Ball":
+						case "Â§bLarge Ball":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id4 = id.charAt(3);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + "1" + Character.toString(id4));
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §bLARGE BALL");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§bLARGE BALL");
 							break;
-						case "§bBurst":
+						case "Â§bBurst":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id4 = id.charAt(3);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + "2" + Character.toString(id4));
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §bBURST");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§bBURST");
 							break;
-						case "§bCreeper":
+						case "Â§bCreeper":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id4 = id.charAt(3);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + "3" + Character.toString(id4));
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §bCREEPER");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§bCREEPER");
 							break;
-						case "§bStar":
+						case "Â§bStar":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id4 = id.charAt(3);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + "4" + Character.toString(id4));
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework type: §bSTAR");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework type: Â§bSTAR");
 							break;
-						case "§bColor":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Choose a color from below");
+						case "Â§bColor":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Choose a color from below");
 							break;
-						case "§bRed":
+						case "Â§bRed":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id3 = id.charAt(2);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + Character.toString(id3) + "0");
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework color: §cRED");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework color: Â§cRED");
 							break;
-						case "§bBlue":
+						case "Â§bBlue":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id3 = id.charAt(2);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + Character.toString(id3) + "1");
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework color: §1BLUE");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework color: Â§1BLUE");
 							break;
-						case "§bGreen":
+						case "Â§bGreen":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id3 = id.charAt(2);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + Character.toString(id3) + "2");
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework color: §2GREEN");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework color: Â§2GREEN");
 							break;
-						case "§bWhite":
+						case "Â§bWhite":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id3 = id.charAt(2);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + Character.toString(id3) + "3");
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework color: §fWHITE");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework color: Â§fWHITE");
 							break;
-						case "§bSettings":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework settings: " + pl.fwSettings.get(p.getName()));
+						case "Â§bSettings":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework settings: " + pl.fwSettings.get(p.getName()));
 							break;
-						case "§bPurple":
+						case "Â§bPurple":
 							pl.ED.encodeFWSettings(p.getName());
 							id = pl.fwSettings.get(p.getName());
 							id1 = id.charAt(0);
 							id2 = id.charAt(1);
 							id3 = id.charAt(2);
 							pl.fwSettings.put(p.getName(), Character.toString(id1) + Character.toString(id2) + Character.toString(id3) + "4");
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §6Firework color: §5PURPLE");
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6Firework color: Â§5PURPLE");
 							break;
-						case "§bTurn Fireworks §7[§aON§7]":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bFireworks: §7[§aON§7]");
-							clickedInv.setItem(10, MH.addItem(new ItemStack(Material.SLIME_BALL), "§bTurn Fireworks §7[§cOFF§7]",
-									Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-											"§6When your TNT explodes it",
-											"§6launches a firework into the air", 
+						case "Â§bTurn Fireworks Â§7[Â§aONÂ§7]":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bFireworks: Â§7[Â§aONÂ§7]");
+							clickedInv.setItem(10, MH.addItem(new ItemStack(Material.SLIME_BALL), "Â§bTurn Fireworks Â§7[Â§cOFFÂ§7]",
+									Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+											"Â§6When your TNT explodes it",
+											"Â§6launches a firework into the air", 
 											" ",
-											"§bClick to turn §7[§cOFF§7]")));
+											"Â§bClick to turn Â§7[Â§cOFFÂ§7]")));
 							if (!pl.Perks.containsKey(p.getName())) {
 								pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 								pl.Perks.get(p.getName()).put("Fireworks", true);
@@ -625,14 +625,14 @@ public class MenuClickHandler implements Listener{
 								}
 							}
 							break;
-						case "§bTurn Fireworks §7[§cOFF§7]":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bFireworks: §7[§cOFF§7]");
-							clickedInv.setItem(10, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "§bTurn Fireworks §7[§aON§7]",
-									Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-											"§6When your TNT explodes it",
-											"§6launches a firework into the air", 
+						case "Â§bTurn Fireworks Â§7[Â§cOFFÂ§7]":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bFireworks: Â§7[Â§cOFFÂ§7]");
+							clickedInv.setItem(10, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "Â§bTurn Fireworks Â§7[Â§aONÂ§7]",
+									Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+											"Â§6When your TNT explodes it",
+											"Â§6launches a firework into the air", 
 											" ",
-											"§bClick to turn §7[§aON§7]")));
+											"Â§bClick to turn Â§7[Â§aONÂ§7]")));
 							if (!pl.Perks.containsKey(p.getName())) {
 								pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 								pl.Perks.get(p.getName()).put("Fireworks", false);
@@ -644,13 +644,13 @@ public class MenuClickHandler implements Listener{
 								}
 							}
 							break;
-						case "§bTurn TNT Outline §7[§aON§7]":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bTNT Outline: §7[§aON§7]");
-							clickedInv.setItem(12, MH.addItem(new ItemStack(Material.SLIME_BALL), "§bTurn TNT Outline §7[§cOFF§7]",
-									Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-											"§6Your TNT will be outlined in white", 
+						case "Â§bTurn TNT Outline Â§7[Â§aONÂ§7]":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bTNT Outline: Â§7[Â§aONÂ§7]");
+							clickedInv.setItem(12, MH.addItem(new ItemStack(Material.SLIME_BALL), "Â§bTurn TNT Outline Â§7[Â§cOFFÂ§7]",
+									Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+											"Â§6Your TNT will be outlined in white", 
 											" ",
-											"§bClick to turn §7[§cOFF§7]")));
+											"Â§bClick to turn Â§7[Â§cOFFÂ§7]")));
 							if (!pl.Perks.containsKey(p.getName())) {
 								pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 								pl.Perks.get(p.getName()).put("Fireworks", false);
@@ -662,13 +662,13 @@ public class MenuClickHandler implements Listener{
 								}
 							}
 							break;
-						case "§bTurn TNT Outline §7[§cOFF§7]":
-							p.sendMessage("§7§l[§c§lTNT Wars§7§l] §bTNT Outline: §7[§cOFF§7]");
-							clickedInv.setItem(12, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "§bTurn TNT Outline §7[§aON§7]",
-									Lists.newArrayList("§6§l---- §c[ TNT Wars ] §6§l----",
-											"§6Your TNT will be outlined in white", 
+						case "Â§bTurn TNT Outline Â§7[Â§cOFFÂ§7]":
+							p.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§bTNT Outline: Â§7[Â§cOFFÂ§7]");
+							clickedInv.setItem(12, MH.addItem(new ItemStack(Material.MAGMA_CREAM), "Â§bTurn TNT Outline Â§7[Â§aONÂ§7]",
+									Lists.newArrayList("Â§6Â§l---- Â§c[ TNT Wars ] Â§6Â§l----",
+											"Â§6Your TNT will be outlined in white", 
 											" ",
-											"§bClick to turn §7[§aON§7]")));
+											"Â§bClick to turn Â§7[Â§aONÂ§7]")));
 							if (!pl.Perks.containsKey(p.getName())) {
 								pl.Perks.put(p.getName(), new HashMap<String, Boolean>());
 								pl.Perks.get(p.getName()).put("Fireworks", false);

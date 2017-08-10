@@ -81,7 +81,7 @@ public class PlayerDeath implements Listener {
 						Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 							@Override
 							public void run() {
-								Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b§l" + winnerNames + " §6has won as a team!");
+								Bukkit.broadcastMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bÂ§l" + winnerNames + " Â§6has won as a team!");
 								winnerNames.remove(map);
 							}
 						}, 2);
@@ -93,8 +93,8 @@ public class PlayerDeath implements Listener {
 								@Override
 								public void run() {
 									pl.econ.depositBalance(winnerP, 10);
-									winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §a+§710 Points");
-									winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §6New Points Balance§7: §a" + pl.econ.getBalance(winnerP));
+									winnerP.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§a+Â§710 Points");
+									winnerP.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6New Points BalanceÂ§7: Â§a" + pl.econ.getBalance(winnerP));
 									GF.resetPlayerfromGame(winnerP, map);
 									GF.setPlayerInv(winnerP);
 								}
@@ -119,7 +119,7 @@ public class PlayerDeath implements Listener {
 					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 						@Override
 						public void run() {
-							Bukkit.broadcastMessage("§7§l[§c§lTNT Wars§7§l] [§6" + map + "§7§l] §b§l" + winner + " §6has won!");
+							Bukkit.broadcastMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] [Â§6" + map + "Â§7Â§l] Â§bÂ§l" + winner + " Â§6has won!");
 						}
 					}, 2);
 					Player winnerP = Bukkit.getPlayer(winner);
@@ -129,8 +129,8 @@ public class PlayerDeath implements Listener {
 						@Override
 						public void run() {
 							pl.econ.depositBalance(winnerP, 10);
-							winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §a+§710 Points");
-							winnerP.sendMessage("§7§l[§c§lTNT Wars§7§l] §6New Points Balance§7: §a" + pl.econ.getBalance(winnerP));
+							winnerP.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§a+Â§710 Points");
+							winnerP.sendMessage("Â§7Â§l[Â§cÂ§lTNT WarsÂ§7Â§l] Â§6New Points BalanceÂ§7: Â§a" + pl.econ.getBalance(winnerP));
 							GF.resetPlayerfromGame(winnerP, map);
 							GF.resetMap(map);
 							GF.setPlayerInv(winnerP);

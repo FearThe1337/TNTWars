@@ -23,21 +23,21 @@ public class PlayerChat implements Listener {
 		String message = e.getMessage();
 		String chat = "";
 		String prefix = pl.chat.getPlayerPrefix(p);
-		String seperator = "ง7: งf";
+		String seperator = "ยง7: ยงf";
 		if(prefix.equals("") || prefix.equals(" ")){
-			chat += "งr";
+			chat += "ยงr";
 		}else{
-			chat += "ง7[";
+			chat += "ยง7[";
 			chat += prefix;
-			chat += "ง7]";
-			chat += " งb";
+			chat += "ยง7]";
+			chat += " ยงb";
 		}
 		chat += p.getName();
 		chat += seperator;
-		if(pl.chat.getPrimaryGroup(p).contains("Owner")||pl.chat.getPrimaryGroup(p).contains("Admin")||pl.chat.getPrimaryGroup(p).contains("Mod")||pl.chat.getPrimaryGroup(p).contains("RightHand"))chat += "งb";
+		if(pl.chat.getPrimaryGroup(p).contains("Owner")||pl.chat.getPrimaryGroup(p).contains("Admin")||pl.chat.getPrimaryGroup(p).contains("Mod")||pl.chat.getPrimaryGroup(p).contains("RightHand"))chat += "ยงb";
 		chat += message;
 		if(p.hasPermission("tntwars.color")){
-			chat = chat.replaceAll("&", "ง");
+			chat = chat.replaceAll("&", "ยง");
 		}
 
 		e.setCancelled(true);

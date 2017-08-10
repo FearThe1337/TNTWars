@@ -20,15 +20,15 @@ public class SignUpdater implements Runnable {
 				Sign s = (Sign) pl.ED.DecodeSignPos(loc).getBlock().getState();
 				String map = ChatColor.stripColor(s.getLine(1));
 				if(pl.cd.active.get(map)){
-					s.setLine(2, "§1Current§7: §2" + pl.inGame.get(map).size() +"§7/§2" + pl.gameMax.get(map));
+					s.setLine(2, "Â§1CurrentÂ§7: Â§2" + pl.inGame.get(map).size() +"Â§7/Â§2" + pl.gameMax.get(map));
 				}else{
-					s.setLine(2, "§1Current§7: §2" + pl.gameQueue.get(map).size() +"§7/§2" + pl.gameMax.get(map));
+					s.setLine(2, "Â§1CurrentÂ§7: Â§2" + pl.gameQueue.get(map).size() +"Â§7/Â§2" + pl.gameMax.get(map));
 				}
 				if(pl.cd.active.get(map)){
-					s.setLine(3, "§1Status§7: §2Playing");
+					s.setLine(3, "Â§1StatusÂ§7: Â§2Playing");
 					mapStatus.put(map, "Playing");
 				}else{
-					s.setLine(3, "§1Status§7: §2Waiting");
+					s.setLine(3, "Â§1StatusÂ§7: Â§2Waiting");
 					mapStatus.put(map, "Waiting");
 				}
 				s.update();

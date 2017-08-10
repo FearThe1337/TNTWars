@@ -359,9 +359,9 @@ public class Main extends JavaPlugin implements Listener {
 			remainingBoard.put(map, manager.getNewScoreboard());
 			objectiveQueue.put(map, queueBoard.get(map).registerNewObjective("Queued", "dummy"));
 			objectiveRemaining.put(map, remainingBoard.get(map).registerNewObjective("Remaining", "dummy"));
-			objectiveQueue.get(map).setDisplayName("§7§l[§c§lQueued§7§l]");
+			objectiveQueue.get(map).setDisplayName("Â§7Â§l[Â§cÂ§lQueuedÂ§7Â§l]");
 			objectiveQueue.get(map).setDisplaySlot(DisplaySlot.SIDEBAR);
-			objectiveRemaining.get(map).setDisplayName("§7§l[§c§lRemaining§7§l]");
+			objectiveRemaining.get(map).setDisplayName("Â§7Â§l[Â§cÂ§lRemainingÂ§7Â§l]");
 			objectiveRemaining.get(map).setDisplaySlot(DisplaySlot.SIDEBAR);
 			cd.active.put(map, false);
 			gameQueue.put(map, new ArrayList<String>());
